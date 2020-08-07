@@ -7,7 +7,7 @@ namespace EngineTester
     public class TileTests
     {
         [TestMethod]
-        public void TileIsCreated()
+        public void Init()
         {
             Tile sut = new Tile(false);
             Assert.IsNotNull(sut);
