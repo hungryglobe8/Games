@@ -19,28 +19,31 @@ namespace Engine
         /// Create a tile with or without a bomb underneath it.
         /// </summary>
         /// <param name="armed">initial mine state</param>
-        public Tile(bool armed)
+        public Tile(bool armed = false)
         {
             IsArmed = armed;
-            dangerLevel = 0;
+            if (IsArmed)
+                dangerLevel = 10;
+            else
+                dangerLevel = 0;
         }
 
         /// <summary>
         /// Ask a tile how many armed neighbors it has.
+        /// If the value is 10, the tile is armed.
         /// </summary>
         public int GetDanger()
         {
-            if (IsArmed)
-                return -1;
             return dangerLevel;
         }
 
         /// <summary>
-        /// Increase the danger level of a tile.
+        /// Increase the danger level of a tile if it is not armed.
         /// </summary>
         public void DangerUp()
         {
-            dangerLevel++;
+            if (!IsArmed)
+                dangerLevel++;
         }
     }
 }

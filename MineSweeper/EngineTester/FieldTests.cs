@@ -56,11 +56,27 @@ namespace EngineTester
         }
 
         [TestMethod]
-        public void PopulateFieldWithMines()
+        public void PopulateSmallFieldWithMinesUsingSeed()
+        {
+            Field sut = new Field(3, 3, 2);
+            sut.PopulateField(10);
+            Tile res = sut.GetTile(2, 0);
+            Assert.IsTrue(res.IsArmed);
+
+            res = sut.GetTile(2, 2);
+            Assert.IsTrue(res.IsArmed);
+        }
+
+        [TestMethod]
+        public void PopulateMediumFieldWithMinesUsingSeed()
         {
             Field sut = new Field(4, 4, 6);
-            sut.PopulateField();
-            Assert.AreEqual(0, 0);
+            sut.PopulateField(10);
+            Tile key = sut.GetTile(1, 2);
+            Assert.AreEqual(4, key.GetDanger());
+
+            key = sut.GetTile(2, 1);
+            Assert.IsTrue(key.IsArmed);
         }
     }
 }

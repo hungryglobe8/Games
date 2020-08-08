@@ -73,52 +73,58 @@ namespace Engine
                 for (int j = 0; j < tiles.GetLength(1); j++)
                 {
                     if (tiles[i, j] == null)
-                        tiles[i, j] = new Tile(false);
+                        tiles[i, j] = new Tile();
                 }
             }
 
             // Increase danger of tiles next to mines.
             foreach (Coordinate mineCoor in mineCoordinates)
             {
-                IList<Tile> neighbors = GetNeighbors(mineCoor);
+                IList<Tile> neighbors = GetNeighbors(mineCoor.x, mineCoor.y);
                 foreach (Tile tile in neighbors)
                     tile.DangerUp();
             }
         }
 
-        public IList<Tile> GetNeighbors(int x, int y)
+        /// <summary>
+        /// Get a tile at a specific coordinate.
+        /// </summary>
+        public Tile GetTile(int x, int y)
         {
-            return GetNeighbors(new Coordinate(x, y));
+            return tiles[x, y];
         }
 
-        private IList<Tile> GetNeighbors(Coordinate target)
+        /// <summary>
+        /// Get a list of neighbors for a given coordinate.
+        /// </summary>
+        public IList<Tile> GetNeighbors(int x, int y)
         {
             IList<Tile> neighbors = new List<Tile>();
-            int lowX = target.x - 1;
-            int lowY = target.y - 1;
-            int highX = target.x + 1;
-            int highY = target.y + 1;
+            int lowX = x - 1;
+            int lowY =  y - 1;
+            int highX = x + 1;
+            int highY = y + 1;
             //bottom left
             if (lowX >= 0 && lowY >= 0)
                 neighbors.Add(tiles[lowX, lowY]);
             //bottom middle
             if (lowY >= 0)
-                neighbors.Add(tiles[target.x, lowY]);
+                neighbors.Add(tiles[x, lowY]);
             //bottom right
             if (highX < tiles.GetLength(0) && lowY >= 0)
                 neighbors.Add(tiles[highX, lowY]);
             //middle left
             if (lowX >= 0)
-                neighbors.Add(tiles[lowX, target.y]);
+                neighbors.Add(tiles[lowX, y]);
             //middle right
             if (highX < tiles.GetLength(0))
-                neighbors.Add(tiles[highX, target.y]);
+                neighbors.Add(tiles[highX, y]);
             //top left
             if (lowX >= 0 && highY < tiles.GetLength(1))
                 neighbors.Add(tiles[lowX, highY]);
             //top middle
             if (highY < tiles.GetLength(1))
-                neighbors.Add(tiles[target.x, highY]);
+                neighbors.Add(tiles[x, highY]);
             //top right
             if (highX < tiles.GetLength(0) && highY < tiles.GetLength(1))
                 neighbors.Add(tiles[highX, highY]);
