@@ -93,22 +93,22 @@ namespace Engine
             int highX = target.x + 1;
             int highY = target.y + 1;
             //bottom left
-            if (lowX > 0 && lowY > 0)
+            if (lowX >= 0 && lowY >= 0)
                 neighbors.Add(tiles[lowX, lowY]);
             //bottom middle
-            if (lowY > 0)
+            if (lowY >= 0)
                 neighbors.Add(tiles[target.x, lowY]);
             //bottom right
-            if (highX < tiles.GetLength(0) && lowY > 0)
+            if (highX < tiles.GetLength(0) && lowY >= 0)
                 neighbors.Add(tiles[highX, lowY]);
             //middle left
-            if (lowX > 0)
+            if (lowX >= 0)
                 neighbors.Add(tiles[lowX, target.y]);
             //middle right
             if (highX < tiles.GetLength(0))
                 neighbors.Add(tiles[highX, target.y]);
             //top left
-            if (lowX > 0 && highY < tiles.GetLength(1))
+            if (lowX >= 0 && highY < tiles.GetLength(1))
                 neighbors.Add(tiles[lowX, highY]);
             //top middle
             if (highY < tiles.GetLength(1))

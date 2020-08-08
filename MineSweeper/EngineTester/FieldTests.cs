@@ -23,12 +23,36 @@ namespace EngineTester
         }
 
         [TestMethod]
-        public void GetNeighborsTopLeftEqualsThree()
+        [DataRow(0, 0, 3)]
+        [DataRow(2, 0, 5)]
+        [DataRow(3, 0, 3)]
+        public void GetNeighborsBottomRow(int x, int y, int expected)
         {
             Field sut = new Field(4, 4, 6);
-            int expectedNeighbors = 3;
-            int actualNeighbors = sut.GetNeighbors(0, 0).Count;
-            Assert.AreEqual(expectedNeighbors, actualNeighbors);
+            int actual = sut.GetNeighbors(x, y).Count;
+            Assert.AreEqual(expected, actual);
+        }
+
+        [TestMethod]
+        [DataRow(0, 2, 5)]
+        [DataRow(2, 2, 8)]
+        [DataRow(1, 3, 5)]
+        public void GetNeighborsMiddleRow(int x, int y, int expected)
+        {
+            Field sut = new Field(4, 4, 6);
+            int actual = sut.GetNeighbors(x, y).Count;
+            Assert.AreEqual(expected, actual);
+        }        
+        
+        [TestMethod]
+        [DataRow(0, 3, 3)]
+        [DataRow(1, 3, 5)]
+        [DataRow(3, 3, 3)]
+        public void GetNeighborsTopRow(int x, int y, int expected)
+        {
+            Field sut = new Field(4, 4, 6);
+            int actual = sut.GetNeighbors(x, y).Count;
+            Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
