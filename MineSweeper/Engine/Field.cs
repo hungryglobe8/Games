@@ -38,9 +38,15 @@ namespace Engine
             NumMines = _numMines;
         }
 
-        public void PopulateField()
+        /// <summary>
+        /// Populate the field with NumMines.
+        /// </summary>
+        /// <param name="seed">allows user to fix the random generator, if desired</param>
+        public void PopulateField(int? seed = null)
         {
-            Random rnd = new Random();
+            // If seed has a value, rnd uses it. Else use time-dependent generator.
+            Random rnd = seed.HasValue ? new Random(seed.Value) : new Random();
+
             // Store mine coordinates.
             IList<Coordinate> mineCoordinates = new List<Coordinate>();
             int count = 0;

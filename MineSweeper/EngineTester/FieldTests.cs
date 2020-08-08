@@ -56,7 +56,7 @@ namespace EngineTester
         }
 
         [TestMethod]
-        public void PopulateField()
+        public void PopulateFieldWithMines()
         {
             Field sut = new Field(4, 4, 6);
             sut.PopulateField();
