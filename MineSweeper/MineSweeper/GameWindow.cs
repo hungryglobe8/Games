@@ -13,6 +13,8 @@ namespace MineSweeper
 {
     public partial class GameWindow : Form
     {
+        private List<Button> buttons;
+
         public GameWindow()
         {
             InitializeComponent();
@@ -37,7 +39,6 @@ namespace MineSweeper
                 {
                     Button b = new Button();
                     Tile tile = field.GetTile(x, y);
-                    //b.Click += (sender, e) => Tile_Click(sender, e, tile);
                     b.MouseUp += (sender, e) => Tile_MouseUp(sender, e, tile);
                     b.Location = new Point(BUTTON_SIZE * (x + 1), BUTTON_SIZE * (y + 1));
                     b.Size = new Size(BUTTON_SIZE, BUTTON_SIZE);
@@ -56,26 +57,46 @@ namespace MineSweeper
 
         private void Tile_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e, Tile tile)
         {
-            var button = (Button)sender;
+            var clickedButton = (Button)sender;
             // Reveal state.
-            if (e.Button == MouseButtons.Left)
+            if (clickedButton.Enabled)
             {
-                //bomb
-                if (tile.IsArmed)
+                // Multi click on revealed square reveals neighbors.
+                // TODO: incorporate into MouseDown event.
+                //if (e.Button == MouseButtons.Left && e.Button == MouseButtons.Right)
+                //{
+                //    MessageBox.Show("Double click used properly!");
+                //}
+
+                if (e.Button == MouseButtons.Left && !tile.IsFlagged)
                 {
-                    button.Image = Image.FromFile("../../Images/Bomb.bmp");
-                    //GameOver();
+                    //bomb
+                    if (tile.IsArmed)
+                    {
+                        clickedButton.Image = Image.FromFile("../../Images/Bomb.bmp");
+                        //GameOver();
+                    }
+                    //normal
+                    else
+                        clickedButton.Text = tile.GetDanger().ToString();
+                    //deactivate
+                    clickedButton.Enabled = false;
                 }
-                //normal
-                else
-                    button.Text = tile.GetDanger().ToString();
-            }
-            // Flag or deflag tile.
-            if (e.Button == MouseButtons.Right)
-            {
-                button.Text = "";
-                button.Image = Image.FromFile("../../Images/Flag.bmp");
-            }
+                // Flag or deflag tile.
+                else if (e.Button == MouseButtons.Right)
+                {
+                    if (!tile.IsFlagged)
+                    {
+                        clickedButton.Image = Image.FromFile("../../Images/Flag.bmp");
+                        tile.IsFlagged = true;
+                    }
+                    else
+                    {
+                        clickedButton.Image = null;
+                        tile.IsFlagged = false;
+                    }
+                } 
+            }   
         }
     }
 }

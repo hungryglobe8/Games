@@ -14,6 +14,7 @@ namespace Engine
         private int dangerLevel;
         // Is there a mine on this space?
         public bool IsArmed { private set; get; }
+        public bool IsFlagged { set; get; }
 
         /// <summary>
         /// Create a tile with or without a bomb underneath it.
