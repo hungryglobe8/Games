@@ -36,26 +36,46 @@ namespace MineSweeper
                 for (int y = 0; y < BoardHeight; y++)
                 {
                     Button b = new Button();
-                    b.Click += PieceButton_Click;
+                    Tile tile = field.GetTile(x, y);
+                    //b.Click += (sender, e) => Tile_Click(sender, e, tile);
+                    b.MouseUp += (sender, e) => Tile_MouseUp(sender, e, tile);
                     b.Location = new Point(BUTTON_SIZE * (x + 1), BUTTON_SIZE * (y + 1));
                     b.Size = new Size(BUTTON_SIZE, BUTTON_SIZE);
                     
-                    Tile tile = field.GetTile(x, y);
                     //bomb image
-                    if (tile.IsArmed)
-                        b.Image = Image.FromFile("../../Images/Bomb.bmp");
-                    //num surrounding mines
-                    else
-                        b.Text = tile.GetDanger().ToString();
+                    //if (tile.IsArmed)
+                    //    b.Image = Image.FromFile("../../Images/Bomb.bmp");
+                    ////num surrounding mines
+                    //else
+                    //    b.Text = tile.GetDanger().ToString();
 
                     Controls.Add(b);
                 }
             }
         }
-        private void PieceButton_Click(object sender, EventArgs e)
+
+        private void Tile_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e, Tile tile)
         {
             var button = (Button)sender;
-            MessageBox.Show(button.Location.X + "/" + button.Location.Y);
+            // Reveal state.
+            if (e.Button == MouseButtons.Left)
+            {
+                //bomb
+                if (tile.IsArmed)
+                {
+                    button.Image = Image.FromFile("../../Images/Bomb.bmp");
+                    //GameOver();
+                }
+                //normal
+                else
+                    button.Text = tile.GetDanger().ToString();
+            }
+            // Flag or deflag tile.
+            if (e.Button == MouseButtons.Right)
+            {
+                button.Text = "";
+                button.Image = Image.FromFile("../../Images/Flag.bmp");
+            }
         }
     }
 }
