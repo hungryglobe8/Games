@@ -43,7 +43,7 @@ namespace MineSweeper
                     Tile tile = field.GetTile(x, y);
                     //bomb image
                     if (tile.IsArmed)
-                        b.Image = Image.FromFile("../../Images/Icon1.ico");
+                        b.Image = Image.FromFile("../../Images/Bomb.bmp");
                     //num surrounding mines
                     else
                         b.Text = tile.GetDanger().ToString();

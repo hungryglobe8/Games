@@ -89,8 +89,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Images\Bomb.bmp" />
     <Content Include="Images\Bomb.png" />
-    <Content Include="Images\Icon1.ico" />
+    <Content Include="Images\Flag.bmp" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
