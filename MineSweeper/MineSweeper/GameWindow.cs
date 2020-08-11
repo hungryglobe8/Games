@@ -40,6 +40,7 @@ namespace MineSweeper
                     Button b = new Button();
                     Tile tile = field.GetTile(x, y);
                     b.MouseUp += (sender, e) => Tile_MouseUp(sender, e, tile);
+                    b.EnabledChanged += Tile_EnableChanged;
                     b.Location = new Point(BUTTON_SIZE * (x + 1), BUTTON_SIZE * (y + 1));
                     b.Size = new Size(BUTTON_SIZE, BUTTON_SIZE);
                     
@@ -53,6 +54,13 @@ namespace MineSweeper
                     Controls.Add(b);
                 }
             }
+        }
+
+        private void Tile_EnableChanged(object sender, System.EventArgs e)
+        {
+            var button = (Button)sender;
+            button.ForeColor = button.Enabled == false ? Color.Blue : Color.Red;
+            button.BackColor = Color.AliceBlue;
         }
 
         private void Tile_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e, Tile tile)
@@ -78,9 +86,22 @@ namespace MineSweeper
                     }
                     //normal
                     else
-                        clickedButton.Text = tile.GetDanger().ToString();
+                    {
+                        var colors = new Dictionary<int, Color>(){
+                            {1, Color.Blue },
+                            {2, Color.Green },
+                            {3, Color.OrangeRed },
+                            {4, Color.BlueViolet },
+                            {5, Color.Brown },
+                            {6, Color.Teal }
+                        };
+                        int danger = tile.GetDanger();
+                        clickedButton.Text = danger.ToString();
+                        clickedButton.ForeColor = colors[danger];
+                    }
+
                     //deactivate
-                    clickedButton.Enabled = false;
+                    //clickedButton.Enabled = false;
                 }
                 // Flag or deflag tile.
                 else if (e.Button == MouseButtons.Right)
