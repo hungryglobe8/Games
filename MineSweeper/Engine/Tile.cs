@@ -54,9 +54,14 @@ namespace Engine
                 dangerLevel++;
         }
 
+        /// <summary>
+        /// Contains logic for left clicking a tile.
+        /// Nothing changes if the tile has been clicked or flagged.
+        /// Deactivates a given tile if the user does a left click, revealing a number or a mine.
+        /// </summary>
         public Image LeftClick(Image oldImage)
         {
-            if (oldImage != null)
+            if (!Enabled || IsFlagged)
                 return oldImage;
 
             else
@@ -90,62 +95,25 @@ namespace Engine
         }
 
         /// <summary>
-        /// Contains logic for potential click paths of a tile. 
-        /// Deactivates a given tile if the user does a left click, revealing a number or a mine.
-        /// Right clicking adds or removes a flag image. Flagged tiles can't be left clicked.
-        /// TODO: Double clicking reveals all neighbors.
+        /// Contains logic for right clicking a tile.
+        /// If a tile has been revealed, do nothing.
+        /// Add or remove a flag as appropriate.
         /// </summary>
-        /// <param name="e"></param>
-        /// <param name="oldImage"></param>
-        /// <returns></returns>
-        public Image Click(System.Windows.Forms.MouseEventArgs e, Image oldImage)
+        public Image RightClick(Image oldImage)
         {
-            Image result = oldImage;
-            if (e.Button == MouseButtons.Left && !IsFlagged)
-            {
-                //deactivate
-                Enabled = false;
-                //bomb
-                if (this.IsArmed)
-                {
-                    //GameOver();
-                    result = Image.FromFile("../../Images/Bomb.bmp");
-                }
-                //normal
-                else
-                {
-                    var colors = new Dictionary<int, Color>(){
-                            {1, Color.Blue },
-                            {2, Color.Green },
-                            {3, Color.OrangeRed },
-                            {4, Color.BlueViolet },
-                            {5, Color.Brown },
-                            {6, Color.Teal }
-                        };
-                    int danger = GetDanger();
-                    if (danger != 0)
-                    {
-                        button.Text = danger.ToString();
-                        button.ForeColor = colors[danger];
-                    }
-                }
-            }
+            if (!Enabled)
+                return oldImage;
 
-            // Flag or deflag tile.
-            else if (e.Button == MouseButtons.Right)
+            if (!IsFlagged)
             {
-                if (!IsFlagged)
-                {
-                    IsFlagged = true;
-                    result = Image.FromFile("../../Images/Flag.bmp");
-                }
-                else
-                {
-                    IsFlagged = false;
-                    result = null;
-                }
+                IsFlagged = true;
+                return Image.FromFile("../../Images/Flag.bmp");
             }
-            return result;
+            else
+            {
+                IsFlagged = false;
+                return null;
+            }
         }
     }
 }
