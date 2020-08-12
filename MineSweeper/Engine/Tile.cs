@@ -28,6 +28,7 @@ namespace Engine
         public Tile(bool armed = false)
         {
             IsArmed = armed;
+            Enabled = true;
             button = new Button();
             if (IsArmed)
                 dangerLevel = 10;
@@ -53,17 +54,19 @@ namespace Engine
                 dangerLevel++;
         }
 
-        public string Click(MouseEventArgs e)
+        public void Click(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (this.Enabled)
             {
                 if (e.Button == MouseButtons.Left && !this.IsFlagged)
                 {
+                    //deactivate
+                    Enabled = false;
                     //bomb
                     if (this.IsArmed)
                     {
                         //GameOver();
-                        return "Bomb";
+                        button.Image = Image.FromFile("../../Images/Bomb.bmp");
                     }
                     //normal
                     else
@@ -76,31 +79,29 @@ namespace Engine
                             {5, Color.Brown },
                             {6, Color.Teal }
                         };
-                        int danger = tile.GetDanger();
+                        int danger = GetDanger();
                         if (danger != 0)
                         {
-                            clickedButton.Text = danger.ToString();
-                            clickedButton.ForeColor = colors[danger];
+                            button.Text = danger.ToString();
+                            button.ForeColor = colors[danger];
                         }
                     }
-
-                    //deactivate
-                    //clickedButton.Enabled = false;
                 }
                 // Flag or deflag tile.
                 else if (e.Button == MouseButtons.Right)
                 {
-                    if (!tile.IsFlagged)
+                    if (!IsFlagged)
                     {
-                        clickedButton.Image = Image.FromFile("../../Images/Flag.bmp");
-                        tile.IsFlagged = true;
+                        button.Image = Image.FromFile("../../Images/Flag.bmp");
+                        IsFlagged = true;
                     }
                     else
                     {
-                        clickedButton.Image = null;
-                        tile.IsFlagged = false;
+                        button.Image = null;
+                        IsFlagged = false;
                     }
                 }
             }
+        }
     }
 }
