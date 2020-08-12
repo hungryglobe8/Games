@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using System.Drawing;
 
 namespace Engine
 {
@@ -54,24 +54,32 @@ namespace Engine
                 dangerLevel++;
         }
 
-        public void Click(object sender, System.Windows.Forms.MouseEventArgs e)
+        /// <summary>
+        /// Contains logic for potential click paths of a tile. 
+        /// Deactivates a given tile if the user does a left click, revealing a number or a mine.
+        /// Right clicking adds or removes a flag image. Flagged tiles can't be left clicked.
+        /// TODO: Double clicking reveals all neighbors.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="oldImage"></param>
+        /// <returns></returns>
+        public Image Click(System.Windows.Forms.MouseEventArgs e, Image oldImage)
         {
-            if (this.Enabled)
+            Image result = oldImage;
+            if (e.Button == MouseButtons.Left && !IsFlagged)
             {
-                if (e.Button == MouseButtons.Left && !this.IsFlagged)
+                //deactivate
+                Enabled = false;
+                //bomb
+                if (this.IsArmed)
                 {
-                    //deactivate
-                    Enabled = false;
-                    //bomb
-                    if (this.IsArmed)
-                    {
-                        //GameOver();
-                        button.Image = Image.FromFile("../../Images/Bomb.bmp");
-                    }
-                    //normal
-                    else
-                    {
-                        var colors = new Dictionary<int, Color>(){
+                    //GameOver();
+                    result = Image.FromFile("../../Images/Bomb.bmp");
+                }
+                //normal
+                else
+                {
+                    var colors = new Dictionary<int, Color>(){
                             {1, Color.Blue },
                             {2, Color.Green },
                             {3, Color.OrangeRed },
@@ -79,29 +87,30 @@ namespace Engine
                             {5, Color.Brown },
                             {6, Color.Teal }
                         };
-                        int danger = GetDanger();
-                        if (danger != 0)
-                        {
-                            button.Text = danger.ToString();
-                            button.ForeColor = colors[danger];
-                        }
-                    }
-                }
-                // Flag or deflag tile.
-                else if (e.Button == MouseButtons.Right)
-                {
-                    if (!IsFlagged)
+                    int danger = GetDanger();
+                    if (danger != 0)
                     {
-                        button.Image = Image.FromFile("../../Images/Flag.bmp");
-                        IsFlagged = true;
-                    }
-                    else
-                    {
-                        button.Image = null;
-                        IsFlagged = false;
+                        button.Text = danger.ToString();
+                        button.ForeColor = colors[danger];
                     }
                 }
             }
+
+            // Flag or deflag tile.
+            else if (e.Button == MouseButtons.Right)
+            {
+                if (!IsFlagged)
+                {
+                    IsFlagged = true;
+                    result = Image.FromFile("../../Images/Flag.bmp");
+                }
+                else
+                {
+                    IsFlagged = false;
+                    result = null;
+                }
+            }
+            return result;
         }
     }
 }

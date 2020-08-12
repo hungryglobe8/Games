@@ -38,7 +38,7 @@ namespace MineSweeper
                 {
                     Tile tile = field.GetTile(x, y);
                     Button b = tile.button;
-                    b.MouseUp += tile.Click;
+                    b.MouseUp += (sender, e) => Button_MouseUp(sender, e, tile);
                     //b.MouseUp += (sender, e) => Tile_MouseUp(sender, e, tile);
                     //b.EnabledChanged += Tile_EnableChanged;
                     b.Location = new Point(BUTTON_SIZE * (x + 1), BUTTON_SIZE * (y + 1));
@@ -54,6 +54,16 @@ namespace MineSweeper
                     Controls.Add(b);
                 }
             }
+        }
+
+        private void Button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e, Tile tile)
+        {
+            var button = (Button)sender;
+            // double click
+            //TODO
+            Image oldImage = button.Image;
+            if (tile.Enabled)
+                button.Image = tile.Click(e, oldImage);
         }
 
         private void Tile_EnableChanged(object sender, System.EventArgs e)
