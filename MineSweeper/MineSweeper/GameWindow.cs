@@ -13,12 +13,11 @@ namespace MineSweeper
 {
     public partial class GameWindow : Form
     {
-        private List<Button> buttons;
-
         public GameWindow()
         {
             InitializeComponent();
             Field field = new Field(4, 4, 6);
+            //first click must be handled before population
             field.PopulateField(10);
             CreateBoard(field);
         }
@@ -37,8 +36,8 @@ namespace MineSweeper
             {
                 for (int y = 0; y < BoardHeight; y++)
                 {
-                    Button b = new Button();
                     Tile tile = field.GetTile(x, y);
+                    Button b = tile.button;
                     b.MouseUp += (sender, e) => Tile_MouseUp(sender, e, tile);
                     b.EnabledChanged += Tile_EnableChanged;
                     b.Location = new Point(BUTTON_SIZE * (x + 1), BUTTON_SIZE * (y + 1));
@@ -66,6 +65,10 @@ namespace MineSweeper
         private void Tile_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e, Tile tile)
         {
             var clickedButton = (Button)sender;
+            string res = tile.Click(e);
+            if (res == "Bomb")
+                clickedButton.Image = Image.FromFile("../../Images/Bomb.bmp");
+
             // Reveal state.
             if (clickedButton.Enabled)
             {
