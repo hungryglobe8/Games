@@ -96,8 +96,11 @@ namespace MineSweeper
                             {6, Color.Teal }
                         };
                         int danger = tile.GetDanger();
-                        clickedButton.Text = danger.ToString();
-                        clickedButton.ForeColor = colors[danger];
+                        if (danger != 0)
+                        {
+                            clickedButton.Text = danger.ToString();
+                            clickedButton.ForeColor = colors[danger];
+                        }
                     }
 
                     //deactivate
