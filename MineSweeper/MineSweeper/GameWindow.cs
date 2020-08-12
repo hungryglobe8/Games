@@ -61,9 +61,12 @@ namespace MineSweeper
             var button = (Button)sender;
             // double click
             //TODO
-            Image oldImage = button.Image;
-            if (tile.Enabled)
-                button.Image = tile.Click(e, oldImage);
+            //left click
+            if (e.Button == MouseButtons.Left)
+            {
+                Image oldImage = button.Image;
+                button.Image = tile.LeftClick(oldImage);
+            }
         }
 
         private void Tile_EnableChanged(object sender, System.EventArgs e)

@@ -54,6 +54,41 @@ namespace Engine
                 dangerLevel++;
         }
 
+        public Image LeftClick(Image oldImage)
+        {
+            if (oldImage != null)
+                return oldImage;
+
+            else
+            {
+                //deactivate
+                Enabled = false;
+                //bomb
+                if (IsArmed)
+                {
+                    //GameOver();
+                    return Image.FromFile("../../Images/Bomb.bmp");
+                }
+                //normal
+                else
+                {
+                    var colors = new Dictionary<int, Color>(){
+                        {0, Color.AliceBlue },
+                        {1, Color.Blue },
+                        {2, Color.Green },
+                        {3, Color.OrangeRed },
+                        {4, Color.BlueViolet },
+                        {5, Color.Brown },
+                        {6, Color.Teal }
+                    };
+                    int danger = GetDanger();
+                    button.Text = danger.ToString();
+                    button.ForeColor = colors[danger];
+                    return null;
+                }
+            }
+        }
+
         /// <summary>
         /// Contains logic for potential click paths of a tile. 
         /// Deactivates a given tile if the user does a left click, revealing a number or a mine.
