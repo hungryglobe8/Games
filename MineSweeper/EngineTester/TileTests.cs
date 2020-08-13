@@ -23,14 +23,14 @@ namespace EngineTester
         [TestMethod]
         public void ArmedTileReturnsArmed()
         {
-            Tile sut = new Tile(true);
+            Tile sut = new Tile(armed: true);
             Assert.IsTrue(sut.IsArmed);
         }
 
         [TestMethod]
         public void GetStatusIsCorrect()
         {
-            Tile armedTile = new Tile(true);
+            Tile armedTile = new Tile(armed: true);
             int exp = 10;
             int act = armedTile.GetDanger();
             Assert.AreEqual(exp, act);

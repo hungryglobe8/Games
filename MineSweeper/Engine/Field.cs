@@ -64,7 +64,7 @@ namespace Engine
                 // Only add mine if there isn't a mine already at the chosen location.
                 if (tiles[row, col] == null)
                 {
-                    tiles[row, col] = new Tile(row, col, armed: true);
+                    tiles[row, col] = new Tile(row, col, true);
                     // Add to mine list.
                     mineCoordinates.Add(coor);
                     // Increase counter.
@@ -89,6 +89,14 @@ namespace Engine
                 IList<Tile> neighbors = GetNeighbors(mineCoor.x, mineCoor.y);
                 foreach (Tile tile in neighbors)
                     tile.DangerUp();
+            }
+        }
+
+        public void RevealAll()
+        {
+            foreach (Tile tile in tiles)
+            {
+                tile.LeftClick(null);
             }
         }
 

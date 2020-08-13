@@ -14,10 +14,12 @@ namespace MineSweeper
     public partial class GameWindow : Form
     {
         private Field field;
+        private bool firstClick = false;
         public GameWindow()
         {
             InitializeComponent();
-            field = new Field(10, 10, 6);
+            field = new Field(10, 10, 15);
+
             //first click must be handled before population
             field.PopulateField(10);
             CreateBoard(field);
@@ -84,6 +86,13 @@ namespace MineSweeper
             var button = (Button)sender;
             button.ForeColor = button.Enabled == false ? Color.Blue : Color.Red;
             button.BackColor = Color.AliceBlue;
+        }
+
+        private void endGameButton_Click(object sender, EventArgs e)
+        {
+            var button = (Button)sender;
+            button.Text = "Ended";
+            field.RevealAll();
         }
     }
 }
