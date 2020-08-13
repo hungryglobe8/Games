@@ -58,7 +58,7 @@ namespace Engine
                 // Only add mine if there isn't a mine already at the chosen location.
                 if (tiles[row, col] == null)
                 {
-                    tiles[row, col] = new Tile(true);
+                    tiles[row, col] = new Tile(row, col, armed: true);
                     // Add to mine list.
                     mineCoordinates.Add(coor);
                     // Increase counter.
@@ -73,7 +73,7 @@ namespace Engine
                 for (int j = 0; j < tiles.GetLength(1); j++)
                 {
                     if (tiles[i, j] == null)
-                        tiles[i, j] = new Tile();
+                        tiles[i, j] = new Tile(i, j);
                 }
             }
 

@@ -20,13 +20,17 @@ namespace Engine
         public bool IsArmed { private set; get; }
         public bool IsFlagged { set; get; }
         public bool Enabled { get; private set; }
+        public int X { get; }
+        public int Y { get; }
 
         /// <summary>
         /// Create a tile with or without a bomb underneath it.
         /// </summary>
         /// <param name="armed">initial mine state</param>
-        public Tile(bool armed = false)
+        public Tile(int x = 0, int y = 0, bool armed = false)
         {
+            X = x;
+            Y = y;
             IsArmed = armed;
             Enabled = true;
             button = new Button();
@@ -78,7 +82,7 @@ namespace Engine
                 else
                 {
                     var colors = new Dictionary<int, Color>(){
-                        {0, Color.AliceBlue },
+                        {0, Color.Black },
                         {1, Color.Blue },
                         {2, Color.Green },
                         {3, Color.OrangeRed },

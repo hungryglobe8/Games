@@ -13,10 +13,11 @@ namespace MineSweeper
 {
     public partial class GameWindow : Form
     {
+        private Field field;
         public GameWindow()
         {
             InitializeComponent();
-            Field field = new Field(4, 4, 6);
+            field = new Field(10, 10, 6);
             //first click must be handled before population
             field.PopulateField(10);
             CreateBoard(field);
@@ -29,8 +30,8 @@ namespace MineSweeper
 
         private void CreateBoard(Field field)
         {
-            int BoardWidth = 4;
-            int BoardHeight = 4;
+            int BoardWidth = 10;
+            int BoardHeight = 10;
             int BUTTON_SIZE = 20;
             for (int x = 0; x < BoardWidth; x++)
             {
@@ -58,9 +59,20 @@ namespace MineSweeper
             {
                 Image oldImage = button.Image;
                 button.Image = tile.LeftClick(oldImage);
+                // Recursively find all neighbors of 0 danger tiles.
+                if (tile.GetDanger() == 0 && !tile.Enabled)
+                {
+                    IList<Tile> neighbors = field.GetNeighbors(tile.X, tile.Y);
+                    foreach (Tile neighbor in neighbors)
+                    {
+                        if (neighbor.Enabled)
+                            Button_MouseUp(neighbor.button, e, neighbor);
+                    }
+                }
+                return;
             }
             //right click
-            if (e.Button == MouseButtons.Right)
+            else if (e.Button == MouseButtons.Right)
             {
                 Image oldImage = button.Image;
                 button.Image = tile.RightClick(oldImage);
