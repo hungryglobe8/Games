@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Schema;
 
 namespace Engine
 {
@@ -22,6 +23,9 @@ namespace Engine
 
     public class Field
     {
+        public int Width { get; }
+        public int Height { get; }
+
         // 2-dimensional field of tiles (x,y)
         private Tile[,] tiles;
         public int NumMines { private set; get; }
@@ -34,6 +38,8 @@ namespace Engine
         /// <param name="_numMines"></param>
         public Field(int x, int  y, int _numMines)
         {
+            Width = x;
+            Height = y;
             tiles = new Tile[x, y];
             NumMines = _numMines;
         }

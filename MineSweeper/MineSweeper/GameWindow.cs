@@ -30,21 +30,22 @@ namespace MineSweeper
 
         private void CreateBoard(Field field)
         {
-            int BoardWidth = 10;
-            int BoardHeight = 10;
+            int BoardWidth = field.Width;
+            int BoardHeight = field.Height;
             int BUTTON_SIZE = 20;
             for (int x = 0; x < BoardWidth; x++)
             {
                 for (int y = 0; y < BoardHeight; y++)
                 {
                     Tile tile = field.GetTile(x, y);
-                    Button b = tile.button;
-                    b.MouseUp += (sender, e) => Button_MouseUp(sender, e, tile);
+                    Button button = tile.button;
+                    tableLayoutPanel1.Controls.Add(button, x, y);
+                    button.Dock = DockStyle.Fill;
+                    button.MouseUp += (sender, e) => Button_MouseUp(sender, e, tile);
                     //b.EnabledChanged += Tile_EnableChanged;
-                    b.Location = new Point(BUTTON_SIZE * (x + 1), BUTTON_SIZE * (y + 1));
-                    b.Size = new Size(BUTTON_SIZE, BUTTON_SIZE);
-
-                    Controls.Add(b);
+                    button.Location = new Point(BUTTON_SIZE * (x + 1), BUTTON_SIZE * (y + 1));
+                    button.Margin = new Padding(0);
+                    //button.Size = new Size(BUTTON_SIZE, BUTTON_SIZE);
                 }
             }
         }
@@ -84,6 +85,6 @@ namespace MineSweeper
             var button = (Button)sender;
             button.ForeColor = button.Enabled == false ? Color.Blue : Color.Red;
             button.BackColor = Color.AliceBlue;
-        }  
+        }
     }
 }
