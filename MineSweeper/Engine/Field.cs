@@ -96,7 +96,7 @@ namespace Engine
         {
             foreach (Tile tile in tiles)
             {
-                tile.LeftClick(null);
+                tile.LeftClick();
             }
         }
 

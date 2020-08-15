@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
 
 namespace Engine
 {
+    // Tile state as seen by user.
+    public enum State { Unopened, Revealed, Flagged };
+
     /// <summary>
     /// Individual squares on a MineSweeper field.
     /// 
@@ -14,12 +14,10 @@ namespace Engine
     public class Tile
     {
         private int dangerLevel;
-        public Button button;
+        public State state;
 
         // Is there a mine on this space?
         public bool IsArmed { private set; get; }
-        public bool IsFlagged { set; get; }
-        public bool Enabled { get; private set; }
         public int X { get; }
         public int Y { get; }
 
@@ -32,8 +30,7 @@ namespace Engine
             X = x;
             Y = y;
             IsArmed = armed;
-            Enabled = true;
-            button = new Button();
+            state = State.Unopened;
             if (IsArmed)
                 dangerLevel = 10;
             else
@@ -63,37 +60,27 @@ namespace Engine
         /// Nothing changes if the tile has been clicked or flagged.
         /// Deactivates a given tile if the user does a left click, revealing a number or a mine.
         /// </summary>
-        public Image LeftClick(Image oldImage)
+        public void LeftClick()
         {
-            if (!Enabled || IsFlagged)
-                return oldImage;
+            if (state == State.Flagged || state == State.Revealed)
+                return;
 
             else
             {
-                //deactivate
-                Enabled = false;
+                //reveal
+                state = State.Revealed;
                 //bomb
                 if (IsArmed)
                 {
                     //GameOver();
-                    return Image.FromFile("../../Images/Bomb.bmp");
+                    //button.Image = Image.FromFile("../../Images/Bomb.bmp");
                 }
-                //normal
+                //number
                 else
                 {
-                    var colors = new Dictionary<int, Color>(){
-                        {0, Color.Black },
-                        {1, Color.Blue },
-                        {2, Color.Green },
-                        {3, Color.OrangeRed },
-                        {4, Color.BlueViolet },
-                        {5, Color.Brown },
-                        {6, Color.Teal }
-                    };
-                    int danger = GetDanger();
-                    button.Text = danger.ToString();
-                    button.ForeColor = colors[danger];
-                    return null;
+                    //int danger = GetDanger();
+                    //button.Text = danger.ToString();
+                    //button.ForeColor = colors[danger];
                 }
             }
         }
@@ -103,21 +90,15 @@ namespace Engine
         /// If a tile has been revealed, do nothing.
         /// Add or remove a flag as appropriate.
         /// </summary>
-        public Image RightClick(Image oldImage)
+        public void RightClick()
         {
-            if (!Enabled)
-                return oldImage;
+            if (state == State.Revealed)
+                return;
 
-            if (!IsFlagged)
-            {
-                IsFlagged = true;
-                return Image.FromFile("../../Images/Flag.bmp");
-            }
+            if (state == State.Flagged)
+                state = State.Unopened;            
             else
-            {
-                IsFlagged = false;
-                return null;
-            }
+                state = State.Flagged;
         }
     }
 }

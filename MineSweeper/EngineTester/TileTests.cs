@@ -14,6 +14,57 @@ namespace EngineTester
         }
 
         [TestMethod]
+        public void NewTileIsUnopened()
+        {
+            Tile sut = new Tile();
+            var expectedState = State.Unopened;
+            var actualState = sut.state;
+            Assert.AreEqual(expectedState, actualState);
+        }
+
+        [TestMethod]
+        public void LeftClickChangesStateToRevealed()
+        {
+            Tile sut = new Tile();
+            var expectedState = State.Revealed;
+            sut.LeftClick();
+            var actualState = sut.state;
+            Assert.AreEqual(expectedState, actualState);
+        }
+        
+        [TestMethod]
+        public void RightClickFlagsTile()
+        {
+            Tile sut = new Tile();
+            var expectedState = State.Flagged;
+            sut.RightClick();
+            var actualState = sut.state;
+            Assert.AreEqual(expectedState, actualState);
+        }
+
+        [TestMethod]
+        public void RightClickDoesNotWorkOnRevealedTile()
+        {
+            Tile sut = new Tile();
+            var expectedState = State.Revealed;
+            sut.LeftClick();
+            sut.RightClick();
+            var actualState = sut.state;
+            Assert.AreEqual(expectedState, actualState);
+        }
+
+        [TestMethod]
+        public void LeftClickDoesNotWorkOnFlaggedTile()
+        {
+            Tile sut = new Tile();
+            var expectedState = State.Flagged;
+            sut.RightClick();
+            sut.LeftClick();
+            var actualState = sut.state;
+            Assert.AreEqual(expectedState, actualState);
+        }
+
+        [TestMethod]
         public void UnarmedTileReturnsUnarmed()
         {
             Tile sut = new Tile();
@@ -28,7 +79,7 @@ namespace EngineTester
         }
 
         [TestMethod]
-        public void GetStatusIsCorrect()
+        public void GetStatusOfInitializedTilesIsCorrect()
         {
             Tile armedTile = new Tile(armed: true);
             int exp = 10;
@@ -50,6 +101,14 @@ namespace EngineTester
 
             sut.DangerUp();
             Assert.AreEqual(2, sut.GetDanger());
+        }
+
+        [TestMethod]
+        public void IncreaseDangerDoesNotAffectBombCounter()
+        {
+            Tile sut = new Tile(armed: true);
+            sut.DangerUp();
+            Assert.AreEqual(10, sut.GetDanger());
         }
     }
 }

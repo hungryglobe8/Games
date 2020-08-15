@@ -41,7 +41,7 @@ namespace MineSweeper
                 for (int y = 0; y < BoardHeight; y++)
                 {
                     Tile tile = field.GetTile(x, y);
-                    Button button = tile.button;
+                    Button button = new Button
                     smallGamePanel.Controls.Add(button, x, y);
                     button.Dock = DockStyle.Fill;
                     button.MouseUp += (sender, e) => Button_MouseUp(sender, e, tile);
@@ -59,25 +59,63 @@ namespace MineSweeper
             //left click
             if (e.Button == MouseButtons.Left)
             {
-                Image oldImage = button.Image;
-                button.Image = tile.LeftClick(oldImage);
+                tile.LeftClick();
                 // Recursively find all neighbors of 0 danger tiles.
-                if (tile.GetDanger() == 0 && !tile.Enabled)
+                if (tile.GetDanger() == 0 && (tile.state == State.Unopened))
                 {
                     IList<Tile> neighbors = field.GetNeighbors(tile.X, tile.Y);
                     foreach (Tile neighbor in neighbors)
                     {
-                        if (neighbor.Enabled)
+                        if (neighbor.state == State.Unopened)
                             Button_MouseUp(neighbor.button, e, neighbor);
                     }
                 }
-                return;
             }
             //right click
             else if (e.Button == MouseButtons.Right)
             {
-                Image oldImage = button.Image;
-                button.Image = tile.RightClick(oldImage);
+                tile.RightClick();
+            }
+
+            ReplaceImage(button, tile);
+
+        }
+
+        /// <summary>
+        /// Change the graphics of a given tile based on its state.
+        /// </summary>
+        /// <param name="tile"></param>
+        private void ReplaceImage(Button button, Tile tile)
+        {
+            switch (tile.state)
+            {
+                case State.Revealed:
+                    if (tile.IsArmed)
+                        button.Image = Image.FromFile("../../Images/Bomb.bmp");
+                    else
+                    {
+                        var colors = new Dictionary<int, Color>(){
+                            {0, Color.Black },
+                            {1, Color.Blue },
+                            {2, Color.Green },
+                            {3, Color.OrangeRed },
+                            {4, Color.BlueViolet },
+                            {5, Color.Brown },
+                            {6, Color.Teal }
+                        };
+                        int danger = tile.GetDanger();
+                        button.Text = danger.ToString();
+                        button.ForeColor = colors[danger];
+                    }
+                    break;
+
+                case State.Flagged:
+                    button.Image = Image.FromFile("../../Images/Flag.bmp");
+                    break;
+
+                default:
+                    button.Image = null;
+                    break;
             }
         }
 
@@ -88,7 +126,7 @@ namespace MineSweeper
             button.BackColor = Color.AliceBlue;
         }
 
-        private void endGameButton_Click(object sender, EventArgs e)
+        private void EndGameButton_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;
             button.Text = "Ended";
