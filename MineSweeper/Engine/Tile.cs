@@ -15,7 +15,6 @@ namespace Engine
     public class Tile
     {
         private int dangerLevel;
-        public Button button;
         public State state;
 
         // Is there a mine on this space?
@@ -31,7 +30,6 @@ namespace Engine
         {
             X = x;
             Y = y;
-            button = new Button();
             IsArmed = armed;
             state = State.Unopened;
             if (IsArmed)

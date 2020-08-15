@@ -14,7 +14,9 @@ namespace MineSweeper
     public partial class GameWindow : Form
     {
         private Field field;
+        private Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
         private bool firstClick = false;
+
         public GameWindow()
         {
             InitializeComponent();
@@ -40,8 +42,11 @@ namespace MineSweeper
             {
                 for (int y = 0; y < BoardHeight; y++)
                 {
+                    // Add a new connection.
                     Tile tile = field.GetTile(x, y);
                     Button button = new Button();
+                    connections.Add(tile, button);
+
                     smallGamePanel.Controls.Add(button, x, y);
                     button.Dock = DockStyle.Fill;
                     button.MouseUp += (sender, e) => Button_MouseUp(sender, e, tile);
@@ -67,7 +72,7 @@ namespace MineSweeper
                     foreach (Tile neighbor in neighbors)
                     {
                         if (neighbor.state == State.Unopened)
-                            Button_MouseUp(neighbor.button, e, neighbor);
+                            Button_MouseUp(connections[neighbor], e, neighbor);
                     }
                 }
             }
