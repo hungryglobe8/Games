@@ -59,6 +59,13 @@ namespace MineSweeper
             //left click
             if (e.Button == MouseButtons.Left)
             {
+                // End game.
+                if (tile.IsArmed)
+                {
+                    RevealMines();
+                    return;
+                }
+
                 tile.LeftClick();
                 // Recursively find all neighbors of 0 danger tiles.
                 if (tile.GetDanger() == 0)
@@ -126,11 +133,26 @@ namespace MineSweeper
             button.BackColor = Color.AliceBlue;
         }
 
+        /// <summary>
+        /// Reveal all unflagged mines and disable the game.
+        /// </summary>
+        private void RevealMines()
+        {
+            foreach (Tile mine in field.GetMines())
+            {
+                mine.LeftClick();
+                ReplaceImage(connections[mine], mine);
+            }
+        }
+
+        /// <summary>
+        /// User chooses to end game by pressing top button.
+        /// </summary>
         private void EndGameButton_Click(object sender, EventArgs e)
         {
             var button = (Button)sender;
             button.Text = "Ended";
-            field.RevealAll();
+            RevealMines();
         }
     }
 }

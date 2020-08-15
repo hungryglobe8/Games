@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Engine
 {
-    struct Coordinate
+    public struct Coordinate
     {
         public int x, y;
 
@@ -24,8 +24,11 @@ namespace Engine
         public int Width { get; }
         public int Height { get; }
 
-        // 2-dimensional field of tiles (x,y)
+        // 2-dimensional field of tiles (x,y).
         private Tile[,] tiles;
+        // Store mines.
+        private IList<Tile> mines;
+
         public int NumMines { private set; get; }
 
         /// <summary>
@@ -39,6 +42,7 @@ namespace Engine
             Width = x;
             Height = y;
             tiles = new Tile[x, y];
+            mines = new List<Tile>();
             NumMines = _numMines;
         }
 
@@ -52,7 +56,6 @@ namespace Engine
             Random rnd = seed.HasValue ? new Random(seed.Value) : new Random();
 
             // Store mine coordinates.
-            IList<Coordinate> mineCoordinates = new List<Coordinate>();
             int count = 0;
             while (count < NumMines)
             {
@@ -64,7 +67,7 @@ namespace Engine
                 {
                     tiles[row, col] = new Tile(row, col, true);
                     // Add to mine list.
-                    mineCoordinates.Add(coor);
+                    mines.Add(tiles[row, col]);
                     // Increase counter.
                     count++;
                 }
@@ -82,20 +85,20 @@ namespace Engine
             }
 
             // Increase danger of tiles next to mines.
-            foreach (Coordinate mineCoor in mineCoordinates)
+            foreach (Tile mine in mines)
             {
-                IList<Tile> neighbors = GetNeighbors(mineCoor.x, mineCoor.y);
+                IList<Tile> neighbors = GetNeighbors(mine.X, mine.Y);
                 foreach (Tile tile in neighbors)
                     tile.DangerUp();
             }
         }
 
-        public void RevealAll()
+        /// <summary>
+        /// Get the mines of the field.
+        /// </summary>
+        public IList<Tile> GetMines()
         {
-            foreach (Tile tile in tiles)
-            {
-                tile.LeftClick();
-            }
+            return mines;
         }
 
         /// <summary>
