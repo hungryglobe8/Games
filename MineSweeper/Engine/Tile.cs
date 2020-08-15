@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 namespace Engine
 {
@@ -14,6 +15,7 @@ namespace Engine
     public class Tile
     {
         private int dangerLevel;
+        public Button button;
         public State state;
 
         // Is there a mine on this space?
@@ -31,6 +33,7 @@ namespace Engine
             Y = y;
             IsArmed = armed;
             state = State.Unopened;
+            button = new Button();
             if (IsArmed)
                 dangerLevel = 10;
             else
@@ -78,9 +81,18 @@ namespace Engine
                 //number
                 else
                 {
-                    //int danger = GetDanger();
-                    //button.Text = danger.ToString();
-                    //button.ForeColor = colors[danger];
+                    var colors = new Dictionary<int, Color>(){
+                        {0, Color.Black },
+                        {1, Color.Blue },
+                        {2, Color.Green },
+                        {3, Color.OrangeRed },
+                        {4, Color.BlueViolet },
+                        {5, Color.Brown },
+                        {6, Color.Teal }
+                    };
+                    int danger = GetDanger();
+                    button.Text = danger.ToString();
+                    button.ForeColor = colors[danger];
                 }
             }
         }

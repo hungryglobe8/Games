@@ -41,7 +41,7 @@ namespace MineSweeper
                 for (int y = 0; y < BoardHeight; y++)
                 {
                     Tile tile = field.GetTile(x, y);
-                    Button button = new Button
+                    Button button = tile.button;
                     smallGamePanel.Controls.Add(button, x, y);
                     button.Dock = DockStyle.Fill;
                     button.MouseUp += (sender, e) => Button_MouseUp(sender, e, tile);
@@ -60,6 +60,7 @@ namespace MineSweeper
             if (e.Button == MouseButtons.Left)
             {
                 tile.LeftClick();
+                ReplaceImage(tile);
                 // Recursively find all neighbors of 0 danger tiles.
                 if (tile.GetDanger() == 0 && (tile.state == State.Unopened))
                 {
@@ -70,43 +71,28 @@ namespace MineSweeper
                             Button_MouseUp(neighbor.button, e, neighbor);
                     }
                 }
+                return;
             }
             //right click
             else if (e.Button == MouseButtons.Right)
             {
                 tile.RightClick();
+                ReplaceImage(tile);
             }
-
-            ReplaceImage(button, tile);
-
         }
 
         /// <summary>
         /// Change the graphics of a given tile based on its state.
         /// </summary>
         /// <param name="tile"></param>
-        private void ReplaceImage(Button button, Tile tile)
+        private void ReplaceImage(Tile tile)
         {
+            Button button = tile.button;
             switch (tile.state)
             {
-                case State.Revealed:
+                case (State.Revealed):
                     if (tile.IsArmed)
                         button.Image = Image.FromFile("../../Images/Bomb.bmp");
-                    else
-                    {
-                        var colors = new Dictionary<int, Color>(){
-                            {0, Color.Black },
-                            {1, Color.Blue },
-                            {2, Color.Green },
-                            {3, Color.OrangeRed },
-                            {4, Color.BlueViolet },
-                            {5, Color.Brown },
-                            {6, Color.Teal }
-                        };
-                        int danger = tile.GetDanger();
-                        button.Text = danger.ToString();
-                        button.ForeColor = colors[danger];
-                    }
                     break;
 
                 case State.Flagged:
