@@ -23,10 +23,29 @@ namespace EngineTester
         }
 
         [TestMethod]
+        public void GetTileLocation()
+        {
+            Tile sut = new Tile(5, 10);
+            Assert.AreEqual(5, sut.X);
+            Assert.AreEqual(10, sut.Y);
+        }
+
+        [TestMethod]
         public void LeftClickChangesStateToRevealed()
         {
             Tile sut = new Tile();
             var expectedState = State.Revealed;
+            sut.LeftClick();
+            var actualState = sut.state;
+            Assert.AreEqual(expectedState, actualState);
+        }
+
+        [TestMethod]
+        public void LeftClickDoesNotWorkOnFlaggedTile()
+        {
+            Tile sut = new Tile();
+            var expectedState = State.Flagged;
+            sut.RightClick();
             sut.LeftClick();
             var actualState = sut.state;
             Assert.AreEqual(expectedState, actualState);
@@ -41,6 +60,17 @@ namespace EngineTester
             var actualState = sut.state;
             Assert.AreEqual(expectedState, actualState);
         }
+        
+        [TestMethod]
+        public void RightClickFlagsAndUnflagsTile()
+        {
+            Tile sut = new Tile();
+            var expectedState = State.Unopened;
+            sut.RightClick();
+            sut.RightClick();
+            var actualState = sut.state;
+            Assert.AreEqual(expectedState, actualState);
+        }
 
         [TestMethod]
         public void RightClickDoesNotWorkOnRevealedTile()
@@ -49,17 +79,6 @@ namespace EngineTester
             var expectedState = State.Revealed;
             sut.LeftClick();
             sut.RightClick();
-            var actualState = sut.state;
-            Assert.AreEqual(expectedState, actualState);
-        }
-
-        [TestMethod]
-        public void LeftClickDoesNotWorkOnFlaggedTile()
-        {
-            Tile sut = new Tile();
-            var expectedState = State.Flagged;
-            sut.RightClick();
-            sut.LeftClick();
             var actualState = sut.state;
             Assert.AreEqual(expectedState, actualState);
         }

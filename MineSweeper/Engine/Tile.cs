@@ -17,13 +17,13 @@ namespace Engine
         private int dangerLevel;
         public State state;
 
-        // Is there a mine on this space?
         public bool IsArmed { private set; get; }
         public int X { get; }
         public int Y { get; }
 
         /// <summary>
         /// Create a tile with or without a bomb underneath it.
+        /// Set location and armed properties. If armed, set danger level to 10.
         /// </summary>
         /// <param name="armed">initial mine state</param>
         public Tile(int x = 0, int y = 0, bool armed = false)
@@ -31,6 +31,7 @@ namespace Engine
             X = x;
             Y = y;
             IsArmed = armed;
+
             state = State.Unopened;
             if (IsArmed)
                 dangerLevel = 10;
