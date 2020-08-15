@@ -42,8 +42,8 @@ namespace EngineTester
             Field sut = new Field(4, 4, 6);
             int actual = sut.GetNeighbors(x, y).Count;
             Assert.AreEqual(expected, actual);
-        }        
-        
+        }
+
         [TestMethod]
         [DataRow(0, 3, 3)]
         [DataRow(1, 3, 5)]

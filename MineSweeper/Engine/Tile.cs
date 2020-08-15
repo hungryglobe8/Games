@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Windows.Forms;
-
-namespace Engine
+﻿namespace Engine
 {
     // Tile state as seen by user.
     public enum State { Unopened, Revealed, Flagged };
@@ -98,7 +94,7 @@ namespace Engine
                 return;
 
             if (state == State.Flagged)
-                state = State.Unopened;            
+                state = State.Unopened;
             else
                 state = State.Flagged;
         }

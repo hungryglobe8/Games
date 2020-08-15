@@ -1,5 +1,5 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Engine;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace EngineTester
 {
@@ -50,7 +50,7 @@ namespace EngineTester
             var actualState = sut.state;
             Assert.AreEqual(expectedState, actualState);
         }
-        
+
         [TestMethod]
         public void RightClickFlagsTile()
         {
@@ -60,7 +60,7 @@ namespace EngineTester
             var actualState = sut.state;
             Assert.AreEqual(expectedState, actualState);
         }
-        
+
         [TestMethod]
         public void RightClickFlagsAndUnflagsTile()
         {
@@ -89,7 +89,7 @@ namespace EngineTester
             Tile sut = new Tile();
             Assert.IsFalse(sut.IsArmed);
         }
-        
+
         [TestMethod]
         public void ArmedTileReturnsArmed()
         {

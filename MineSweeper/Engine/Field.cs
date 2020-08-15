@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Xml.Schema;
 
 namespace Engine
 {
@@ -36,7 +34,7 @@ namespace Engine
         /// <param name="x">num of tiles in the x direction</param>
         /// <param name="y">num of tiles in the y direction</param>
         /// <param name="_numMines"></param>
-        public Field(int x, int  y, int _numMines)
+        public Field(int x, int y, int _numMines)
         {
             Width = x;
             Height = y;
@@ -72,7 +70,7 @@ namespace Engine
                 }
                 // Choose a new location.       
             }
-            
+
             // Add normal tiles.
             for (int i = 0; i < tiles.GetLength(0); i++)
             {
@@ -115,7 +113,7 @@ namespace Engine
         {
             IList<Tile> neighbors = new List<Tile>();
             int lowX = x - 1;
-            int lowY =  y - 1;
+            int lowY = y - 1;
             int highX = x + 1;
             int highY = y + 1;
             //bottom left
