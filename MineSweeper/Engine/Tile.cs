@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Windows.Forms;
 
 namespace Engine
 {
@@ -31,9 +31,9 @@ namespace Engine
         {
             X = x;
             Y = y;
+            button = new Button();
             IsArmed = armed;
             state = State.Unopened;
-            button = new Button();
             if (IsArmed)
                 dangerLevel = 10;
             else
@@ -81,18 +81,9 @@ namespace Engine
                 //number
                 else
                 {
-                    var colors = new Dictionary<int, Color>(){
-                        {0, Color.Black },
-                        {1, Color.Blue },
-                        {2, Color.Green },
-                        {3, Color.OrangeRed },
-                        {4, Color.BlueViolet },
-                        {5, Color.Brown },
-                        {6, Color.Teal }
-                    };
-                    int danger = GetDanger();
-                    button.Text = danger.ToString();
-                    button.ForeColor = colors[danger];
+                    //int danger = GetDanger();
+                    //button.Text = danger.ToString();
+                    //button.ForeColor = colors[danger];
                 }
             }
         }
