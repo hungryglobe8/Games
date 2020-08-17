@@ -11,6 +11,7 @@ namespace MineSweeper
     {
         private Field field;
         private Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
+        private Dictionary<Button, Tile> b_connections = new Dictionary<Button, Tile>();
         private bool firstClick = false;
 
         public GameWindow()
@@ -42,19 +43,20 @@ namespace MineSweeper
                     Tile tile = field.GetTile(x, y);
                     Button button = new Button();
                     connections.Add(tile, button);
+                    b_connections.Add(button, tile);
 
                     smallGamePanel.Controls.Add(button, x, y);
                     button.Dock = DockStyle.Fill;
-                    button.MouseUp += (sender, e) => Button_MouseUp(sender, e, tile);
-                    //b.EnabledChanged += Tile_EnableChanged;
+                    button.MouseUp += Button_MouseUp;
                     button.Margin = new Padding(0);
                 }
             }
         }
 
-        private void Button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e, Tile tile)
+        private void Button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             var button = (Button)sender;
+            var tile = b_connections[button];
             // double click
             //TODO
             //left click
@@ -76,7 +78,7 @@ namespace MineSweeper
                     foreach (Tile neighbor in neighbors)
                     {
                         if (neighbor.state == State.Unopened)
-                            Button_MouseUp(connections[neighbor], e, neighbor);
+                            Button_MouseUp(connections[neighbor], e);
                     }
                 }
             }
@@ -93,8 +95,7 @@ namespace MineSweeper
         private void RemoveFunctionality(Tile tile)
         {
             Button button = connections[tile];
-            smallGamePanel.Controls.Remove(button);
-            Controls.Remove(button);
+            button.MouseUp -= Button_MouseUp;
         }
 
         /// <summary>
