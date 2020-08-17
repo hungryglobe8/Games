@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Runtime.Remoting.Channels;
 using System.Windows.Forms;
 
 namespace MineSweeper
@@ -59,10 +60,11 @@ namespace MineSweeper
             //left click
             if (e.Button == MouseButtons.Left)
             {
+                RemoveFunctionality(tile);
                 // End game.
                 if (tile.IsArmed)
                 {
-                    RevealMines();
+                    GameOver();
                     return;
                 }
 
@@ -86,6 +88,13 @@ namespace MineSweeper
 
             ReplaceImage(button, tile);
 
+        }
+
+        private void RemoveFunctionality(Tile tile)
+        {
+            Button button = connections[tile];
+            smallGamePanel.Controls.Remove(button);
+            Controls.Remove(button);
         }
 
         /// <summary>
@@ -120,9 +129,12 @@ namespace MineSweeper
                     button.Image = Image.FromFile("../../Images/Flag.bmp");
                     break;
 
-                default:
+                case State.Unopened:
                     button.Image = null;
                     break;
+
+                default:
+                    throw new Exception("Invalid state.");
             }
         }
 
@@ -136,12 +148,18 @@ namespace MineSweeper
         /// <summary>
         /// Reveal all unflagged mines and disable the game.
         /// </summary>
-        private void RevealMines()
+        private void GameOver()
         {
             foreach (Tile mine in field.GetMines())
             {
                 mine.LeftClick();
                 ReplaceImage(connections[mine], mine);
+            }
+
+            // tile in unopened tiles?
+            foreach (Tile tile in field.GetTiles())
+            {
+                RemoveFunctionality(tile);
             }
         }
 
@@ -152,7 +170,7 @@ namespace MineSweeper
         {
             var button = (Button)sender;
             button.Text = "Ended";
-            RevealMines();
+            GameOver();
         }
     }
 }

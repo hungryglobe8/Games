@@ -145,5 +145,13 @@ namespace Engine
                 neighbors.Add(tiles[highX, highY]);
             return neighbors;
         }
+
+        public IEnumerable<Tile> GetTiles()
+        {
+            IList<Tile> res = new List<Tile>();
+            foreach (Tile tile in tiles)
+                res.Add(tile);
+            return res;
+        }
     }
 }
