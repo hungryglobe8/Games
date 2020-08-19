@@ -56,12 +56,17 @@ namespace MineSweeper
             this.smallGamePanel.ColumnCount = numCols;
             this.smallGamePanel.RowCount = numRows;
             float BUTTON_SIZE = 20F;
+            // Remove first column.
+            this.smallGamePanel.ColumnStyles.RemoveAt(0);
+            // Add cols and rows.
             for (int i = 0; i < numCols; i++)
-            {
                 this.smallGamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
+            
+            for (int i = 0; i < numRows; i++)
                 this.smallGamePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
-            }
-            this.smallGamePanel.Size = new System.Drawing.Size(x * 20, y * 20);
+            // Resize game window to fit game panel.
+            this.smallGamePanel.Size = new System.Drawing.Size(numCols * 20, numRows * 20);
+            this.ClientSize = new System.Drawing.Size(smallGamePanel.Size.Width + 60, smallGamePanel.Size.Height + 100);             
 
             for (int x = 0; x < BoardWidth; x++)
             {
@@ -91,23 +96,26 @@ namespace MineSweeper
             //left click
             if (e.Button == MouseButtons.Left)
             {
-                RemoveFunctionality(tile);
-                // End game.
-                if (tile.IsArmed)
-                {
-                    GameOver();
-                    return;
-                }
-
                 tile.LeftClick();
-                // Recursively find all neighbors of 0 danger tiles.
-                if (tile.GetDanger() == 0)
+                if (tile.state == State.Revealed)
                 {
-                    IList<Tile> neighbors = field.GetNeighbors(tile.X, tile.Y);
-                    foreach (Tile neighbor in neighbors)
+                    RemoveFunctionality(tile);
+                    // End game.
+                    if (tile.IsArmed)
                     {
-                        if (neighbor.state == State.Unopened)
-                            Button_MouseUp(connections[neighbor], e);
+                        GameOver();
+                        return;
+                    }
+
+                    // Recursively find all neighbors of 0 danger tiles.
+                    if (tile.GetDanger() == 0)
+                    {
+                        IList<Tile> neighbors = field.GetNeighbors(tile.X, tile.Y);
+                        foreach (Tile neighbor in neighbors)
+                        {
+                            if (neighbor.state == State.Unopened)
+                                Button_MouseUp(connections[neighbor], e);
+                        }
                     }
                 }
             }
@@ -118,7 +126,6 @@ namespace MineSweeper
             }
 
             ReplaceImage(button, tile);
-
         }
 
         private void RemoveFunctionality(Tile tile)
@@ -147,7 +154,9 @@ namespace MineSweeper
                             {3, Color.OrangeRed },
                             {4, Color.BlueViolet },
                             {5, Color.Brown },
-                            {6, Color.Teal }
+                            {6, Color.Teal },
+                            {7, Color.Red },
+                            {8, Color.Blue }
                         };
                         int danger = tile.GetDanger();
                         button.Text = danger.ToString();
@@ -184,21 +193,50 @@ namespace MineSweeper
             {
                 RemoveFunctionality(tile);
             }
+            // End game button reset.
+            endGameButton.Text = "Ended";
+            endGameButton.Click -= EndGameButton_Click;
+            endGameButton.Click += ResetGame_Click;
+
+            // Record user stats (W/L)
+        }
+
+        /// <summary>
+        /// Game is over. Clicking this button again will reset the game with a new minefield.
+        /// </summary>
+        private void ResetGame_Click(object sender, EventArgs e)
+        {
+            field = new Field(field.Width, field.Height, field.NumMines);
+            field.PopulateField();
+            // Remove old values.
+            Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
+            Dictionary<Button, Tile> b_connections = new Dictionary<Button, Tile>();
+            this.smallGamePanel.Hide();
+            this.smallGamePanel = new System.Windows.Forms.TableLayoutPanel();
+            this.smallGamePanel.AutoSize = true;
+            this.smallGamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.smallGamePanel.Location = new System.Drawing.Point(30, 85);
+            this.smallGamePanel.Name = "smallGamePanel";
+            this.smallGamePanel.Size = new System.Drawing.Size(200, 100);
+            this.smallGamePanel.TabIndex = 0;
+            this.Controls.Add(this.smallGamePanel);
+
+            CreateBoard(field.Width, field.Height, field);
+            
+            // End game button reset.
+            endGameButton.Text = "smilyimg";
+            endGameButton.Click -= ResetGame_Click;
+            endGameButton.Click += EndGameButton_Click;
         }
 
         /// <summary>
         /// User chooses to end game by pressing top button.
         /// </summary>
-        private void EndGameButton_Click(object sender, EventArgs e)
-        {
-            var button = (Button)sender;
-            button.Text = "Ended";
-            GameOver();
-        }
+        private void EndGameButton_Click(object sender, EventArgs e) => GameOver();
 
-        private void GameWindow_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            Application.Exit();
-        }
+        /// <summary>
+        /// Terminate program.
+        /// </summary>
+        private void GameWindow_FormClosed(object sender, FormClosedEventArgs e) => Application.Exit();
     }
 }

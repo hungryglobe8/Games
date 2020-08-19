@@ -34,19 +34,19 @@
             // 
             // smallGamePanel
             // 
-            this.smallGamePanel.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.smallGamePanel.AutoSize = true;
             this.smallGamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
             this.smallGamePanel.Location = new System.Drawing.Point(30, 85);
             this.smallGamePanel.Name = "smallGamePanel";
+            this.smallGamePanel.Size = new System.Drawing.Size(200, 100);
             this.smallGamePanel.TabIndex = 0;
             // 
             // endGameButton
             // 
-            this.endGameButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.endGameButton.Location = new System.Drawing.Point(108, 29);
+            this.endGameButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.endGameButton.Location = new System.Drawing.Point(130, 40);
             this.endGameButton.Name = "endGameButton";
-            this.endGameButton.Size = new System.Drawing.Size(45, 41);
+            this.endGameButton.Size = new System.Drawing.Size(45, 40);
             this.endGameButton.TabIndex = 1;
             this.endGameButton.Text = "smilyimg";
             this.endGameButton.UseVisualStyleBackColor = true;
@@ -56,9 +56,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(259, 305);
+            this.ClientSize = new System.Drawing.Size(284, 261);
             this.Controls.Add(this.endGameButton);
             this.Controls.Add(this.smallGamePanel);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
             this.Name = "GameWindow";
             this.Text = "MineSweeper";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.GameWindow_FormClosed);

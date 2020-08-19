@@ -52,6 +52,8 @@ namespace Engine
         /// <param name="seed">allows user to fix the random generator, if desired</param>
         public void PopulateField(int? seed = null)
         {
+            tiles = new Tile[Width, Height];
+
             // If seed has a value, rnd uses it. Else use time-dependent generator.
             Random rnd = seed.HasValue ? new Random(seed.Value) : new Random();
 
