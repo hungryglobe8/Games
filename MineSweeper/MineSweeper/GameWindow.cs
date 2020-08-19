@@ -47,6 +47,7 @@ namespace MineSweeper
 
                     smallGamePanel.Controls.Add(button, x, y);
                     button.Dock = DockStyle.Fill;
+                    //button.MouseUp += (sender, e) => Button_MouseUp(sender, e, tile);
                     button.MouseUp += Button_MouseUp;
                     button.Margin = new Padding(0);
                 }
@@ -137,13 +138,6 @@ namespace MineSweeper
                 default:
                     throw new Exception("Invalid state.");
             }
-        }
-
-        private void Tile_EnableChanged(object sender, System.EventArgs e)
-        {
-            var button = (Button)sender;
-            button.ForeColor = button.Enabled == false ? Color.Blue : Color.Red;
-            button.BackColor = Color.AliceBlue;
         }
 
         /// <summary>
