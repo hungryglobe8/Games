@@ -238,5 +238,11 @@ namespace MineSweeper
         /// Terminate program.
         /// </summary>
         private void GameWindow_FormClosed(object sender, FormClosedEventArgs e) => Application.Exit();
+
+        private void SmallToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new GameWindow("small").Show();
+            Hide();
+        }
     }
 }
