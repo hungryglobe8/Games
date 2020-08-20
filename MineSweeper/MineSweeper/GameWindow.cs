@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.Remoting.Channels;
+using System.Security.Cryptography;
 using System.Windows.Forms;
 
 namespace MineSweeper
@@ -212,13 +213,15 @@ namespace MineSweeper
             Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
             Dictionary<Button, Tile> b_connections = new Dictionary<Button, Tile>();
             this.smallGamePanel.Hide();
-            this.smallGamePanel = new System.Windows.Forms.TableLayoutPanel();
-            this.smallGamePanel.AutoSize = true;
+            this.smallGamePanel = new System.Windows.Forms.TableLayoutPanel
+            {
+                AutoSize = true,
+                Name = "smallGamePanel",
+                Size = new System.Drawing.Size(200, 100),
+                TabIndex = 0
+            };
             this.smallGamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
             this.smallGamePanel.Location = new System.Drawing.Point(30, 85);
-            this.smallGamePanel.Name = "smallGamePanel";
-            this.smallGamePanel.Size = new System.Drawing.Size(200, 100);
-            this.smallGamePanel.TabIndex = 0;
             this.Controls.Add(this.smallGamePanel);
 
             CreateBoard(field.Width, field.Height, field);
@@ -239,9 +242,19 @@ namespace MineSweeper
         /// </summary>
         private void GameWindow_FormClosed(object sender, FormClosedEventArgs e) => Application.Exit();
 
-        private void SmallToolStripMenuItem_Click(object sender, EventArgs e)
+        private void SmallToolStripMenuItem_Click(object sender, EventArgs e) => MakeNewGameCloseOld("small");
+        private void MediumToolStripMenuItem_Click(object sender, EventArgs e) => MakeNewGameCloseOld("medium");
+        private void LargeToolStripMenuItem_Click(object sender, EventArgs e) => MakeNewGameCloseOld("large");
+        
+        /// <summary>
+        /// Make a new game of various sizes. If user has started old game, report it as a loss.
+        /// </summary>
+        /// <param name="size">new game size</param>
+        private void MakeNewGameCloseOld(string size)
         {
-            new GameWindow("small").Show();
+            //if (firstClick)
+                //report loss
+            new GameWindow(size).Show();
             Hide();
         }
     }

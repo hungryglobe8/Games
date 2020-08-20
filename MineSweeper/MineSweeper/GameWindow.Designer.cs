@@ -32,10 +32,10 @@
             this.smallGamePanel = new System.Windows.Forms.TableLayoutPanel();
             this.endGameButton = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.gameDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.smallToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mediumToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.largeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.gameDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.statsButton = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -71,25 +71,6 @@
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
             // 
-            // smallToolStripMenuItem
-            // 
-            this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
-            this.smallToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.smallToolStripMenuItem.Text = "Small";
-            this.smallToolStripMenuItem.Click += new System.EventHandler(this.SmallToolStripMenuItem_Click);
-            // 
-            // mediumToolStripMenuItem
-            // 
-            this.mediumToolStripMenuItem.Name = "mediumToolStripMenuItem";
-            this.mediumToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.mediumToolStripMenuItem.Text = "Medium";
-            // 
-            // largeToolStripMenuItem
-            // 
-            this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
-            this.largeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.largeToolStripMenuItem.Text = "Large";
-            // 
             // gameDropDownButton
             // 
             this.gameDropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
@@ -102,6 +83,27 @@
             this.gameDropDownButton.Name = "gameDropDownButton";
             this.gameDropDownButton.Size = new System.Drawing.Size(78, 22);
             this.gameDropDownButton.Text = "New Game";
+            // 
+            // smallToolStripMenuItem
+            // 
+            this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
+            this.smallToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.smallToolStripMenuItem.Text = "Small";
+            this.smallToolStripMenuItem.Click += new System.EventHandler(this.SmallToolStripMenuItem_Click);
+            // 
+            // mediumToolStripMenuItem
+            // 
+            this.mediumToolStripMenuItem.Name = "mediumToolStripMenuItem";
+            this.mediumToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mediumToolStripMenuItem.Text = "Medium";
+            this.mediumToolStripMenuItem.Click += new System.EventHandler(this.MediumToolStripMenuItem_Click);
+            // 
+            // largeToolStripMenuItem
+            // 
+            this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
+            this.largeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.largeToolStripMenuItem.Text = "Large";
+            this.largeToolStripMenuItem.Click += new System.EventHandler(this.LargeToolStripMenuItem_Click);
             // 
             // statsButton
             // 

@@ -63,7 +63,6 @@ namespace Engine
             {
                 int row = rnd.Next(tiles.GetLength(0));
                 int col = rnd.Next(tiles.GetLength(1));
-                Coordinate coor = new Coordinate(row, col);
                 // Only add mine if there isn't a mine already at the chosen location.
                 if (tiles[row, col] == null)
                 {
