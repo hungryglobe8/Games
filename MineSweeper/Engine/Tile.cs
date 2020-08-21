@@ -1,4 +1,6 @@
-﻿namespace Engine
+﻿using System;
+
+namespace Engine
 {
     // Tile state as seen by user.
     public enum State { Unopened, Revealed, Flagged };
@@ -81,6 +83,15 @@
                     //button.ForeColor = colors[danger];
                 }
             }
+        }
+
+        /// <summary>
+        /// Add a mine to an already existing tile.
+        /// </summary>
+        internal void AddMine()
+        {
+            IsArmed = true; 
+            dangerLevel = 10;
         }
 
         /// <summary>

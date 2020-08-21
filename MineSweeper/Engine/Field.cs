@@ -12,11 +12,6 @@ namespace Engine
             x = _x;
             y = _y;
         }
-
-        public static Coordinate operator +(Coordinate a, Coordinate b)
-        {
-            return new Coordinate(a.x + b.x, a.y + b.y);
-        }
     }
 
     public class Field
@@ -30,6 +25,7 @@ namespace Engine
         private IList<Tile> mines;
 
         public int NumMines { private set; get; }
+        public int NumFlags { set; get; }
 
         /// <summary>
         /// Create starting parameters for a field with a certain number of mines.
@@ -42,17 +38,29 @@ namespace Engine
             Width = x;
             Height = y;
             tiles = new Tile[x, y];
+            // Populate tiles.
+            for (int i = 0; i < tiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < tiles.GetLength(1); j++)
+                {
+                    if (tiles[i, j] == null)
+                        tiles[i, j] = new Tile(i, j);
+                }
+            }
             mines = new List<Tile>();
             NumMines = _numMines;
+            NumFlags = 0;
         }
 
         /// <summary>
         /// Populate the field with NumMines.
         /// </summary>
         /// <param name="seed">allows user to fix the random generator, if desired</param>
-        public void PopulateField(int? seed = null)
+        public void PopulateField(Tile initialClick, int? seed = null)
         {
-            tiles = new Tile[Width, Height];
+            // Guarantees first click to be a zero (more playable).
+            IList<Tile> protectedSpace = GetNeighbors(initialClick.X, initialClick.Y);
+            protectedSpace.Add(initialClick);
 
             // If seed has a value, rnd uses it. Else use time-dependent generator.
             Random rnd = seed.HasValue ? new Random(seed.Value) : new Random();
@@ -63,26 +71,17 @@ namespace Engine
             {
                 int row = rnd.Next(tiles.GetLength(0));
                 int col = rnd.Next(tiles.GetLength(1));
+                Tile potentialMine = tiles[row, col];
                 // Only add mine if there isn't a mine already at the chosen location.
-                if (tiles[row, col] == null)
+                if (!potentialMine.IsArmed && !protectedSpace.Contains(potentialMine))
                 {
-                    tiles[row, col] = new Tile(row, col, true);
+                    potentialMine.AddMine();
                     // Add to mine list.
                     mines.Add(tiles[row, col]);
                     // Increase counter.
                     count++;
                 }
                 // Choose a new location.       
-            }
-
-            // Add normal tiles.
-            for (int i = 0; i < tiles.GetLength(0); i++)
-            {
-                for (int j = 0; j < tiles.GetLength(1); j++)
-                {
-                    if (tiles[i, j] == null)
-                        tiles[i, j] = new Tile(i, j);
-                }
             }
 
             // Increase danger of tiles next to mines.

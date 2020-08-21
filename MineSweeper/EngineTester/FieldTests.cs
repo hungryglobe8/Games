@@ -59,7 +59,7 @@ namespace EngineTester
         public void PopulateSmallFieldWithMinesUsingSeed()
         {
             Field sut = new Field(3, 3, 2);
-            sut.PopulateField(10);
+            sut.PopulateField(new Tile(), 10);
             Tile res = sut.GetTile(2, 0);
             Assert.IsTrue(res.IsArmed);
 
@@ -71,7 +71,7 @@ namespace EngineTester
         public void PopulateMediumFieldWithMinesUsingSeed()
         {
             Field sut = new Field(4, 4, 6);
-            sut.PopulateField(10);
+            sut.PopulateField(new Tile(), 10);
             Tile key = sut.GetTile(1, 2);
             Assert.AreEqual(4, key.GetDanger());
 

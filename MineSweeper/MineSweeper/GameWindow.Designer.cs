@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameWindow));
-            this.smallGamePanel = new System.Windows.Forms.TableLayoutPanel();
+            this.gamePanel = new System.Windows.Forms.TableLayoutPanel();
             this.endGameButton = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.gameDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
@@ -37,17 +37,18 @@
             this.mediumToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.largeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statsButton = new System.Windows.Forms.ToolStripButton();
+            this.flagCounterLabel = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // smallGamePanel
+            // gamePanel
             // 
-            this.smallGamePanel.AutoSize = true;
-            this.smallGamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
-            this.smallGamePanel.Location = new System.Drawing.Point(30, 85);
-            this.smallGamePanel.Name = "smallGamePanel";
-            this.smallGamePanel.Size = new System.Drawing.Size(200, 100);
-            this.smallGamePanel.TabIndex = 0;
+            this.gamePanel.AutoSize = true;
+            this.gamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.gamePanel.Location = new System.Drawing.Point(30, 85);
+            this.gamePanel.Name = "gamePanel";
+            this.gamePanel.Size = new System.Drawing.Size(200, 100);
+            this.gamePanel.TabIndex = 0;
             // 
             // endGameButton
             // 
@@ -114,14 +115,26 @@
             this.statsButton.Size = new System.Drawing.Size(36, 22);
             this.statsButton.Text = "Stats";
             // 
+            // flagCounterLabel
+            // 
+            this.flagCounterLabel.AutoSize = true;
+            this.flagCounterLabel.Font = new System.Drawing.Font("Modern No. 20", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.flagCounterLabel.ForeColor = System.Drawing.Color.Red;
+            this.flagCounterLabel.Location = new System.Drawing.Point(203, 40);
+            this.flagCounterLabel.Name = "flagCounterLabel";
+            this.flagCounterLabel.Size = new System.Drawing.Size(27, 31);
+            this.flagCounterLabel.TabIndex = 3;
+            this.flagCounterLabel.Text = "0";
+            // 
             // GameWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 261);
+            this.Controls.Add(this.flagCounterLabel);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.endGameButton);
-            this.Controls.Add(this.smallGamePanel);
+            this.Controls.Add(this.gamePanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "GameWindow";
@@ -136,7 +149,7 @@
 
         #endregion
 
-        private System.Windows.Forms.TableLayoutPanel smallGamePanel;
+        private System.Windows.Forms.TableLayoutPanel gamePanel;
         private System.Windows.Forms.Button endGameButton;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton gameDropDownButton;
@@ -144,6 +157,6 @@
         private System.Windows.Forms.ToolStripMenuItem mediumToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem largeToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton statsButton;
+        private System.Windows.Forms.Label flagCounterLabel;
     }
 }
-
