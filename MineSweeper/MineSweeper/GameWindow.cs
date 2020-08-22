@@ -65,7 +65,9 @@ namespace MineSweeper
                 this.gamePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
             // Resize game window to fit game panel.
             this.gamePanel.Size = new System.Drawing.Size(numCols * 20, numRows * 20);
-            this.ClientSize = new System.Drawing.Size(gamePanel.Size.Width + 60, gamePanel.Size.Height + 100);             
+            this.ClientSize = new System.Drawing.Size(gamePanel.Size.Width + 60, gamePanel.Size.Height + 100);
+            // End game button centered over game panel.
+            this.endGameButton.Location = new Point(gamePanel.Size.Width / 2 + 10, 35);
 
             for (int x = 0; x < numCols; x++)
             {

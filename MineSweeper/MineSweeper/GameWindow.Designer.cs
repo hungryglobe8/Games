@@ -53,9 +53,9 @@
             // endGameButton
             // 
             this.endGameButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.endGameButton.Location = new System.Drawing.Point(130, 40);
+            this.endGameButton.Location = new System.Drawing.Point(120, 40);
             this.endGameButton.Name = "endGameButton";
-            this.endGameButton.Size = new System.Drawing.Size(45, 40);
+            this.endGameButton.Size = new System.Drawing.Size(40, 40);
             this.endGameButton.TabIndex = 1;
             this.endGameButton.Text = "smilyimg";
             this.endGameButton.UseVisualStyleBackColor = true;
@@ -88,21 +88,21 @@
             // smallToolStripMenuItem
             // 
             this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
-            this.smallToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.smallToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.smallToolStripMenuItem.Text = "Small";
             this.smallToolStripMenuItem.Click += new System.EventHandler(this.SmallToolStripMenuItem_Click);
             // 
             // mediumToolStripMenuItem
             // 
             this.mediumToolStripMenuItem.Name = "mediumToolStripMenuItem";
-            this.mediumToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.mediumToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.mediumToolStripMenuItem.Text = "Medium";
             this.mediumToolStripMenuItem.Click += new System.EventHandler(this.MediumToolStripMenuItem_Click);
             // 
             // largeToolStripMenuItem
             // 
             this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
-            this.largeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.largeToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
             this.largeToolStripMenuItem.Text = "Large";
             this.largeToolStripMenuItem.Click += new System.EventHandler(this.LargeToolStripMenuItem_Click);
             // 
