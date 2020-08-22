@@ -118,11 +118,11 @@
             // flagCounterLabel
             // 
             this.flagCounterLabel.AutoSize = true;
-            this.flagCounterLabel.Font = new System.Drawing.Font("Modern No. 20", 21.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.flagCounterLabel.Font = new System.Drawing.Font("Modern No. 20", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.flagCounterLabel.ForeColor = System.Drawing.Color.Red;
             this.flagCounterLabel.Location = new System.Drawing.Point(203, 40);
             this.flagCounterLabel.Name = "flagCounterLabel";
-            this.flagCounterLabel.Size = new System.Drawing.Size(27, 31);
+            this.flagCounterLabel.Size = new System.Drawing.Size(25, 29);
             this.flagCounterLabel.TabIndex = 3;
             this.flagCounterLabel.Text = "0";
             // 

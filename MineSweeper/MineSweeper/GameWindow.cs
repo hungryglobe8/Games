@@ -67,7 +67,11 @@ namespace MineSweeper
             this.gamePanel.Size = new System.Drawing.Size(numCols * 20, numRows * 20);
             this.ClientSize = new System.Drawing.Size(gamePanel.Size.Width + 60, gamePanel.Size.Height + 100);
             // End game button centered over game panel.
-            this.endGameButton.Location = new Point(gamePanel.Size.Width / 2 + 10, 35);
+            Point topButton = new Point(gamePanel.Size.Width / 2 + 10, 35);
+            this.endGameButton.Location = topButton;
+            // Set flag label and position.
+            flagCounterLabel.Text = field.NumFlags.ToString();
+            flagCounterLabel.Location = Point.Add(topButton, new Size(60, 5));
 
             for (int x = 0; x < numCols; x++)
             {
@@ -86,8 +90,6 @@ namespace MineSweeper
                     button.Margin = new Padding(0);
                 }
             }
-            // Set flag label.
-            flagCounterLabel.Text = field.NumFlags.ToString();
         }
 
         private void Button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -140,7 +142,10 @@ namespace MineSweeper
                     field.NumFlags++;
                 // If no more flags available, undo right click.
                 if (field.NumFlags < 0)
+                {
+                    field.NumFlags++;
                     tile.RightClick();
+                }
 
                 flagCounterLabel.Text = field.NumFlags.ToString();
             }
@@ -262,11 +267,7 @@ namespace MineSweeper
         /// </summary>
         private void EndGameButton_Click(object sender, EventArgs e) => GameOver();
 
-        /// <summary>
-        /// Terminate program.
-        /// </summary>
-        private void GameWindow_FormClosed(object sender, FormClosedEventArgs e) => Application.Exit();
-
+        #region Toolbar
         /// <summary>
         /// Toolbar buttons start a new game or show stats.
         /// </summary>
@@ -285,5 +286,14 @@ namespace MineSweeper
             new GameWindow(size).Show();
             Hide();
         }
+
+        #endregion
+
+        #region Exit Program
+        /// <summary>
+        /// Terminate program.
+        /// </summary>
+        private void GameWindow_FormClosed(object sender, FormClosedEventArgs e) => Application.Exit();
+        #endregion
     }
 }
