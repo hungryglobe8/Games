@@ -49,7 +49,7 @@ namespace Engine
             }
             mines = new List<Tile>();
             NumMines = _numMines;
-            NumFlags = 0;
+            NumFlags = NumMines;
         }
 
         /// <summary>

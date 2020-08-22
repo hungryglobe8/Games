@@ -133,11 +133,11 @@ namespace MineSweeper
                 // Update number of flags.
                 tile.RightClick();
                 if (tile.state == State.Flagged)
-                    field.NumFlags++;
-                else if (tile.state == State.Unopened)
                     field.NumFlags--;
+                else if (tile.state == State.Unopened)
+                    field.NumFlags++;
                 // If no more flags available, undo right click.
-                if (field.NumFlags > field.NumMines)
+                if (field.NumFlags < 0)
                     tile.RightClick();
 
                 flagCounterLabel.Text = field.NumFlags.ToString();
