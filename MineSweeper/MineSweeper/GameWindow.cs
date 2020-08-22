@@ -69,10 +69,14 @@ namespace MineSweeper
             // End game button centered over game panel.
             Point topButton = new Point(gamePanel.Size.Width / 2 + 10, 35);
             this.endGameButton.Location = topButton;
-            // Set flag label and position.
+            // Set flag label and right position.
             flagCounterLabel.Text = field.NumFlags.ToString();
             flagCounterLabel.Location = Point.Add(topButton, new Size(60, 5));
+            // Reveal all button left position.
+            revealAllButton.Location = Point.Subtract(topButton, new Size(50, -5));
+            revealAllBorder.Location = Point.Subtract(topButton, new Size(52, -3));
 
+            // Link buttons to tiles.
             for (int x = 0; x < numCols; x++)
             {
                 for (int y = 0; y < numRows; y++)
@@ -115,7 +119,7 @@ namespace MineSweeper
                     // End game.
                     if (tile.IsArmed)
                     {
-                        GameOver();
+                        GameOver(false);
                         return;
                     }
 
@@ -148,6 +152,17 @@ namespace MineSweeper
                 }
 
                 flagCounterLabel.Text = field.NumFlags.ToString();
+                // Show game end button.
+                if (field.NumFlags == 0)
+                {
+                    revealAllButton.Show();
+                    revealAllBorder.Show();
+                }
+                else
+                {
+                    revealAllButton.Hide();
+                    revealAllBorder.Hide();
+                }
             }
 
             ReplaceImage(button, tile);
@@ -206,20 +221,32 @@ namespace MineSweeper
         }
 
         /// <summary>
-        /// Reveal all unflagged mines and disable the game.
+        /// Reveal all mines or tiles and disable the game.
+        /// Reveal all tiles if user uses revealAll button (only activated after placing all flags).
         /// </summary>
-        private void GameOver()
+        private void GameOver(bool revealAll)
         {
-            foreach (Tile mine in field.GetMines())
+            if (revealAll)
             {
-                mine.LeftClick();
-                ReplaceImage(connections[mine], mine);
+                foreach (Tile tile in field.GetTiles())
+                {
+                    tile.LeftClick();
+                    ReplaceImage(connections[tile], tile);
+                }
             }
-
-            // tile in unopened tiles?
-            foreach (Tile tile in field.GetTiles())
+            //just bombs
+            else
             {
-                RemoveFunctionality(tile);
+                foreach (Tile mine in field.GetMines())
+                {
+                    mine.LeftClick();
+                    ReplaceImage(connections[mine], mine);
+                }
+                // Disable other buttons.
+                foreach (Tile tile in field.GetTiles())
+                {
+                    RemoveFunctionality(tile);
+                }
             }
             // End game button reset.
             endGameButton.Text = "Ended";
@@ -258,6 +285,10 @@ namespace MineSweeper
             endGameButton.Click -= ResetGame_Click;
             endGameButton.Click += EndGameButton_Click;
 
+            // RevealAll reset.
+            revealAllBorder.Hide();
+            revealAllButton.Hide();
+
             // First click reset.
             firstClick = false;
         }
@@ -265,7 +296,15 @@ namespace MineSweeper
         /// <summary>
         /// User chooses to end game by pressing top button.
         /// </summary>
-        private void EndGameButton_Click(object sender, EventArgs e) => GameOver();
+        private void EndGameButton_Click(object sender, EventArgs e) => GameOver(false);
+        
+        /// <summary>
+        /// Reveal all unflagged tiles. This will end the game one way or another.
+        /// </summary>
+        private void RevealAllButton_Click(object sender, EventArgs e)
+        {
+            GameOver(true);
+        }
 
         #region Toolbar
         /// <summary>
@@ -295,5 +334,6 @@ namespace MineSweeper
         /// </summary>
         private void GameWindow_FormClosed(object sender, FormClosedEventArgs e) => Application.Exit();
         #endregion
+
     }
 }

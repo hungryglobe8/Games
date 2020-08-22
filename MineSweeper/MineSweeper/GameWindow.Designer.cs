@@ -38,6 +38,8 @@
             this.largeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statsButton = new System.Windows.Forms.ToolStripButton();
             this.flagCounterLabel = new System.Windows.Forms.Label();
+            this.revealAllButton = new MineSweeper.CircularButton();
+            this.revealAllBorder = new MineSweeper.CircularButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -120,11 +122,39 @@
             this.flagCounterLabel.AutoSize = true;
             this.flagCounterLabel.Font = new System.Drawing.Font("Modern No. 20", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.flagCounterLabel.ForeColor = System.Drawing.Color.Red;
-            this.flagCounterLabel.Location = new System.Drawing.Point(203, 40);
+            this.flagCounterLabel.Location = new System.Drawing.Point(195, 44);
             this.flagCounterLabel.Name = "flagCounterLabel";
             this.flagCounterLabel.Size = new System.Drawing.Size(25, 29);
             this.flagCounterLabel.TabIndex = 3;
             this.flagCounterLabel.Text = "0";
+            // 
+            // revealAllButton
+            // 
+            this.revealAllButton.BackColor = System.Drawing.Color.Crimson;
+            this.revealAllButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.revealAllButton.FlatAppearance.BorderSize = 0;
+            this.revealAllButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.revealAllButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Lime;
+            this.revealAllButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.revealAllButton.Location = new System.Drawing.Point(55, 39);
+            this.revealAllButton.Name = "revealAllButton";
+            this.revealAllButton.Size = new System.Drawing.Size(28, 28);
+            this.revealAllButton.TabIndex = 4;
+            this.revealAllButton.UseVisualStyleBackColor = false;
+            this.revealAllButton.Visible = false;
+            this.revealAllButton.Click += new System.EventHandler(this.RevealAllButton_Click);
+            // 
+            // revealAllBorder
+            // 
+            this.revealAllBorder.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.revealAllBorder.FlatAppearance.BorderSize = 10;
+            this.revealAllBorder.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.revealAllBorder.Location = new System.Drawing.Point(53, 37);
+            this.revealAllBorder.Name = "revealAllBorder";
+            this.revealAllBorder.Size = new System.Drawing.Size(32, 32);
+            this.revealAllBorder.TabIndex = 5;
+            this.revealAllBorder.UseVisualStyleBackColor = true;
+            this.revealAllBorder.Visible = false;
             // 
             // GameWindow
             // 
@@ -135,6 +165,8 @@
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.endGameButton);
             this.Controls.Add(this.gamePanel);
+            this.Controls.Add(this.revealAllButton);
+            this.Controls.Add(this.revealAllBorder);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.Name = "GameWindow";
@@ -158,5 +190,7 @@
         private System.Windows.Forms.ToolStripMenuItem largeToolStripMenuItem;
         private System.Windows.Forms.ToolStripButton statsButton;
         private System.Windows.Forms.Label flagCounterLabel;
+        private CircularButton revealAllButton;
+        private CircularButton revealAllBorder;
     }
 }
