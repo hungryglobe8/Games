@@ -138,20 +138,9 @@ namespace MineSweeper
             //right click
             else if (e.Button == MouseButtons.Right)
             {
-                // Update number of flags.
-                tile.RightClick();
-                if (tile.state == State.Flagged)
-                    field.NumFlags--;
-                else if (tile.state == State.Unopened)
-                    field.NumFlags++;
-                // If no more flags available, undo right click.
-                if (field.NumFlags < 0)
-                {
-                    field.NumFlags++;
-                    tile.RightClick();
-                }
-
+                field.Flag(tile);
                 flagCounterLabel.Text = field.NumFlags.ToString();
+
                 // Show game end button.
                 if (field.NumFlags == 0)
                 {
@@ -242,11 +231,11 @@ namespace MineSweeper
                     mine.LeftClick();
                     ReplaceImage(connections[mine], mine);
                 }
-                // Disable other buttons.
-                foreach (Tile tile in field.GetTiles())
-                {
-                    RemoveFunctionality(tile);
-                }
+            }
+            // Disable other buttons.
+            foreach (Tile tile in field.GetTiles())
+            {
+                RemoveFunctionality(tile);
             }
             // End game button reset.
             endGameButton.Text = "Ended";

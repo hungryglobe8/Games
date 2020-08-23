@@ -3,17 +3,6 @@ using System.Collections.Generic;
 
 namespace Engine
 {
-    public struct Coordinate
-    {
-        public int x, y;
-
-        public Coordinate(int _x, int _y)
-        {
-            x = _x;
-            y = _y;
-        }
-    }
-
     public class Field
     {
         public int Width { get; }
@@ -23,9 +12,11 @@ namespace Engine
         private Tile[,] tiles;
         // Store mines.
         private IList<Tile> mines;
+        private bool firstClick = false;
 
         public int NumMines { private set; get; }
         public int NumFlags { set; get; }
+        public int NumRevealed { get; private set; }
 
         /// <summary>
         /// Create starting parameters for a field with a certain number of mines.
@@ -94,6 +85,26 @@ namespace Engine
         }
 
         /// <summary>
+        /// Flag a given tile. If there are no flags left undo the right click.
+        /// </summary>
+        /// <param name="tile"></param>
+        public void Flag(Tile tile)
+        {
+            // Update number of flags.
+            tile.RightClick();
+            if (tile.state == State.Flagged)
+                NumFlags--;
+            else if (tile.state == State.Unopened)
+                NumFlags++;
+            // If no more flags available, undo right click.
+            if (NumFlags < 0)
+            {
+                NumFlags++;
+                tile.RightClick();
+            }
+        }
+
+        /// <summary>
         /// Get the mines of the field.
         /// </summary>
         public IList<Tile> GetMines()
@@ -153,5 +164,7 @@ namespace Engine
                 res.Add(tile);
             return res;
         }
+
+        public bool WonGame() => NumRevealed == (Width * Height) - NumMines;
     }
 }

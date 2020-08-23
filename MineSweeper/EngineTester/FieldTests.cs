@@ -22,6 +22,7 @@ namespace EngineTester
             Assert.AreEqual(expectedMines, actualMines);
         }
 
+        #region GetNeighbors
         [TestMethod]
         [DataRow(0, 0, 3)]
         [DataRow(2, 0, 5)]
@@ -54,6 +55,7 @@ namespace EngineTester
             int actual = sut.GetNeighbors(x, y).Count;
             Assert.AreEqual(expected, actual);
         }
+        #endregion
 
         [TestMethod]
         public void PopulateSmallFieldWithMinesUsingSeed()
@@ -72,11 +74,42 @@ namespace EngineTester
         {
             Field sut = new Field(4, 4, 6);
             sut.PopulateField(new Tile(), 10);
-            Tile key = sut.GetTile(1, 2);
-            Assert.AreEqual(4, key.GetDanger());
+            Assert.AreEqual(6, sut.NumMines);
+        }
 
-            key = sut.GetTile(2, 1);
-            Assert.IsTrue(key.IsArmed);
+        [TestMethod]
+        public void FlagTile()
+        {
+            Field sut = new Field(3, 3, 2);
+            sut.PopulateField(new Tile());
+            Tile tile = sut.GetTile(1, 2);
+            sut.Flag(tile);
+            Assert.AreEqual(1, sut.NumFlags);
+        }
+
+        [TestMethod]
+        public void FlagTileTwice()
+        {
+            Field sut = new Field(3, 3, 2);
+            sut.PopulateField(new Tile());
+            Tile tile = sut.GetTile(1, 2);
+            sut.Flag(tile);
+            sut.Flag(tile);
+            Assert.AreEqual(2, sut.NumFlags);
+        }
+
+        [TestMethod]
+        public void FlagAll()
+        {
+            Field sut = new Field(3, 3, 2);
+            sut.PopulateField(new Tile());
+            var tiles = sut.GetTiles();
+            foreach (Tile tile in tiles)
+            {
+                sut.Flag(tile);
+            }
+            Assert.AreEqual(0, sut.NumFlags);
+            Assert.AreEqual(2, sut.NumMines);
         }
     }
 }
