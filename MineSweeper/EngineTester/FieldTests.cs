@@ -22,7 +22,7 @@ namespace EngineTester
             Assert.AreEqual(expectedMines, actualMines);
         }
 
-        #region GetNeighbors
+        #region Get Neighbors
         [TestMethod]
         [DataRow(0, 0, 3)]
         [DataRow(2, 0, 5)]
@@ -30,7 +30,8 @@ namespace EngineTester
         public void GetNeighborsBottomRow(int x, int y, int expected)
         {
             Field sut = new Field(4, 4, 6);
-            int actual = sut.GetNeighbors(x, y).Count;
+            Tile testTile = sut.GetTile(x, y);
+            int actual = sut.GetNeighbors(testTile).Count;
             Assert.AreEqual(expected, actual);
         }
 
@@ -41,7 +42,8 @@ namespace EngineTester
         public void GetNeighborsMiddleRow(int x, int y, int expected)
         {
             Field sut = new Field(4, 4, 6);
-            int actual = sut.GetNeighbors(x, y).Count;
+            Tile testTile = sut.GetTile(x, y);
+            int actual = sut.GetNeighbors(testTile).Count;
             Assert.AreEqual(expected, actual);
         }
 
@@ -52,11 +54,13 @@ namespace EngineTester
         public void GetNeighborsTopRow(int x, int y, int expected)
         {
             Field sut = new Field(4, 4, 6);
-            int actual = sut.GetNeighbors(x, y).Count;
+            Tile testTile = sut.GetTile(x, y);
+            int actual = sut.GetNeighbors(testTile).Count;
             Assert.AreEqual(expected, actual);
         }
         #endregion
 
+        #region Populate Field
         [TestMethod]
         public void PopulateSmallFieldWithMinesUsingSeed()
         {
@@ -76,7 +80,9 @@ namespace EngineTester
             sut.PopulateField(new Tile(), 10);
             Assert.AreEqual(6, sut.NumMines);
         }
+        #endregion
 
+        #region Flag
         [TestMethod]
         public void FlagTile()
         {
@@ -111,5 +117,49 @@ namespace EngineTester
             Assert.AreEqual(0, sut.NumFlags);
             Assert.AreEqual(2, sut.NumMines);
         }
+        #endregion
+
+        #region Reveal
+        [TestMethod]
+        public void RevealTile()
+        {
+            Field sut = new Field(3, 3, 2);
+            sut.PopulateField(new Tile(), 3);
+            Tile tile = sut.GetTile(0, 0);
+            sut.Reveal(tile);
+            Assert.AreEqual(State.Revealed, tile.state);
+        }        
+        
+        [TestMethod]
+        public void RevealBombTile()
+        {
+            Field sut = new Field(3, 3, 2);
+            sut.PopulateField(new Tile(), 3);
+            Tile tile = sut.GetTile(0, 2);
+            sut.Reveal(tile);
+            Assert.AreEqual(State.Revealed, tile.state);
+        }        
+        
+        [TestMethod]
+        public void RevealFlaggedTileNoChange()
+        {
+            Field sut = new Field(3, 3, 2);
+            sut.PopulateField(new Tile(), 3);
+            Tile tile = sut.GetTile(0, 2);
+            sut.Flag(tile);
+            sut.Reveal(tile);
+            Assert.AreEqual(State.Flagged, tile.state);
+        }
+
+        [TestMethod]
+        public void RevealAllNeighborsOfZeroDangerTiles()
+        {
+            Field sut = new Field(3, 3, 0);
+            sut.PopulateField(new Tile(), 3);
+            Tile tile = sut.GetTile(0, 0);
+            var result = sut.Reveal(tile);
+            Assert.AreEqual(9, result.Count);
+        }
+        #endregion
     }
 }

@@ -9,8 +9,7 @@ namespace MineSweeper
     public partial class GameWindow : Form
     {
         private Field field;
-        private readonly Dictionary<Tile, MineSweeperButton> connections = new Dictionary<Tile, MineSweeperButton>();
-        private bool firstClick = false;
+        private readonly Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
 
         public GameWindow(string gameSize)
         {
@@ -98,34 +97,23 @@ namespace MineSweeper
             //left click
             if (e.Button == MouseButtons.Left)
             {
-                // On first click, populate minefield.
-                if (!firstClick)
-                {
-                    field.PopulateField(tile);
-                    firstClick = true;
-                }
-
-                tile.LeftClick();
+                var revealedTiles = field.Reveal(tile);
                 if (tile.state == State.Revealed)
                 {
-                    RemoveFunctionality(button);
                     // End game.
                     if (tile.IsArmed)
                     {
                         GameOver(false);
                         return;
                     }
-
-                    // Recursively find all neighbors of 0 danger tiles.
-                    if (tile.GetDanger() == 0)
+                    
+                    foreach (Tile t in revealedTiles)
                     {
-                        IList<Tile> neighbors = field.GetNeighbors(tile.X, tile.Y);
-                        foreach (Tile neighbor in neighbors)
-                        {
-                            if (neighbor.state == State.Unopened)
-                                Button_MouseUp(connections[neighbor], e);
-                        }
+                        var neighborButton = connections[t];
+                        RemoveFunctionality(neighborButton);
+                        neighborButton.ReplaceImage();
                     }
+                    return;
                 }
             }
             //right click
@@ -151,6 +139,7 @@ namespace MineSweeper
         }
 
         /// <summary>
+        /// Remove event handler from a button.
         /// Do nothing if the user clicks on a button with its functionality removed.
         /// </summary>
         private void RemoveFunctionality(Button button) => button.MouseUp -= Button_MouseUp;
@@ -162,10 +151,10 @@ namespace MineSweeper
         private void GameOver(bool revealAll)
         {
             // If no click happened, generate random board.
-            if (!firstClick)
+            if (!field.firstClick)
             {
-                field.PopulateField(field.GetTile(0, 0));
-                firstClick = true;
+                field.PopulateField();
+                field.firstClick = true;
             }
 
             // Reveal all tiles.
@@ -208,7 +197,6 @@ namespace MineSweeper
             //field.PopulateField();
             // Remove old values.
             Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
-            Dictionary<Button, Tile> b_connections = new Dictionary<Button, Tile>();
             gamePanel.Hide();
             gamePanel = new System.Windows.Forms.TableLayoutPanel
             {
@@ -233,7 +221,7 @@ namespace MineSweeper
             revealAllButton.Hide();
 
             // First click reset.
-            firstClick = false;
+            field.firstClick = false;
         }
 
         /// <summary>

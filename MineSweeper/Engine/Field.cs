@@ -12,7 +12,7 @@ namespace Engine
         private readonly Tile[,] tiles;
         // Store mines.
         private readonly IList<Tile> mines;
-        private readonly bool firstClick = false;
+        public bool firstClick = false;
 
         public int NumMines { private set; get; }
         public int NumFlags { set; get; }
@@ -21,21 +21,21 @@ namespace Engine
         /// <summary>
         /// Create starting parameters for a field with a certain number of mines.
         /// </summary>
-        /// <param name="x">num of tiles in the x direction</param>
-        /// <param name="y">num of tiles in the y direction</param>
+        /// <param name="width">num of tiles in the x direction</param>
+        /// <param name="height">num of tiles in the y direction</param>
         /// <param name="_numMines"></param>
-        public Field(int x, int y, int _numMines)
+        public Field(int width, int height, int _numMines)
         {
-            Width = x;
-            Height = y;
-            tiles = new Tile[x, y];
+            Width = width;
+            Height = height;
+            tiles = new Tile[width, height];
             // Populate tiles.
-            for (int i = 0; i < tiles.GetLength(0); i++)
+            for (int x = 0; x < tiles.GetLength(0); x++)
             {
-                for (int j = 0; j < tiles.GetLength(1); j++)
+                for (int y = 0; y < tiles.GetLength(1); y++)
                 {
-                    if (tiles[i, j] == null)
-                        tiles[i, j] = new Tile(i, j);
+                    if (tiles[x, y] == null)
+                        tiles[x, y] = new Tile(x, y);
                 }
             }
             mines = new List<Tile>();
@@ -43,14 +43,20 @@ namespace Engine
             NumFlags = NumMines;
         }
 
+        #region Generate Field
         /// <summary>
-        /// Populate the field with NumMines.
+        /// Populate the field with a certain number of mines (NumMines).
+        /// Protect a chosen tile and the area around it from being armed, so that tile is guaranteed to be 0.
+        /// If the tile is unchosen, pick the tile at (0, 0).
         /// </summary>
         /// <param name="seed">allows user to fix the random generator, if desired</param>
-        public void PopulateField(Tile initialClick, int? seed = null)
+        public void PopulateField(Tile initialClick = null, int? seed = null)
         {
+            // If no initial tile is chosen, pick one.
+            if (initialClick == null)
+                initialClick = GetTile(0, 0);
             // Guarantees first click to be a zero (more playable).
-            IList<Tile> protectedSpace = GetNeighbors(initialClick.X, initialClick.Y);
+            IList<Tile> protectedSpace = GetNeighbors(initialClick);
             protectedSpace.Add(initialClick);
 
             // If seed has a value, rnd uses it. Else use time-dependent generator.
@@ -63,7 +69,7 @@ namespace Engine
                 int row = rnd.Next(tiles.GetLength(0));
                 int col = rnd.Next(tiles.GetLength(1));
                 Tile potentialMine = tiles[row, col];
-                // Only add mine if there isn't a mine already at the chosen location.
+                // Do not add if chosen space has been selected before or is within protected space.
                 if (!potentialMine.IsArmed && !protectedSpace.Contains(potentialMine))
                 {
                     potentialMine.AddMine();
@@ -78,11 +84,57 @@ namespace Engine
             // Increase danger of tiles next to mines.
             foreach (Tile mine in mines)
             {
-                IList<Tile> neighbors = GetNeighbors(mine.X, mine.Y);
+                IList<Tile> neighbors = GetNeighbors(mine);
                 foreach (Tile tile in neighbors)
                     tile.DangerUp();
             }
         }
+        #endregion
+
+        #region Reveal Tile
+        /// <summary>
+        /// Driver for reveal tile functionality.
+        /// Attempting to reveal an unpopulated field will result in population first.
+        /// </summary>
+        /// <param name="tile">initial tile to reveal</param>
+        public ISet<Tile> Reveal(Tile tile)
+        {
+            // On first click, populate minefield.
+            if (!firstClick)
+            {
+                PopulateField(tile);
+                firstClick = true;
+            }
+
+            ISet<Tile> revealedTiles = new HashSet<Tile>();
+            Reveal(tile, revealedTiles);
+            return revealedTiles;
+        }
+
+        /// <summary>
+        /// Reveal a specific tile, changing its state, and revealing its neighbors
+        /// if there are no bombs nearby.
+        /// </summary>
+        /// <param name="tile">tile to be revealed</param>
+        /// <param name="revealedTiles">collection of revealed tiles</param>
+        private void Reveal(Tile tile, ISet<Tile> revealedTiles)
+        {
+            tile.LeftClick();
+            revealedTiles.Add(tile);
+
+            // Recursively find all neighbors of 0 danger tiles.
+            if (tile.GetDanger() == 0)
+            {
+                IList<Tile> neighbors = GetNeighbors(tile);
+                foreach (Tile neighbor in neighbors)
+                {
+                    // Only reveal tiles that haven't been opened yet (to prevent infinite loop).
+                    if (neighbor.state == State.Unopened)
+                        Reveal(neighbor, revealedTiles);
+                }
+            }
+        }
+        #endregion
 
         /// <summary>
         /// Flag a given tile. If there are no flags left undo the right click.
@@ -123,8 +175,11 @@ namespace Engine
         /// <summary>
         /// Get a list of neighbors for a given coordinate.
         /// </summary>
-        public IList<Tile> GetNeighbors(int x, int y)
+        public IList<Tile> GetNeighbors(Tile tile)
         {
+            int x = tile.X;
+            int y = tile.Y;
+
             IList<Tile> neighbors = new List<Tile>();
             int lowX = x - 1;
             int lowY = y - 1;
