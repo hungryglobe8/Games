@@ -122,17 +122,20 @@ namespace Engine
         /// <summary>
         /// Reveal a specific tile, changing its state, and revealing its neighbors
         /// if there are no bombs nearby.
+        /// Doesn't do anything if tile is flagged or revealed.
         /// </summary>
         /// <param name="tile">tile to be revealed</param>
         /// <param name="revealedTiles">collection of revealed tiles</param>
         private void Reveal(Tile tile, ISet<Tile> revealedTiles)
         {
-            if (tile.state == State.Unopened)
+            if (tile.state != State.Unopened)
             {
-                tile.LeftClick();
-                revealedTiles.Add(tile);
-                NumRevealed++;
+                return;
             }
+
+            tile.LeftClick();
+            revealedTiles.Add(tile);
+            NumRevealed++;
 
             // Recursively find all neighbors of 0 danger tiles.
             if (tile.GetDanger() == 0)
