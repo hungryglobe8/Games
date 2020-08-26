@@ -9,7 +9,7 @@ namespace MineSweeper
     public partial class GameWindow : Form
     {
         private Field field;
-        private readonly Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
+        private readonly Dictionary<Tile, MineSweeperButton> connections = new Dictionary<Tile, MineSweeperButton>();
 
         public GameWindow(string gameSize)
         {
@@ -97,13 +97,13 @@ namespace MineSweeper
             //left click
             if (e.Button == MouseButtons.Left)
             {
-                var revealedTiles = field.Reveal(tile);
-                if (tile.state == State.Revealed)
-                {
-                    // End game.
+                if (tile.state == State.Unopened)
+                { 
+                    var revealedTiles = field.Reveal(tile);
+                    // Lose game.
                     if (tile.IsArmed)
                     {
-                        GameOver(false);
+                        GameOver();
                         return;
                     }
                     
@@ -113,6 +113,11 @@ namespace MineSweeper
                         RemoveFunctionality(neighborButton);
                         neighborButton.ReplaceImage();
                     }
+
+                    // If all tiles have been revealed, win game.
+                    if (field.FoundAllNormalTiles)
+                        MessageBox.Show("YOU WIN!!");
+
                     return;
                 }
             }
@@ -148,32 +153,19 @@ namespace MineSweeper
         /// Reveal all mines or tiles and disable the game.
         /// Reveal all tiles if user uses revealAll button (only activated after placing all flags).
         /// </summary>
-        private void GameOver(bool revealAll)
+        private void GameOver()
         {
-            // If no click happened, generate random board.
-            if (!field.firstClick)
-            {
-                field.PopulateField();
-                field.firstClick = true;
-            }
+            if(field.FoundAllNormalTiles)
+                MessageBox.Show("YOU WON!");
 
-            // Reveal all tiles.
-            if (revealAll)
-            {
-                foreach (Tile tile in field.GetTiles())
-                {
-                    tile.LeftClick();
-                    connections[tile].ReplaceImage();
-                }
-            }
+            // If no click happened, generate random board.
+            _ = field.Reveal(new Tile());
+
             // Reveal all mines.
-            else
+            foreach (Tile mine in field.GetMines())
             {
-                foreach (Tile mine in field.GetMines())
-                {
-                    mine.LeftClick();
-                    connections[mine].ReplaceImage();
-                }
+                mine.LeftClick();
+                connections[mine].ReplaceImage();
             }
             // Disable other buttons.
             foreach (Button button in gamePanel.Controls)
@@ -219,22 +211,25 @@ namespace MineSweeper
             // RevealAll reset.
             revealAllBorder.Hide();
             revealAllButton.Hide();
-
-            // First click reset.
-            field.firstClick = false;
         }
 
         /// <summary>
         /// User chooses to end game by pressing top button.
         /// </summary>
-        private void EndGameButton_Click(object sender, EventArgs e) => GameOver(false);
+        private void EndGameButton_Click(object sender, EventArgs e) => GameOver();
 
         /// <summary>
-        /// Reveal all unflagged tiles. This will end the game one way or another.
+        /// Reveal all unflagged tiles. Ends the game one way or another.
         /// </summary>
         private void RevealAllButton_Click(object sender, EventArgs e)
         {
-            GameOver(true);
+            // Reveal all unflagged tiles.
+            foreach (Tile tile in field.GetTiles())
+            {
+                field.Reveal(tile);
+                connections[tile].ReplaceImage();
+            }
+            GameOver();
         }
 
         #region Toolbar

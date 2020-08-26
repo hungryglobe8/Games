@@ -5,6 +5,7 @@ namespace Engine
 {
     public class Field
     {
+        #region Properties
         public int Width { get; }
         public int Height { get; }
 
@@ -12,12 +13,16 @@ namespace Engine
         private readonly Tile[,] tiles;
         // Store mines.
         private readonly IList<Tile> mines;
-        public bool firstClick = false;
+        private bool firstClick = false;
 
         public int NumMines { private set; get; }
-        public int NumFlags { set; get; }
-        public int NumRevealed { get; private set; }
+        public int NumFlags { private set; get; }
+        public int NumRevealed { private set; get; }
+        // Returns true when all normal tiles have been revealed.
+        public bool FoundAllNormalTiles => NumRevealed == (Width * Height) - NumMines;
+        #endregion
 
+        #region Constructor
         /// <summary>
         /// Create starting parameters for a field with a certain number of mines.
         /// </summary>
@@ -41,7 +46,9 @@ namespace Engine
             mines = new List<Tile>();
             NumMines = _numMines;
             NumFlags = NumMines;
+            NumRevealed = 0;
         }
+        #endregion
 
         #region Generate Field
         /// <summary>
@@ -95,6 +102,7 @@ namespace Engine
         /// <summary>
         /// Driver for reveal tile functionality.
         /// Attempting to reveal an unpopulated field will result in population first.
+        /// Returns a set of all tiles revealed by the algorithm.
         /// </summary>
         /// <param name="tile">initial tile to reveal</param>
         public ISet<Tile> Reveal(Tile tile)
@@ -119,8 +127,12 @@ namespace Engine
         /// <param name="revealedTiles">collection of revealed tiles</param>
         private void Reveal(Tile tile, ISet<Tile> revealedTiles)
         {
-            tile.LeftClick();
-            revealedTiles.Add(tile);
+            if (tile.state == State.Unopened)
+            {
+                tile.LeftClick();
+                revealedTiles.Add(tile);
+                NumRevealed++;
+            }
 
             // Recursively find all neighbors of 0 danger tiles.
             if (tile.GetDanger() == 0)
@@ -136,6 +148,7 @@ namespace Engine
         }
         #endregion
 
+        #region Flag Tile
         /// <summary>
         /// Flag a given tile. If there are no flags left undo the right click.
         /// </summary>
@@ -155,25 +168,11 @@ namespace Engine
                 tile.RightClick();
             }
         }
-
+        #endregion
+        
+        #region Neighbors
         /// <summary>
-        /// Get the mines of the field.
-        /// </summary>
-        public IList<Tile> GetMines()
-        {
-            return mines;
-        }
-
-        /// <summary>
-        /// Get a tile at a specific coordinate.
-        /// </summary>
-        public Tile GetTile(int x, int y)
-        {
-            return tiles[x, y];
-        }
-
-        /// <summary>
-        /// Get a list of neighbors for a given coordinate.
+        /// Get a list of neighbors for a given tile.
         /// </summary>
         public IList<Tile> GetNeighbors(Tile tile)
         {
@@ -211,7 +210,22 @@ namespace Engine
                 neighbors.Add(tiles[highX, highY]);
             return neighbors;
         }
+        #endregion
 
+        #region Getters
+        /// <summary>
+        /// Get the mines of the field.
+        /// </summary>
+        public IList<Tile> GetMines() => mines;
+
+        /// <summary>
+        /// Get a tile at a specific coordinate.
+        /// </summary>
+        public Tile GetTile(int x, int y) => tiles[x, y];
+
+        /// <summary>
+        /// Get all tiles in the field.
+        /// </summary>
         public IEnumerable<Tile> GetTiles()
         {
             IList<Tile> res = new List<Tile>();
@@ -219,7 +233,6 @@ namespace Engine
                 res.Add(tile);
             return res;
         }
-
-        public bool WonGame() => NumRevealed == (Width * Height) - NumMines;
+        #endregion
     }
 }
