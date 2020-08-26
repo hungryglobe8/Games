@@ -25,7 +25,9 @@ namespace MineSweeper
             {
                 case State.Revealed:
                     if (Tile.IsArmed)
+                    {
                         Image = Image.FromFile("../../Images/Bomb.bmp");
+                    }
                     else
                     {
                         var colors = new Dictionary<int, Color>(){

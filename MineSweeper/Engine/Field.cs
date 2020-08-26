@@ -9,10 +9,10 @@ namespace Engine
         public int Height { get; }
 
         // 2-dimensional field of tiles (x,y).
-        private Tile[,] tiles;
+        private readonly Tile[,] tiles;
         // Store mines.
-        private IList<Tile> mines;
-        private bool firstClick = false;
+        private readonly IList<Tile> mines;
+        private readonly bool firstClick = false;
 
         public int NumMines { private set; get; }
         public int NumFlags { set; get; }

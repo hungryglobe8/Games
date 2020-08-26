@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Runtime.Remoting.Channels;
-using System.Security.Cryptography;
 using System.Windows.Forms;
 
 namespace MineSweeper
@@ -11,7 +9,7 @@ namespace MineSweeper
     public partial class GameWindow : Form
     {
         private Field field;
-        private Dictionary<Tile, MineSweeperButton> connections = new Dictionary<Tile, MineSweeperButton>();
+        private readonly Dictionary<Tile, MineSweeperButton> connections = new Dictionary<Tile, MineSweeperButton>();
         private bool firstClick = false;
 
         public GameWindow(string gameSize)
@@ -24,7 +22,7 @@ namespace MineSweeper
                 case "small":
                     x = 8;
                     y = 8;
-                    numMines = 10; 
+                    numMines = 10;
                     break;
                 case "medium":
                     x = 16;
@@ -51,23 +49,23 @@ namespace MineSweeper
             // 
             // Make GamePanel
             // 
-            this.gamePanel.ColumnCount = numCols;
-            this.gamePanel.RowCount = numRows;
+            gamePanel.ColumnCount = numCols;
+            gamePanel.RowCount = numRows;
             float BUTTON_SIZE = 20F;
             // Remove first column.
-            this.gamePanel.ColumnStyles.RemoveAt(0);
+            gamePanel.ColumnStyles.RemoveAt(0);
             // Add cols and rows.
             for (int i = 0; i < numCols; i++)
-                this.gamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
+                gamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
             for (int i = 0; i < numRows; i++)
-                this.gamePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
+                gamePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
 
             // Resize game window to fit game panel.
-            this.gamePanel.Size = new System.Drawing.Size(numCols * 20, numRows * 20);
-            this.ClientSize = new System.Drawing.Size(gamePanel.Size.Width + 60, gamePanel.Size.Height + 100);
+            gamePanel.Size = new System.Drawing.Size(numCols * 20, numRows * 20);
+            ClientSize = new System.Drawing.Size(gamePanel.Size.Width + 60, gamePanel.Size.Height + 100);
             // End game button centered over game panel.
             Point topButton = new Point(gamePanel.Size.Width / 2 + 10, 35);
-            this.endGameButton.Location = topButton;
+            endGameButton.Location = topButton;
             // Set flag label and right position.
             flagCounterLabel.Text = field.NumFlags.ToString();
             flagCounterLabel.Location = Point.Add(topButton, new Size(60, 5));
@@ -106,7 +104,7 @@ namespace MineSweeper
                     field.PopulateField(tile);
                     firstClick = true;
                 }
-                    
+
                 tile.LeftClick();
                 if (tile.state == State.Revealed)
                 {
@@ -211,17 +209,17 @@ namespace MineSweeper
             // Remove old values.
             Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
             Dictionary<Button, Tile> b_connections = new Dictionary<Button, Tile>();
-            this.gamePanel.Hide();
-            this.gamePanel = new System.Windows.Forms.TableLayoutPanel
+            gamePanel.Hide();
+            gamePanel = new System.Windows.Forms.TableLayoutPanel
             {
                 AutoSize = true,
                 Name = "smallGamePanel",
                 Size = new System.Drawing.Size(200, 100),
                 TabIndex = 0
             };
-            this.gamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
-            this.gamePanel.Location = new System.Drawing.Point(30, 85);
-            this.Controls.Add(this.gamePanel);
+            gamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            gamePanel.Location = new System.Drawing.Point(30, 85);
+            Controls.Add(gamePanel);
 
             CreateBoard(field);
 
@@ -242,7 +240,7 @@ namespace MineSweeper
         /// User chooses to end game by pressing top button.
         /// </summary>
         private void EndGameButton_Click(object sender, EventArgs e) => GameOver(false);
-        
+
         /// <summary>
         /// Reveal all unflagged tiles. This will end the game one way or another.
         /// </summary>
@@ -258,7 +256,7 @@ namespace MineSweeper
         private void SmallToolStripMenuItem_Click(object sender, EventArgs e) => MakeNewGameCloseOld("small");
         private void MediumToolStripMenuItem_Click(object sender, EventArgs e) => MakeNewGameCloseOld("medium");
         private void LargeToolStripMenuItem_Click(object sender, EventArgs e) => MakeNewGameCloseOld("large");
-        
+
         /// <summary>
         /// Make a new game of various sizes. If user has started old game, report it as a loss.
         /// </summary>
@@ -266,7 +264,7 @@ namespace MineSweeper
         private void MakeNewGameCloseOld(string size)
         {
             //if (firstClick)
-                //report loss
+            //report loss
             new GameWindow(size).Show();
             Hide();
         }

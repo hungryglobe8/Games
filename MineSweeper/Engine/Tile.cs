@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Engine
+﻿namespace Engine
 {
     // Tile state as seen by user.
     public enum State { Unopened, Revealed, Flagged };
@@ -63,8 +61,9 @@ namespace Engine
         public void LeftClick()
         {
             if (state == State.Flagged || state == State.Revealed)
+            {
                 return;
-
+            }
             else
             {
                 //reveal
@@ -90,7 +89,7 @@ namespace Engine
         /// </summary>
         internal void AddMine()
         {
-            IsArmed = true; 
+            IsArmed = true;
             dangerLevel = 10;
         }
 
