@@ -99,6 +99,9 @@ namespace Engine
                 foreach (Tile tile in neighbors)
                     tile.DangerUp();
             }
+
+            // Field has been generated.
+            firstClick = true;
         }
         #endregion
 
@@ -113,10 +116,7 @@ namespace Engine
         {
             // On first click, populate minefield.
             if (!firstClick)
-            {
                 PopulateField(tile);
-                firstClick = true;
-            }
 
             ISet<Tile> revealedTiles = new HashSet<Tile>();
             Reveal(tile, revealedTiles);

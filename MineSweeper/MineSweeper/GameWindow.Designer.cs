@@ -32,12 +32,12 @@
             this.gamePanel = new System.Windows.Forms.TableLayoutPanel();
             this.endGameButton = new System.Windows.Forms.Button();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.flagCounterLabel = new System.Windows.Forms.Label();
             this.gameDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
             this.smallToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mediumToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.largeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statsButton = new System.Windows.Forms.ToolStripButton();
-            this.flagCounterLabel = new System.Windows.Forms.Label();
             this.revealAllButton = new MineSweeper.CircularButton();
             this.revealAllBorder = new MineSweeper.CircularButton();
             this.toolStrip1.SuspendLayout();
@@ -55,6 +55,7 @@
             // endGameButton
             // 
             this.endGameButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.endGameButton.FlatAppearance.BorderColor = System.Drawing.SystemColors.ActiveBorder;
             this.endGameButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.endGameButton.Location = new System.Drawing.Point(120, 40);
             this.endGameButton.Name = "endGameButton";
@@ -73,6 +74,17 @@
             this.toolStrip1.Size = new System.Drawing.Size(284, 25);
             this.toolStrip1.TabIndex = 2;
             this.toolStrip1.Text = "toolStrip1";
+            // 
+            // flagCounterLabel
+            // 
+            this.flagCounterLabel.AutoSize = true;
+            this.flagCounterLabel.Font = new System.Drawing.Font("Modern No. 20", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.flagCounterLabel.ForeColor = System.Drawing.Color.Red;
+            this.flagCounterLabel.Location = new System.Drawing.Point(195, 44);
+            this.flagCounterLabel.Name = "flagCounterLabel";
+            this.flagCounterLabel.Size = new System.Drawing.Size(25, 29);
+            this.flagCounterLabel.TabIndex = 3;
+            this.flagCounterLabel.Text = "0";
             // 
             // gameDropDownButton
             // 
@@ -116,17 +128,6 @@
             this.statsButton.Name = "statsButton";
             this.statsButton.Size = new System.Drawing.Size(36, 22);
             this.statsButton.Text = "Stats";
-            // 
-            // flagCounterLabel
-            // 
-            this.flagCounterLabel.AutoSize = true;
-            this.flagCounterLabel.Font = new System.Drawing.Font("Modern No. 20", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.flagCounterLabel.ForeColor = System.Drawing.Color.Red;
-            this.flagCounterLabel.Location = new System.Drawing.Point(195, 44);
-            this.flagCounterLabel.Name = "flagCounterLabel";
-            this.flagCounterLabel.Size = new System.Drawing.Size(25, 29);
-            this.flagCounterLabel.TabIndex = 3;
-            this.flagCounterLabel.Text = "0";
             // 
             // revealAllButton
             // 
