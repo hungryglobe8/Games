@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace Engine
 {
+    /// <summary>
+    /// This class contains all of the logic for a MineSweeper field and 
+    /// interactions between armed and nonarmed pieces.
+    /// </summary>
     public class Field
     {
         #region Properties

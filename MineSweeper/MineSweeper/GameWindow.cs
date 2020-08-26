@@ -11,6 +11,7 @@ namespace MineSweeper
         private Field field;
         private readonly Dictionary<Tile, MineSweeperButton> connections = new Dictionary<Tile, MineSweeperButton>();
 
+        #region Constructor
         public GameWindow(string gameSize)
         {
             InitializeComponent();
@@ -64,6 +65,8 @@ namespace MineSweeper
             ClientSize = new System.Drawing.Size(gamePanel.Size.Width + 60, gamePanel.Size.Height + 100);
             // End game button centered over game panel.
             Point topButton = new Point(gamePanel.Size.Width / 2 + 10, 35);
+            endGameButton.Image = Image.FromFile("../../Images/normal.png");
+
             endGameButton.Location = topButton;
             // Set flag label and right position.
             flagCounterLabel.Text = field.NumFlags.ToString();
@@ -87,7 +90,14 @@ namespace MineSweeper
                 }
             }
         }
+        #endregion
 
+        #region Mouse Controls
+        /// <summary>
+        /// Event handler for when the user lifts the mouse button.
+        /// If it is left, reveal the tile (possibly ending the game).
+        /// If it is right, try to flag or unflag a tile.
+        /// </summary>
         private void Button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             MineSweeperButton button = (MineSweeperButton)sender;
@@ -116,7 +126,7 @@ namespace MineSweeper
 
                     // If all tiles have been revealed, win game.
                     if (field.FoundAllNormalTiles)
-                        MessageBox.Show("YOU WIN!!");
+                        GameOver();
 
                     return;
                 }
@@ -148,90 +158,8 @@ namespace MineSweeper
         /// Do nothing if the user clicks on a button with its functionality removed.
         /// </summary>
         private void RemoveFunctionality(Button button) => button.MouseUp -= Button_MouseUp;
-
-        /// <summary>
-        /// Reveal all mines or tiles and disable the game.
-        /// Reveal all tiles if user uses revealAll button (only activated after placing all flags).
-        /// </summary>
-        private void GameOver()
-        {
-            if(field.FoundAllNormalTiles)
-                MessageBox.Show("YOU WON!");
-
-            // If no click happened, generate random board.
-            _ = field.Reveal(new Tile());
-
-            // Reveal all mines.
-            foreach (Tile mine in field.GetMines())
-            {
-                mine.LeftClick();
-                connections[mine].ReplaceImage();
-            }
-            // Disable other buttons.
-            foreach (Button button in gamePanel.Controls)
-            {
-                RemoveFunctionality(button);
-            }
-            // End game button reset.
-            endGameButton.Text = "Ended";
-            endGameButton.Click -= EndGameButton_Click;
-            endGameButton.Click += ResetGame_Click;
-
-            // Record user stats (W/L)
-        }
-
-        /// <summary>
-        /// Game is over. Clicking this button again will reset the game in the same window with a new minefield.
-        /// </summary>
-        private void ResetGame_Click(object sender, EventArgs e)
-        {
-            field = new Field(field.Width, field.Height, field.NumMines);
-            //field.PopulateField();
-            // Remove old values.
-            Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
-            gamePanel.Hide();
-            gamePanel = new System.Windows.Forms.TableLayoutPanel
-            {
-                AutoSize = true,
-                Name = "smallGamePanel",
-                Size = new System.Drawing.Size(200, 100),
-                TabIndex = 0
-            };
-            gamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
-            gamePanel.Location = new System.Drawing.Point(30, 85);
-            Controls.Add(gamePanel);
-
-            CreateBoard(field);
-
-            // End game button reset.
-            endGameButton.Text = "smilyimg";
-            endGameButton.Click -= ResetGame_Click;
-            endGameButton.Click += EndGameButton_Click;
-
-            // RevealAll reset.
-            revealAllBorder.Hide();
-            revealAllButton.Hide();
-        }
-
-        /// <summary>
-        /// User chooses to end game by pressing top button.
-        /// </summary>
-        private void EndGameButton_Click(object sender, EventArgs e) => GameOver();
-
-        /// <summary>
-        /// Reveal all unflagged tiles. Ends the game one way or another.
-        /// </summary>
-        private void RevealAllButton_Click(object sender, EventArgs e)
-        {
-            // Reveal all unflagged tiles.
-            foreach (Tile tile in field.GetTiles())
-            {
-                field.Reveal(tile);
-                connections[tile].ReplaceImage();
-            }
-            GameOver();
-        }
-
+        #endregion
+        
         #region Toolbar
         /// <summary>
         /// Toolbar buttons start a new game or show stats.
@@ -252,6 +180,89 @@ namespace MineSweeper
             Hide();
         }
 
+        #endregion
+        
+        #region Game Ending Buttons
+        /// <summary>
+        /// Reveal all unflagged tiles. Ends the game one way or another.
+        /// </summary>
+        private void RevealAllButton_Click(object sender, EventArgs e)
+        {
+            // Reveal all unflagged tiles.
+            foreach (Tile tile in field.GetTiles())
+            {
+                field.Reveal(tile);
+                connections[tile].ReplaceImage();
+            }
+            GameOver();
+        }
+
+        /// <summary>
+        /// User chooses to end game by pressing top button.
+        /// </summary>
+        private void EndGameButton_Click(object sender, EventArgs e) => GameOver();
+
+        /// <summary>
+        /// Game is over. Clicking top middle button again will reset the game in the same window with a new minefield.
+        /// TODO: VERY SLOW how to speed up??
+        /// </summary>
+        private void ResetGame_Click(object sender, EventArgs e)
+        {
+            // Remove old values.
+            Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
+            gamePanel.Controls.Clear();
+
+            // Make new board with same dimensions.
+            field = new Field(field.Width, field.Height, field.NumMines);
+            CreateBoard(field);
+
+            // End game button reset.
+            endGameButton.Click -= ResetGame_Click;
+            endGameButton.Click += EndGameButton_Click;
+
+            // RevealAll reset.
+            revealAllBorder.Hide();
+            revealAllButton.Hide();
+        }
+        #endregion
+
+        #region End Game
+        /// <summary>
+        /// Reveal all mines or tiles and disable the game.
+        /// Reveal all tiles if user uses revealAll button (only activated after placing all flags).
+        /// </summary>
+        private void GameOver()
+        {
+            //win
+            if (field.FoundAllNormalTiles)
+                MessageBox.Show("YOU WON!");
+            //loss
+            else
+            {
+                endGameButton.Image = Image.FromFile("../../Images/Dead.png");
+
+                // If no click happened, generate random board.
+                _ = field.Reveal(new Tile());
+
+                // Reveal all mines.
+                foreach (Tile mine in field.GetMines())
+                {
+                    mine.LeftClick();
+                    connections[mine].ReplaceImage();
+                }
+            }
+            // Disable other buttons.
+            foreach (Button button in gamePanel.Controls)
+            {
+                RemoveFunctionality(button);
+            }
+            // End game button reset.
+            endGameButton.Text = "Ended";
+            endGameButton.Click -= EndGameButton_Click;
+            endGameButton.Click += ResetGame_Click;
+
+            // Record user stats (W/L)
+        }
         #endregion
 
         #region Exit Program

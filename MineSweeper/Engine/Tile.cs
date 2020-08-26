@@ -61,27 +61,10 @@
         public void LeftClick()
         {
             if (state == State.Flagged || state == State.Revealed)
-            {
                 return;
-            }
+            //reveal
             else
-            {
-                //reveal
                 state = State.Revealed;
-                //bomb
-                if (IsArmed)
-                {
-                    //GameOver();
-                    //button.Image = Image.FromFile("../../Images/Bomb.bmp");
-                }
-                //number
-                else
-                {
-                    //int danger = GetDanger();
-                    //button.Text = danger.ToString();
-                    //button.ForeColor = colors[danger];
-                }
-            }
         }
 
         /// <summary>

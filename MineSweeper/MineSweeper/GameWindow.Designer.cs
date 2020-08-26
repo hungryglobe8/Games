@@ -55,11 +55,11 @@
             // endGameButton
             // 
             this.endGameButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
+            this.endGameButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.endGameButton.Location = new System.Drawing.Point(120, 40);
             this.endGameButton.Name = "endGameButton";
             this.endGameButton.Size = new System.Drawing.Size(40, 40);
             this.endGameButton.TabIndex = 1;
-            this.endGameButton.Text = "smilyimg";
             this.endGameButton.UseVisualStyleBackColor = true;
             this.endGameButton.Click += new System.EventHandler(this.EndGameButton_Click);
             // 
