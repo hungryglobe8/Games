@@ -17,7 +17,7 @@ namespace Engine
         private readonly Tile[,] tiles;
         // Store mines.
         private readonly IList<Tile> mines;
-        private bool firstClick = false;
+        public bool firstClick = false;
 
         public int NumMines { private set; get; }
         public int NumFlags { private set; get; }
@@ -132,14 +132,15 @@ namespace Engine
         /// <param name="revealedTiles">collection of revealed tiles</param>
         private void Reveal(Tile tile, ISet<Tile> revealedTiles)
         {
+            // Only reveal an unopened tile.
             if (tile.state != State.Unopened)
-            {
                 return;
-            }
 
             tile.LeftClick();
             revealedTiles.Add(tile);
-            NumRevealed++;
+            // Add to numRevealed if normal tile.
+            if (!tile.IsArmed)
+                NumRevealed++;
 
             // Recursively find all neighbors of 0 danger tiles.
             if (tile.GetDanger() == 0)

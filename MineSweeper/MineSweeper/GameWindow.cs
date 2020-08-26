@@ -142,11 +142,13 @@ namespace MineSweeper
                 {
                     revealAllButton.Show();
                     revealAllBorder.Show();
+                    endGameButton.Image = Image.FromFile("../../Images/Worried.png");
                 }
                 else
                 {
                     revealAllButton.Hide();
                     revealAllBorder.Hide();
+                    endGameButton.Image = Image.FromFile("../../Images/normal.png");
                 }
             }
 
@@ -235,19 +237,23 @@ namespace MineSweeper
         {
             //win
             if (field.FoundAllNormalTiles)
+            {
                 MessageBox.Show("YOU WON!");
+                endGameButton.Image = Image.FromFile("../../Images/Cool.png");
+            }
             //loss
             else
             {
                 endGameButton.Image = Image.FromFile("../../Images/Dead.png");
 
                 // If no click happened, generate random board.
-                _ = field.Reveal(new Tile());
+                if (!field.firstClick)
+                    field.PopulateField();
 
                 // Reveal all mines.
                 foreach (Tile mine in field.GetMines())
                 {
-                    mine.LeftClick();
+                    field.Reveal(mine);
                     connections[mine].ReplaceImage();
                 }
             }
@@ -257,7 +263,6 @@ namespace MineSweeper
                 RemoveFunctionality(button);
             }
             // End game button reset.
-            endGameButton.Text = "Ended";
             endGameButton.Click -= EndGameButton_Click;
             endGameButton.Click += ResetGame_Click;
 
