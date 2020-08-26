@@ -11,8 +11,7 @@ namespace MineSweeper
     public partial class GameWindow : Form
     {
         private Field field;
-        private Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
-        private Dictionary<Button, Tile> b_connections = new Dictionary<Button, Tile>();
+        private Dictionary<Tile, MineSweeperButton> connections = new Dictionary<Tile, MineSweeperButton>();
         private bool firstClick = false;
 
         public GameWindow(string gameSize)
@@ -60,9 +59,9 @@ namespace MineSweeper
             // Add cols and rows.
             for (int i = 0; i < numCols; i++)
                 this.gamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
-            
             for (int i = 0; i < numRows; i++)
                 this.gamePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
+
             // Resize game window to fit game panel.
             this.gamePanel.Size = new System.Drawing.Size(numCols * 20, numRows * 20);
             this.ClientSize = new System.Drawing.Size(gamePanel.Size.Width + 60, gamePanel.Size.Height + 100);
@@ -83,23 +82,19 @@ namespace MineSweeper
                 {
                     // Add a new connection.
                     Tile tile = field.GetTile(x, y);
-                    Button button = new Button();
+                    MineSweeperButton button = new MineSweeperButton(tile);
                     connections.Add(tile, button);
-                    b_connections.Add(button, tile);
 
                     gamePanel.Controls.Add(button, x, y);
-                    button.Dock = DockStyle.Fill;
-                    //button.MouseUp += (sender, e) => Button_MouseUp(sender, e, tile);
                     button.MouseUp += Button_MouseUp;
-                    button.Margin = new Padding(0);
                 }
             }
         }
 
         private void Button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            var button = (Button)sender;
-            var tile = b_connections[button];
+            MineSweeperButton button = (MineSweeperButton)sender;
+            Tile tile = button.Tile;
             // double click
             //TODO
             //left click
@@ -115,7 +110,7 @@ namespace MineSweeper
                 tile.LeftClick();
                 if (tile.state == State.Revealed)
                 {
-                    RemoveFunctionality(tile);
+                    RemoveFunctionality(button);
                     // End game.
                     if (tile.IsArmed)
                     {
@@ -154,60 +149,13 @@ namespace MineSweeper
                 }
             }
 
-            ReplaceImage(button, tile);
+            button.ReplaceImage();
         }
 
         /// <summary>
         /// Do nothing if the user clicks on a button with its functionality removed.
         /// </summary>
-        private void RemoveFunctionality(Tile tile)
-        {
-            Button button = connections[tile];
-            button.MouseUp -= Button_MouseUp;
-        }
-
-        /// <summary>
-        /// Change the graphics of a given tile based on its state.
-        /// </summary>
-        /// <param name="tile"></param>
-        private void ReplaceImage(Button button, Tile tile)
-        {
-            switch (tile.state)
-            {
-                case State.Revealed:
-                    if (tile.IsArmed)
-                        button.Image = Image.FromFile("../../Images/Bomb.bmp");
-                    else
-                    {
-                        var colors = new Dictionary<int, Color>(){
-                            {0, Color.Black },
-                            {1, Color.Blue },
-                            {2, Color.Green },
-                            {3, Color.OrangeRed },
-                            {4, Color.BlueViolet },
-                            {5, Color.Brown },
-                            {6, Color.Teal },
-                            {7, Color.Red },
-                            {8, Color.Blue }
-                        };
-                        int danger = tile.GetDanger();
-                        button.Text = danger.ToString();
-                        button.ForeColor = colors[danger];
-                    }
-                    break;
-
-                case State.Flagged:
-                    button.Image = Image.FromFile("../../Images/Flag.bmp");
-                    break;
-
-                case State.Unopened:
-                    button.Image = null;
-                    break;
-
-                default:
-                    throw new Exception("Invalid state.");
-            }
-        }
+        private void RemoveFunctionality(Button button) => button.MouseUp -= Button_MouseUp;
 
         /// <summary>
         /// Reveal all mines or tiles and disable the game.
@@ -215,27 +163,35 @@ namespace MineSweeper
         /// </summary>
         private void GameOver(bool revealAll)
         {
+            // If no click happened, generate random board.
+            if (!firstClick)
+            {
+                field.PopulateField(field.GetTile(0, 0));
+                firstClick = true;
+            }
+
+            // Reveal all tiles.
             if (revealAll)
             {
                 foreach (Tile tile in field.GetTiles())
                 {
                     tile.LeftClick();
-                    ReplaceImage(connections[tile], tile);
+                    connections[tile].ReplaceImage();
                 }
             }
-            //just bombs
+            // Reveal all mines.
             else
             {
                 foreach (Tile mine in field.GetMines())
                 {
                     mine.LeftClick();
-                    ReplaceImage(connections[mine], mine);
+                    connections[mine].ReplaceImage();
                 }
             }
             // Disable other buttons.
-            foreach (Tile tile in field.GetTiles())
+            foreach (Button button in gamePanel.Controls)
             {
-                RemoveFunctionality(tile);
+                RemoveFunctionality(button);
             }
             // End game button reset.
             endGameButton.Text = "Ended";
