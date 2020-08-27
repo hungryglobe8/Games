@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Engine
 {
@@ -22,7 +24,7 @@ namespace Engine
         public bool firstClick = false;
 
         public int NumMines { private set; get; }
-        public int NumFlags { private set; get; }
+        public int NumFlagsLeft { private set; get; }
         public int NumRevealed { private set; get; }
         // Returns true when all normal tiles have been revealed.
         public bool FoundAllNormalTiles => NumRevealed == (Width * Height) - NumMines;
@@ -40,6 +42,7 @@ namespace Engine
             Width = width;
             Height = height;
             tiles = new Tile[width, height];
+            neighbors = new Dictionary<Tile, IList<Tile>>();
             // Populate tiles.
             for (int x = 0; x < tiles.GetLength(0); x++)
             {
@@ -47,12 +50,14 @@ namespace Engine
                 {
                     Tile tile = new Tile(x, y);
                     tiles[x, y] = tile;
-                    //neighbors[tile]
+                    // Add neighbor relationships.
+                    neighbors.Add(tile, new List<Tile>());
+                    AddNeighbors(tile);
                 }
             }
             mines = new List<Tile>();
             NumMines = _numMines;
-            NumFlags = NumMines;
+            NumFlagsLeft = NumMines;
             NumRevealed = 0;
         }
         #endregion
@@ -148,8 +153,7 @@ namespace Engine
             // Recursively find all neighbors of 0 danger tiles.
             if (tile.GetDanger() == 0)
             {
-                IList<Tile> neighbors = GetNeighbors(tile);
-                foreach (Tile neighbor in neighbors)
+                foreach (Tile neighbor in GetNeighbors(tile))
                 {
                     // Only reveal tiles that haven't been opened yet (to prevent infinite loop).
                     if (neighbor.state == State.Unopened)
@@ -169,58 +173,54 @@ namespace Engine
             // Update number of flags.
             tile.RightClick();
             if (tile.state == State.Flagged)
-                NumFlags--;
+                NumFlagsLeft--;
             else if (tile.state == State.Unopened)
-                NumFlags++;
+                NumFlagsLeft++;
             // If no more flags available, undo right click.
-            if (NumFlags < 0)
+            if (NumFlagsLeft < 0)
             {
-                NumFlags++;
+                NumFlagsLeft++;
                 tile.RightClick();
             }
         }
         #endregion
-        
+
         #region Neighbors
         /// <summary>
-        /// Get a list of neighbors for a given tile.
+        /// Add left, top, and diagonal neighbor relationships.
         /// </summary>
-        public IList<Tile> GetNeighbors(Tile tile)
+        private void AddNeighbors(Tile tile)
         {
             int x = tile.X;
             int y = tile.Y;
 
-            IList<Tile> neighbors = new List<Tile>();
-            int lowX = x - 1;
-            int lowY = y - 1;
-            int highX = x + 1;
-            int highY = y + 1;
-            //bottom left
-            if (lowX >= 0 && lowY >= 0)
-                neighbors.Add(tiles[lowX, lowY]);
-            //bottom middle
-            if (lowY >= 0)
-                neighbors.Add(tiles[x, lowY]);
-            //bottom right
-            if (highX < tiles.GetLength(0) && lowY >= 0)
-                neighbors.Add(tiles[highX, lowY]);
-            //middle left
-            if (lowX >= 0)
-                neighbors.Add(tiles[lowX, y]);
-            //middle right
-            if (highX < tiles.GetLength(0))
-                neighbors.Add(tiles[highX, y]);
-            //top left
-            if (lowX >= 0 && highY < tiles.GetLength(1))
-                neighbors.Add(tiles[lowX, highY]);
-            //top middle
-            if (highY < tiles.GetLength(1))
-                neighbors.Add(tiles[x, highY]);
-            //top right
-            if (highX < tiles.GetLength(0) && highY < tiles.GetLength(1))
-                neighbors.Add(tiles[highX, highY]);
-            return neighbors;
+            //left
+            if (x - 1 >= 0)
+                AddNeighbor(tile, GetTile(x - 1, y));
+            //top
+            if (y - 1 >= 0)
+                AddNeighbor(tile, GetTile(x, y - 1));
+            //top left diagonal
+            if (x - 1 >= 0 && y - 1 >= 0)
+                AddNeighbor(tile, GetTile(x - 1, y - 1));
+            //bottom left diagonal
+            if (x - 1 >= 0 && y + 1 < tiles.GetLength(1))
+                AddNeighbor(tile, GetTile(x - 1, y + 1));
         }
+
+        /// <summary>
+        /// Add a single neighbor relationship between two tiles.
+        /// </summary>
+        private void AddNeighbor(Tile t1, Tile t2)
+        {
+            neighbors[t1].Add(t2);
+            neighbors[t2].Add(t1);
+        }
+
+        /// <summary>
+        /// Get a list of neighbors for a given tile.
+        /// </summary>
+        public IList<Tile> GetNeighbors(Tile tile) => neighbors[tile];
         #endregion
 
         #region Getters

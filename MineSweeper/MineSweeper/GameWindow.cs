@@ -69,7 +69,7 @@ namespace MineSweeper
 
             endGameButton.Location = topButton;
             // Set flag label and right position.
-            flagCounterLabel.Text = field.NumFlags.ToString();
+            flagCounterLabel.Text = field.NumFlagsLeft.ToString();
             flagCounterLabel.Location = Point.Add(topButton, new Size(60, 5));
             // Reveal all button left position.
             revealAllButton.Location = Point.Subtract(topButton, new Size(50, -5));
@@ -135,10 +135,10 @@ namespace MineSweeper
             else if (e.Button == MouseButtons.Right)
             {
                 field.Flag(tile);
-                flagCounterLabel.Text = field.NumFlags.ToString();
+                flagCounterLabel.Text = field.NumFlagsLeft.ToString();
 
                 // Show game end button.
-                if (field.NumFlags == 0)
+                if (field.NumFlagsLeft == 0)
                 {
                     revealAllButton.Show();
                     revealAllBorder.Show();
