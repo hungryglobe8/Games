@@ -17,6 +17,8 @@ namespace Engine
         private readonly Tile[,] tiles;
         // Store mines.
         private readonly IList<Tile> mines;
+        // Store neighbors.
+        private readonly IDictionary<Tile, IList<Tile>> neighbors;
         public bool firstClick = false;
 
         public int NumMines { private set; get; }
@@ -43,8 +45,9 @@ namespace Engine
             {
                 for (int y = 0; y < tiles.GetLength(1); y++)
                 {
-                    if (tiles[x, y] == null)
-                        tiles[x, y] = new Tile(x, y);
+                    Tile tile = new Tile(x, y);
+                    tiles[x, y] = tile;
+                    //neighbors[tile]
                 }
             }
             mines = new List<Tile>();
