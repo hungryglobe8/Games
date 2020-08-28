@@ -19,6 +19,9 @@ namespace MineSweeper
         {
             InitializeComponent();
             CalculatePercentages();
+            resetSmallButton.ImageIndex = 0;
+            resetMediumButton.ImageIndex = 0;
+            resetLargeButton.ImageIndex = 0;
         }
 
         /// <summary>
@@ -35,17 +38,37 @@ namespace MineSweeper
 
             foreach ((int numWins, int numLoss, Label label) in groups)
             {
-                // Catch divide by zero exception.
-                try
-                {
-                    double res = (double)numWins / (numWins + numLoss);
-                    label.Text = res.ToString();
-                }
-                catch
-                {
-                    smallPercentage.Text = "-";
-                }
+                // Handle division by zero.
+                double res = (double)numWins / (numWins + numLoss);
+                if (res.Equals(double.NaN))
+                    label.Text = "-";
+                else
+                    label.Text = res.ToString("p");
             }
+        }
+
+        private void ResetSmallButton_Click(object sender, EventArgs e)
+        {
+            Settings.Default.SmallWinsData = 0;
+            Settings.Default.SmallLossData = 0;
+            Settings.Default.Save();
+            CalculatePercentages();
+        }
+
+        private void ResetMediumButton_Click(object sender, EventArgs e)
+        {
+            Settings.Default.MediumLossData = 0;
+            Settings.Default.MediumWinsData = 0;
+            Settings.Default.Save();
+            CalculatePercentages();
+        }
+
+        private void ResetLargeButton_Click(object sender, EventArgs e)
+        {
+            Settings.Default.LargeLossData = 0;
+            Settings.Default.LargeWinsData = 0;
+            Settings.Default.Save();
+            CalculatePercentages();
         }
     }
 }

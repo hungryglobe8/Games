@@ -28,14 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StatsForm));
             this.panel1 = new System.Windows.Forms.Panel();
             this.largeGroupBox = new System.Windows.Forms.GroupBox();
+            this.resetLargeButton = new System.Windows.Forms.Button();
+            this.images = new System.Windows.Forms.ImageList(this.components);
             this.largePercentage = new System.Windows.Forms.Label();
             this.largePercentageLabel = new System.Windows.Forms.Label();
+            this.largeLossCounter = new System.Windows.Forms.Label();
             this.largeWinsCounter = new System.Windows.Forms.Label();
             this.largeLossLabel = new System.Windows.Forms.Label();
             this.largeWinLabel = new System.Windows.Forms.Label();
             this.mediumGroupBox = new System.Windows.Forms.GroupBox();
+            this.resetMediumButton = new System.Windows.Forms.Button();
             this.mediumPercentage = new System.Windows.Forms.Label();
             this.mediumPercentageLabel = new System.Windows.Forms.Label();
             this.mediumLossCounter = new System.Windows.Forms.Label();
@@ -43,13 +49,13 @@
             this.mediumLossLabel = new System.Windows.Forms.Label();
             this.mediumWinLabel = new System.Windows.Forms.Label();
             this.smallGroupBox = new System.Windows.Forms.GroupBox();
+            this.resetSmallButton = new System.Windows.Forms.Button();
             this.smallPercentage = new System.Windows.Forms.Label();
             this.smallPercentageLabel = new System.Windows.Forms.Label();
             this.smallLossCounter = new System.Windows.Forms.Label();
             this.smallWinsCounter = new System.Windows.Forms.Label();
             this.smallLossLabel = new System.Windows.Forms.Label();
             this.smallWinLabel = new System.Windows.Forms.Label();
-            this.largeLossCounter = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.largeGroupBox.SuspendLayout();
             this.mediumGroupBox.SuspendLayout();
@@ -69,6 +75,7 @@
             // largeGroupBox
             // 
             this.largeGroupBox.BackColor = System.Drawing.Color.DarkCyan;
+            this.largeGroupBox.Controls.Add(this.resetLargeButton);
             this.largeGroupBox.Controls.Add(this.largePercentage);
             this.largeGroupBox.Controls.Add(this.largePercentageLabel);
             this.largeGroupBox.Controls.Add(this.largeLossCounter);
@@ -82,6 +89,23 @@
             this.largeGroupBox.TabIndex = 6;
             this.largeGroupBox.TabStop = false;
             this.largeGroupBox.Text = "large";
+            // 
+            // resetLargeButton
+            // 
+            this.resetLargeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.resetLargeButton.ImageList = this.images;
+            this.resetLargeButton.Location = new System.Drawing.Point(177, 21);
+            this.resetLargeButton.Name = "resetLargeButton";
+            this.resetLargeButton.Size = new System.Drawing.Size(40, 40);
+            this.resetLargeButton.TabIndex = 8;
+            this.resetLargeButton.UseVisualStyleBackColor = true;
+            this.resetLargeButton.Click += new System.EventHandler(this.ResetLargeButton_Click);
+            // 
+            // images
+            // 
+            this.images.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("images.ImageStream")));
+            this.images.TransparentColor = System.Drawing.Color.White;
+            this.images.Images.SetKeyName(0, "Bomb.png");
             // 
             // largePercentage
             // 
@@ -102,6 +126,17 @@
             this.largePercentageLabel.Size = new System.Drawing.Size(66, 13);
             this.largePercentageLabel.TabIndex = 4;
             this.largePercentageLabel.Text = "Percentage:";
+            // 
+            // largeLossCounter
+            // 
+            this.largeLossCounter.AutoSize = true;
+            this.largeLossCounter.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::MineSweeper.Properties.Settings.Default, "LargeLossData", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
+            this.largeLossCounter.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.largeLossCounter.Location = new System.Drawing.Point(80, 34);
+            this.largeLossCounter.Name = "largeLossCounter";
+            this.largeLossCounter.Size = new System.Drawing.Size(13, 13);
+            this.largeLossCounter.TabIndex = 3;
+            this.largeLossCounter.Text = "0";
             // 
             // largeWinsCounter
             // 
@@ -137,6 +172,7 @@
             // mediumGroupBox
             // 
             this.mediumGroupBox.BackColor = System.Drawing.Color.Cyan;
+            this.mediumGroupBox.Controls.Add(this.resetMediumButton);
             this.mediumGroupBox.Controls.Add(this.mediumPercentage);
             this.mediumGroupBox.Controls.Add(this.mediumPercentageLabel);
             this.mediumGroupBox.Controls.Add(this.mediumLossCounter);
@@ -150,6 +186,17 @@
             this.mediumGroupBox.TabIndex = 6;
             this.mediumGroupBox.TabStop = false;
             this.mediumGroupBox.Text = "medium";
+            // 
+            // resetMediumButton
+            // 
+            this.resetMediumButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.resetMediumButton.ImageList = this.images;
+            this.resetMediumButton.Location = new System.Drawing.Point(177, 21);
+            this.resetMediumButton.Name = "resetMediumButton";
+            this.resetMediumButton.Size = new System.Drawing.Size(40, 40);
+            this.resetMediumButton.TabIndex = 7;
+            this.resetMediumButton.UseVisualStyleBackColor = true;
+            this.resetMediumButton.Click += new System.EventHandler(this.ResetMediumButton_Click);
             // 
             // mediumPercentage
             // 
@@ -216,6 +263,7 @@
             // smallGroupBox
             // 
             this.smallGroupBox.BackColor = System.Drawing.Color.PaleTurquoise;
+            this.smallGroupBox.Controls.Add(this.resetSmallButton);
             this.smallGroupBox.Controls.Add(this.smallPercentage);
             this.smallGroupBox.Controls.Add(this.smallPercentageLabel);
             this.smallGroupBox.Controls.Add(this.smallLossCounter);
@@ -229,6 +277,17 @@
             this.smallGroupBox.TabIndex = 4;
             this.smallGroupBox.TabStop = false;
             this.smallGroupBox.Text = "small";
+            // 
+            // resetSmallButton
+            // 
+            this.resetSmallButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.resetSmallButton.ImageList = this.images;
+            this.resetSmallButton.Location = new System.Drawing.Point(177, 21);
+            this.resetSmallButton.Name = "resetSmallButton";
+            this.resetSmallButton.Size = new System.Drawing.Size(40, 40);
+            this.resetSmallButton.TabIndex = 6;
+            this.resetSmallButton.UseVisualStyleBackColor = true;
+            this.resetSmallButton.Click += new System.EventHandler(this.ResetSmallButton_Click);
             // 
             // smallPercentage
             // 
@@ -292,17 +351,6 @@
             this.smallWinLabel.TabIndex = 0;
             this.smallWinLabel.Text = "Wins:";
             // 
-            // largeLossCounter
-            // 
-            this.largeLossCounter.AutoSize = true;
-            this.largeLossCounter.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::MineSweeper.Properties.Settings.Default, "LargeLossData", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
-            this.largeLossCounter.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.largeLossCounter.Location = new System.Drawing.Point(80, 34);
-            this.largeLossCounter.Name = "largeLossCounter";
-            this.largeLossCounter.Size = new System.Drawing.Size(13, 13);
-            this.largeLossCounter.TabIndex = 3;
-            this.largeLossCounter.Text = "0";
-            // 
             // StatsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -347,5 +395,9 @@
         private System.Windows.Forms.Label mediumLossLabel;
         private System.Windows.Forms.Label mediumWinLabel;
         private System.Windows.Forms.Label largeLossCounter;
+        private System.Windows.Forms.Button resetLargeButton;
+        private System.Windows.Forms.Button resetMediumButton;
+        private System.Windows.Forms.Button resetSmallButton;
+        private System.Windows.Forms.ImageList images;
     }
 }
