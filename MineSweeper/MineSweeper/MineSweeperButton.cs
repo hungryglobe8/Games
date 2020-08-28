@@ -6,6 +6,11 @@ using System.Windows.Forms;
 
 namespace MineSweeper
 {
+    /// <summary>
+    /// A minesweeper button links a button in windows forms to the logic of a tile.
+    /// This class focuses some of the more button-specific interactions away from the GameWindow.
+    /// Ideally it would do even more (events).
+    /// </summary>
     public class MineSweeperButton : Button
     {
         public MineSweeperButton(Tile tile)

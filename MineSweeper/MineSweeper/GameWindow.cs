@@ -1,4 +1,5 @@
 ﻿using Engine;
+using MineSweeper.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -6,10 +7,13 @@ using System.Windows.Forms;
 
 namespace MineSweeper
 {
+    public enum GameSize { small, medium, large };
+
     public partial class GameWindow : Form
     {
         private Field field;
         private readonly Dictionary<Tile, MineSweeperButton> connections = new Dictionary<Tile, MineSweeperButton>();
+        private readonly GameSize size;
 
         #region Constructor
         public GameWindow(string gameSize)
@@ -23,16 +27,19 @@ namespace MineSweeper
                     x = 8;
                     y = 8;
                     numMines = 10;
+                    size = GameSize.small;
                     break;
                 case "medium":
                     x = 16;
                     y = 16;
                     numMines = 40;
+                    size = GameSize.medium;
                     break;
                 case "large":
                     x = 30;
                     y = 16;
                     numMines = 99;
+                    size = GameSize.large;
                     break;
                 default:
                     throw new Exception("Game Size is not valid");
@@ -66,7 +73,6 @@ namespace MineSweeper
             // End game button centered over game panel.
             Point topButton = new Point(gamePanel.Size.Width / 2 + 10, 35);
             endGameButton.Image = Image.FromFile("../../Images/normal.png");
-
             endGameButton.Location = topButton;
             // Set flag label and right position.
             flagCounterLabel.Text = field.NumFlagsLeft.ToString();
@@ -169,6 +175,7 @@ namespace MineSweeper
         private void SmallToolStripMenuItem_Click(object sender, EventArgs e) => MakeNewGameCloseOld("small");
         private void MediumToolStripMenuItem_Click(object sender, EventArgs e) => MakeNewGameCloseOld("medium");
         private void LargeToolStripMenuItem_Click(object sender, EventArgs e) => MakeNewGameCloseOld("large");
+        private void StatsButton_Click(object sender, EventArgs e) => new StatsForm().Show();
 
         /// <summary>
         /// Make a new game of various sizes. If user has started old game, report it as a loss.
@@ -176,14 +183,21 @@ namespace MineSweeper
         /// <param name="size">new game size</param>
         private void MakeNewGameCloseOld(string size)
         {
-            //if (firstClick)
-            //report loss
+            if (field.firstClick)
+            {
+                // Warn user of loss.
+                DialogResult dialogResult = MessageBox.Show(
+                    "Starting a new game now will result in a loss!\nContinue?", "Start New Game", MessageBoxButtons.YesNo);
+                if (dialogResult == DialogResult.No)
+                    return;
+                //MessageBox.Show()
+                IncreaseLossCounter();
+            }
             new GameWindow(size).Show();
             Hide();
         }
-
         #endregion
-        
+
         #region Game Ending Buttons
         /// <summary>
         /// Reveal all unflagged tiles. Ends the game one way or another.
@@ -230,6 +244,46 @@ namespace MineSweeper
 
         #region End Game
         /// <summary>
+        /// This increases the win counter kept by settings based on the size of the game.
+        /// </summary>
+        private void IncreaseWinCounter()
+        {
+            switch (size)
+            {
+                case GameSize.small:
+                    Settings.Default.SmallWinsData++;
+                    break;
+                case GameSize.medium:
+                    Settings.Default.MediumWinsData++;
+                    break;
+                case GameSize.large:
+                    Settings.Default.LargeWinsData++;
+                    break;
+            }
+            Settings.Default.Save();
+        }
+        
+        /// <summary>
+        /// This increases the loss counter kept by settings based on the size of the game.
+        /// </summary>
+        private void IncreaseLossCounter()
+        {
+            switch (size)
+            {
+                case GameSize.small:
+                    Settings.Default.SmallLossData++;
+                    break;
+                case GameSize.medium:
+                    Settings.Default.MediumLossData++;
+                    break;
+                case GameSize.large:
+                    Settings.Default.LargeLossData++;
+                    break;
+            }
+            Settings.Default.Save();
+        }
+
+        /// <summary>
         /// Reveal all mines or tiles and disable the game.
         /// Reveal all tiles if user uses revealAll button (only activated after placing all flags).
         /// </summary>
@@ -238,24 +292,25 @@ namespace MineSweeper
             //win
             if (field.FoundAllNormalTiles)
             {
-                MessageBox.Show("YOU WON!");
+                // Report win.
+                IncreaseWinCounter();
                 endGameButton.Image = Image.FromFile("../../Images/Cool.png");
             }
             //loss
             else
             {
-                endGameButton.Image = Image.FromFile("../../Images/Dead.png");
-
                 // If no click happened, generate random board.
                 if (!field.firstClick)
                     field.PopulateField();
-
                 // Reveal all mines.
                 foreach (Tile mine in field.GetMines())
                 {
                     field.Reveal(mine);
                     connections[mine].ReplaceImage();
                 }
+                // Report loss.
+                endGameButton.Image = Image.FromFile("../../Images/Dead.png");
+                IncreaseLossCounter();
             }
             // Disable other buttons.
             foreach (Button button in gamePanel.Controls)
@@ -265,8 +320,6 @@ namespace MineSweeper
             // End game button reset.
             endGameButton.Click -= EndGameButton_Click;
             endGameButton.Click += ResetGame_Click;
-
-            // Record user stats (W/L)
         }
         #endregion
 
@@ -276,6 +329,5 @@ namespace MineSweeper
         /// </summary>
         private void GameWindow_FormClosed(object sender, FormClosedEventArgs e) => Application.Exit();
         #endregion
-
     }
 }
