@@ -16,7 +16,11 @@ namespace MineSweeper
         private void StartGame(object sender, EventArgs e)
         {
             Button button = (Button)sender;
-            Form game = new GameWindow(button.Text);
+            var gameSize = button.Text;
+
+            var imageProvider = new CachedImageProvider();
+            Form game = new GameWindow(gameSize, imageProvider);
+
             Hide();
             game.Show();
         }
