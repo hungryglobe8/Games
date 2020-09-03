@@ -5,6 +5,8 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Engine
 {
+    public enum GameSize { small, medium, large };
+
     /// <summary>
     /// This class contains all of the logic for a MineSweeper field and 
     /// interactions between armed and nonarmed pieces.
@@ -245,5 +247,18 @@ namespace Engine
             return res;
         }
         #endregion
+
+        public static Field Create(GameSize size)
+        {
+            switch(size)
+            {
+                case GameSize.small:
+                    return new Field(8, 8, 10);
+                case GameSize.medium:
+                    return new Field(16, 16, 40);
+                default:
+                    return new Field(30, 16, 99);
+            }
+        }
     }
 }

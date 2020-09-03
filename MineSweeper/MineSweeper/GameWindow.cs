@@ -6,44 +6,35 @@ using System.Windows.Forms;
 
 namespace MineSweeper
 {
-    public enum GameSize { small, medium, large };
 
     public partial class GameWindow : Form
     {
         const float BUTTON_SIZE = 20F;
-        private Field field;
-        private readonly Dictionary<Tile, MineSweeperButton> connections = new Dictionary<Tile, MineSweeperButton>();
-        private GameSize size;
+        private Field _field;
+        private readonly Dictionary<Tile, MineSweeperButton> _connections = new Dictionary<Tile, MineSweeperButton>();
+        private readonly IImageProvider _imageProvider;
+        private GameSize _size;
         private StatisticsTracker _tracker = new StatisticsTracker();
 
         #region Constructor
-        public GameWindow(string gameSize)
+        public GameWindow(string gameSize, IImageProvider imageProvider)
         {
             InitializeComponent();
 
-            // Pick one of three sizes of games.
-            switch (gameSize)
+            _imageProvider = imageProvider;
+
+            if (!Enum.TryParse(gameSize, out GameSize size))
             {
-                case "small":
-                    SetupGame(8, 8, 10, GameSize.small);
-                    break;
-                case "medium":
-                    SetupGame(16, 16, 40, GameSize.medium);
-                    break;
-                case "large":
-                    SetupGame(30, 16, 99, GameSize.large);
-                    break;
-                default:
-                    throw new Exception("Game Size is not valid");
-            };
+                throw new ArgumentException($"Invalid game size {gameSize}"); 
+            }
+            _size = size;
+            SetupGame(this._size);
         }
 
-        private void SetupGame(int x, int y, int numMines, GameSize size)
+        private void SetupGame(GameSize size)
         {
-            this.size = size;
-            field = new Field(x, y, numMines);
-
-            CreateBoard(field);
+            _field = Field.Create(size);
+            CreateBoard(_field);
         }
 
         private void CreateBoard(Field field)
@@ -62,22 +53,23 @@ namespace MineSweeper
 
         private void LinkButtonsToTiles(int numCols, int numRows)
         {
-            gamePanel.SuspendLayout();
-            for (int x = 0; x < numCols; x++)
+            FastChangeGamePanel(gp =>
             {
-                for (int y = 0; y < numRows; y++)
+                for (int x = 0; x < numCols; x++)
                 {
-                    // Add a new connection.
-                    Tile tile = field.GetTile(x, y);
-                    MineSweeperButton button = new MineSweeperButton(tile);
-                    connections.Add(tile, button);
+                    for (int y = 0; y < numRows; y++)
+                    {
+                        // Add a new connection.
+                        Tile tile = _field.GetTile(x, y);
+                        MineSweeperButton button = new MineSweeperButton(tile);
+                        _connections.Add(tile, button);
 
-                    gamePanel.Controls.Add(button, x, y);
-                    button.MouseUp += Button_MouseUp;
-                    button.DoubleClick += Button_DoubleClick;
+                        gp.Controls.Add(button, x, y);
+                        button.MouseUp += Button_MouseUp;
+                        button.DoubleClick += Button_DoubleClick;
+                    }
                 }
-            }
-            gamePanel.ResumeLayout();
+            });
         }
 
         private void SetRevealButton(Point topButtonLocation)
@@ -90,7 +82,7 @@ namespace MineSweeper
         private void SetFlagLabel(Point topButtonLocation)
         {
             // Set flag label and right position.
-            flagCounterLabel.Text = field.NumFlagsLeft.ToString();
+            flagCounterLabel.Text = _field.NumFlagsLeft.ToString();
             flagCounterLabel.Location = Point.Add(topButtonLocation, new Size(60, 5));
         }
 
@@ -98,7 +90,7 @@ namespace MineSweeper
         {
             // End game button centered over game panel.
             Point topButtonLocation = new Point(gamePanel.Size.Width / 2 + 10, 35);
-            endGameButton.Image = Image.FromFile("../../Images/normal.png");
+            endGameButton.Image = _imageProvider.GetImage("normal");
             endGameButton.Location = topButtonLocation;
 
             return topButtonLocation;
@@ -106,18 +98,21 @@ namespace MineSweeper
 
         private void MakeGamePanel(int numCols, int numRows)
         {
-            gamePanel.ColumnCount = numCols;
-            gamePanel.RowCount = numRows;
-            // Remove first column.
-            gamePanel.ColumnStyles.RemoveAt(0);
-            // Add cols and rows.
-            for (int i = 0; i < numCols; i++)
-                gamePanel.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, BUTTON_SIZE));
-            for (int i = 0; i < numRows; i++)
-                gamePanel.RowStyles.Add(new RowStyle(SizeType.Absolute, BUTTON_SIZE));
+            FastChangeGamePanel(gp =>
+            {
+                gp.ColumnCount = numCols;
+                gp.RowCount = numRows;
+                // Remove first column.
+                gp.ColumnStyles.RemoveAt(0);
+                // Add cols and rows.
+                for (int i = 0; i < numCols; i++)
+                    gp.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, BUTTON_SIZE));
+                for (int i = 0; i < numRows; i++)
+                    gp.RowStyles.Add(new RowStyle(SizeType.Absolute, BUTTON_SIZE));
 
-            // Resize game window to fit game panel.
-            gamePanel.Size = new Size(numCols * 20, numRows * 20);
+                // Resize game window to fit game panel.
+                gp.Size = new Size(numCols * 20, numRows * 20);
+            });
             ClientSize = new Size(gamePanel.Size.Width + 60, gamePanel.Size.Height + 100);
         }
 
@@ -156,7 +151,7 @@ namespace MineSweeper
         {
             if (tile.state == State.Unopened)
             {
-                var revealedTiles = field.Reveal(tile);
+                var revealedTiles = _field.Reveal(tile);
                 // Lose game.
                 if (tile.IsArmed)
                 {
@@ -166,13 +161,13 @@ namespace MineSweeper
 
                 foreach (Tile t in revealedTiles)
                 {
-                    var neighborButton = connections[t];
+                    var neighborButton = _connections[t];
                     RemoveFunctionality(neighborButton);
                     neighborButton.ReplaceImage();
                 }
 
                 // If all tiles have been revealed, win game.
-                if (field.FoundAllNormalTiles)
+                if (_field.FoundAllNormalTiles)
                     GameOver();
 
                 return;
@@ -181,21 +176,21 @@ namespace MineSweeper
 
         private void HandleRightClick(Tile tile)
         {
-            field.Flag(tile);
-            flagCounterLabel.Text = field.NumFlagsLeft.ToString();
+            _field.Flag(tile);
+            flagCounterLabel.Text = _field.NumFlagsLeft.ToString();
 
             // Show game end button.
-            if (field.NumFlagsLeft == 0)
+            if (_field.NumFlagsLeft == 0)
             {
                 revealAllButton.Show();
                 revealAllBorder.Show();
-                endGameButton.Image = Image.FromFile("../../Images/Worried.png");
+                endGameButton.Image = _imageProvider.GetImage("Worried");
             }
             else
             {
                 revealAllButton.Hide();
                 revealAllBorder.Hide();
-                endGameButton.Image = Image.FromFile("../../Images/normal.png");
+                endGameButton.Image = _imageProvider.GetImage("normal");
             }
         }
 
@@ -225,7 +220,7 @@ namespace MineSweeper
         /// <param name="size">new game size</param>
         private void MakeNewGameCloseOld(string size)
         {
-            if (field.firstClick)
+            if (_field.firstClick)
             {
                 // Warn user of loss.
                 DialogResult dialogResult = MessageBox.Show(
@@ -233,9 +228,12 @@ namespace MineSweeper
                 if (dialogResult == DialogResult.No)
                     return;
                 //MessageBox.Show()
-                _tracker.IncreaseLossCounter(this.size);
+                _tracker.IncreaseLossCounter(this._size);
             }
-            new GameWindow(size).Show();
+            //TODO: spawning a new game window from another game window isn't a great idea,
+            //the old one isn't thrown out of memory just because you Hide it...
+            //probably should just reinitialize the board: SetupGame?
+            new GameWindow(size, _imageProvider).Show();
             Hide();
         }
         #endregion
@@ -247,10 +245,10 @@ namespace MineSweeper
         private void RevealAllButton_Click(object sender, EventArgs e)
         {
             // Reveal all unflagged tiles.
-            foreach (Tile tile in field.GetTiles())
+            foreach (Tile tile in _field.GetTiles())
             {
-                field.Reveal(tile);
-                connections[tile].ReplaceImage();
+                _field.Reveal(tile);
+                _connections[tile].ReplaceImage();
             }
             GameOver();
         }
@@ -268,10 +266,14 @@ namespace MineSweeper
         {
             // Remove old values.
             Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
-            gamePanel.Controls.Clear();
+
+            FastChangeGamePanel(gp =>
+            {
+                gp.Controls.Clear();
+            });
 
             // Make new board with same dimensions.
-            SetupGame(field.Width, field.Height, field.NumMines, size);
+            SetupGame(_size);
 
             // End game button reset.
             endGameButton.Click -= ResetGame_Click;
@@ -280,6 +282,21 @@ namespace MineSweeper
             // RevealAll reset.
             revealAllBorder.Hide();
             revealAllButton.Hide();
+        }
+
+        /// <summary>
+        /// Toggles visibility of gamePanel before performing an expensive action
+        /// </summary>
+        /// <param name="action"></param>
+        private void FastChangeGamePanel(Action<TableLayoutPanel> action)
+        {
+            gamePanel.SuspendLayout();
+            gamePanel.Visible = false;
+
+            action(gamePanel);
+            
+            gamePanel.Visible = true;
+            gamePanel.ResumeLayout();
         }
         #endregion
 
@@ -292,7 +309,7 @@ namespace MineSweeper
         private void GameOver()
         {
             //win
-            if (field.FoundAllNormalTiles)
+            if (_field.FoundAllNormalTiles)
             {
                 ReportWin();
             }
@@ -308,24 +325,24 @@ namespace MineSweeper
 
         private void ReportWin()
         {
-            _tracker.IncreaseWinCounter(size);
-            endGameButton.Image = Image.FromFile("../../Images/Cool.png");
+            _tracker.IncreaseWinCounter(_size);
+            endGameButton.Image = _imageProvider.GetImage("Cool");
         }
 
         private void ReportLoss()
         {
             // If no click happened, generate random board.
-            if (!field.firstClick)
-                field.PopulateField();
+            if (!_field.firstClick)
+                _field.PopulateField();
             // Reveal all mines.
-            foreach (Tile mine in field.GetMines())
+            foreach (Tile mine in _field.GetMines())
             {
-                field.Reveal(mine);
-                connections[mine].ReplaceImage();
+                _field.Reveal(mine);
+                _connections[mine].ReplaceImage();
             }
             // Report loss.
-            endGameButton.Image = Image.FromFile("../../Images/Dead.png");
-            _tracker.IncreaseLossCounter(size);
+            endGameButton.Image = _imageProvider.GetImage("Dead");
+            _tracker.IncreaseLossCounter(_size);
         }
 
         private void DisableButtons()
