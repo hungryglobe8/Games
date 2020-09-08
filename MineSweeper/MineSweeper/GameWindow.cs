@@ -1,5 +1,4 @@
 ﻿using Engine;
-using MineSweeper.Properties;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,95 +6,116 @@ using System.Windows.Forms;
 
 namespace MineSweeper
 {
-    public enum GameSize { small, medium, large };
 
     public partial class GameWindow : Form
     {
-        private Field field;
-        private readonly Dictionary<Tile, MineSweeperButton> connections = new Dictionary<Tile, MineSweeperButton>();
-        private readonly GameSize size;
+        const float BUTTON_SIZE = 20F;
+        private Field _field;
+        private readonly Dictionary<Tile, MineSweeperButton> _connections = new Dictionary<Tile, MineSweeperButton>();
+        private readonly IImageProvider _imageProvider;
+        private GameSize _size;
+        private StatisticsTracker _tracker = new StatisticsTracker();
 
         #region Constructor
-        public GameWindow(string gameSize)
+        public GameWindow(string gameSize, IImageProvider imageProvider)
         {
             InitializeComponent();
-            // Pick one of three sizes of games.
-            int x, y, numMines;
-            switch (gameSize)
-            {
-                case "small":
-                    x = 8;
-                    y = 8;
-                    numMines = 10;
-                    size = GameSize.small;
-                    break;
-                case "medium":
-                    x = 16;
-                    y = 16;
-                    numMines = 40;
-                    size = GameSize.medium;
-                    break;
-                case "large":
-                    x = 30;
-                    y = 16;
-                    numMines = 99;
-                    size = GameSize.large;
-                    break;
-                default:
-                    throw new Exception("Game Size is not valid");
-            };
-            field = new Field(x, y, numMines);
 
-            CreateBoard(field);
+            _imageProvider = imageProvider;
+
+            if (!Enum.TryParse(gameSize, out GameSize size))
+            {
+                throw new ArgumentException($"Invalid game size {gameSize}"); 
+            }
+            _size = size;
+            SetupGame(this._size);
+        }
+
+        private void SetupGame(GameSize size)
+        {
+            _field = Field.Create(size);
+            CreateBoard(_field);
         }
 
         private void CreateBoard(Field field)
         {
             int numCols = field.Width;
             int numRows = field.Height;
-            // 
-            // Make GamePanel
-            // 
-            gamePanel.ColumnCount = numCols;
-            gamePanel.RowCount = numRows;
-            float BUTTON_SIZE = 20F;
-            // Remove first column.
-            gamePanel.ColumnStyles.RemoveAt(0);
-            // Add cols and rows.
-            for (int i = 0; i < numCols; i++)
-                gamePanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
-            for (int i = 0; i < numRows; i++)
-                gamePanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, BUTTON_SIZE));
 
-            // Resize game window to fit game panel.
-            gamePanel.Size = new System.Drawing.Size(numCols * 20, numRows * 20);
-            ClientSize = new System.Drawing.Size(gamePanel.Size.Width + 60, gamePanel.Size.Height + 100);
-            // End game button centered over game panel.
-            Point topButton = new Point(gamePanel.Size.Width / 2 + 10, 35);
-            endGameButton.Image = Image.FromFile("../../Images/normal.png");
-            endGameButton.Location = topButton;
-            // Set flag label and right position.
-            flagCounterLabel.Text = field.NumFlagsLeft.ToString();
-            flagCounterLabel.Location = Point.Add(topButton, new Size(60, 5));
-            // Reveal all button left position.
-            revealAllButton.Location = Point.Subtract(topButton, new Size(50, -5));
-            revealAllBorder.Location = Point.Subtract(topButton, new Size(52, -3));
+            MakeGamePanel(numCols, numRows);
 
-            // Link buttons to tiles.
-            for (int x = 0; x < numCols; x++)
-            {
-                for (int y = 0; y < numRows; y++)
-                {
-                    // Add a new connection.
-                    Tile tile = field.GetTile(x, y);
-                    MineSweeperButton button = new MineSweeperButton(tile);
-                    connections.Add(tile, button);
+            var topButtonLocation = PlaceEndGameButton();
+            SetFlagLabel(topButtonLocation);
+            SetRevealButton(topButtonLocation);
 
-                    gamePanel.Controls.Add(button, x, y);
-                    button.MouseUp += Button_MouseUp;
-                }
-            }
+            LinkButtonsToTiles(numCols, numRows);
         }
+
+        private void LinkButtonsToTiles(int numCols, int numRows)
+        {
+            FastChangeGamePanel(gp =>
+            {
+                for (int x = 0; x < numCols; x++)
+                {
+                    for (int y = 0; y < numRows; y++)
+                    {
+                        // Add a new connection.
+                        Tile tile = _field.GetTile(x, y);
+                        MineSweeperButton button = new MineSweeperButton(tile);
+                        _connections.Add(tile, button);
+
+                        gp.Controls.Add(button, x, y);
+                        button.MouseUp += Button_MouseUp;
+                        button.DoubleClick += Button_DoubleClick;
+                    }
+                }
+            });
+        }
+
+        private void SetRevealButton(Point topButtonLocation)
+        {
+            // Reveal all button left position.
+            revealAllButton.Location = Point.Subtract(topButtonLocation, new Size(50, -5));
+            revealAllBorder.Location = Point.Subtract(topButtonLocation, new Size(52, -3));
+        }
+
+        private void SetFlagLabel(Point topButtonLocation)
+        {
+            // Set flag label and right position.
+            flagCounterLabel.Text = _field.NumFlagsLeft.ToString();
+            flagCounterLabel.Location = Point.Add(topButtonLocation, new Size(60, 5));
+        }
+
+        private Point PlaceEndGameButton()
+        {
+            // End game button centered over game panel.
+            Point topButtonLocation = new Point(gamePanel.Size.Width / 2 + 10, 35);
+            endGameButton.Image = _imageProvider.GetImage("normal");
+            endGameButton.Location = topButtonLocation;
+
+            return topButtonLocation;
+        }
+
+        private void MakeGamePanel(int numCols, int numRows)
+        {
+            FastChangeGamePanel(gp =>
+            {
+                gp.ColumnCount = numCols;
+                gp.RowCount = numRows;
+                // Remove first column.
+                gp.ColumnStyles.RemoveAt(0);
+                // Add cols and rows.
+                for (int i = 0; i < numCols; i++)
+                    gp.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, BUTTON_SIZE));
+                for (int i = 0; i < numRows; i++)
+                    gp.RowStyles.Add(new RowStyle(SizeType.Absolute, BUTTON_SIZE));
+
+                // Resize game window to fit game panel.
+                gp.Size = new Size(numCols * 20, numRows * 20);
+            });
+            ClientSize = new Size(gamePanel.Size.Width + 60, gamePanel.Size.Height + 100);
+        }
+
         #endregion
 
         #region Mouse Controls
@@ -104,70 +124,87 @@ namespace MineSweeper
         /// If it is left, reveal the tile (possibly ending the game).
         /// If it is right, try to flag or unflag a tile.
         /// </summary>
-        private void Button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void Button_MouseUp(object sender, MouseEventArgs e)
         {
             MineSweeperButton button = (MineSweeperButton)sender;
             Tile tile = button.Tile;
             // double click
             //TODO
-            //left click
             if (e.Button == MouseButtons.Left)
             {
-                if (tile.state == State.Unopened)
-                { 
-                    var revealedTiles = field.Reveal(tile);
-                    // Lose game.
-                    if (tile.IsArmed)
-                    {
-                        GameOver();
-                        return;
-                    }
-                    
-                    foreach (Tile t in revealedTiles)
-                    {
-                        var neighborButton = connections[t];
-                        RemoveFunctionality(neighborButton);
-                        neighborButton.ReplaceImage();
-                    }
-
-                    // If all tiles have been revealed, win game.
-                    if (field.FoundAllNormalTiles)
-                        GameOver();
-
-                    return;
-                }
+                HandleLeftClick(tile);
             }
-            //right click
             else if (e.Button == MouseButtons.Right)
             {
-                field.Flag(tile);
-                flagCounterLabel.Text = field.NumFlagsLeft.ToString();
-
-                // Show game end button.
-                if (field.NumFlagsLeft == 0)
-                {
-                    revealAllButton.Show();
-                    revealAllBorder.Show();
-                    endGameButton.Image = Image.FromFile("../../Images/Worried.png");
-                }
-                else
-                {
-                    revealAllButton.Hide();
-                    revealAllBorder.Hide();
-                    endGameButton.Image = Image.FromFile("../../Images/normal.png");
-                }
+                HandleRightClick(tile);
             }
 
             button.ReplaceImage();
+        }
+
+        void Button_DoubleClick(object sender, EventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void HandleLeftClick(Tile tile)
+        {
+            if (tile.state == State.Unopened)
+            {
+                var revealedTiles = _field.Reveal(tile);
+                // Lose game.
+                if (tile.IsArmed)
+                {
+                    GameOver();
+                    return;
+                }
+
+                foreach (Tile t in revealedTiles)
+                {
+                    var neighborButton = _connections[t];
+                    RemoveFunctionality(neighborButton);
+                    neighborButton.ReplaceImage();
+                }
+
+                // If all tiles have been revealed, win game.
+                if (_field.FoundAllNormalTiles)
+                    GameOver();
+
+                return;
+            }
+        }
+
+        private void HandleRightClick(Tile tile)
+        {
+            _field.Flag(tile);
+            flagCounterLabel.Text = _field.NumFlagsLeft.ToString();
+
+            // Show game end button.
+            if (_field.NumFlagsLeft == 0)
+            {
+                revealAllButton.Show();
+                revealAllBorder.Show();
+                endGameButton.Image = _imageProvider.GetImage("Worried");
+            }
+            else
+            {
+                revealAllButton.Hide();
+                revealAllBorder.Hide();
+                endGameButton.Image = _imageProvider.GetImage("normal");
+            }
         }
 
         /// <summary>
         /// Remove event handler from a button.
         /// Do nothing if the user clicks on a button with its functionality removed.
         /// </summary>
-        private void RemoveFunctionality(Button button) => button.MouseUp -= Button_MouseUp;
+        private void RemoveFunctionality(Button button)
+        {
+            button.MouseUp -= Button_MouseUp;
+            button.DoubleClick -= Button_DoubleClick;
+        }
         #endregion
-        
+
         #region Toolbar
         /// <summary>
         /// Toolbar buttons start a new game or show stats.
@@ -183,7 +220,7 @@ namespace MineSweeper
         /// <param name="size">new game size</param>
         private void MakeNewGameCloseOld(string size)
         {
-            if (field.firstClick)
+            if (_field.firstClick)
             {
                 // Warn user of loss.
                 DialogResult dialogResult = MessageBox.Show(
@@ -191,9 +228,12 @@ namespace MineSweeper
                 if (dialogResult == DialogResult.No)
                     return;
                 //MessageBox.Show()
-                IncreaseLossCounter();
+                _tracker.IncreaseLossCounter(this._size);
             }
-            new GameWindow(size).Show();
+            //TODO: spawning a new game window from another game window isn't a great idea,
+            //the old one isn't thrown out of memory just because you Hide it...
+            //probably should just reinitialize the board: SetupGame?
+            new GameWindow(size, _imageProvider).Show();
             Hide();
         }
         #endregion
@@ -205,10 +245,10 @@ namespace MineSweeper
         private void RevealAllButton_Click(object sender, EventArgs e)
         {
             // Reveal all unflagged tiles.
-            foreach (Tile tile in field.GetTiles())
+            foreach (Tile tile in _field.GetTiles())
             {
-                field.Reveal(tile);
-                connections[tile].ReplaceImage();
+                _field.Reveal(tile);
+                _connections[tile].ReplaceImage();
             }
             GameOver();
         }
@@ -226,11 +266,14 @@ namespace MineSweeper
         {
             // Remove old values.
             Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
-            gamePanel.Controls.Clear();
+
+            FastChangeGamePanel(gp =>
+            {
+                gp.Controls.Clear();
+            });
 
             // Make new board with same dimensions.
-            field = new Field(field.Width, field.Height, field.NumMines);
-            CreateBoard(field);
+            SetupGame(_size);
 
             // End game button reset.
             endGameButton.Click -= ResetGame_Click;
@@ -240,48 +283,24 @@ namespace MineSweeper
             revealAllBorder.Hide();
             revealAllButton.Hide();
         }
+
+        /// <summary>
+        /// Toggles visibility of gamePanel before performing an expensive action
+        /// </summary>
+        /// <param name="action"></param>
+        private void FastChangeGamePanel(Action<TableLayoutPanel> action)
+        {
+            gamePanel.SuspendLayout();
+            gamePanel.Visible = false;
+
+            action(gamePanel);
+            
+            gamePanel.Visible = true;
+            gamePanel.ResumeLayout();
+        }
         #endregion
 
         #region End Game
-        /// <summary>
-        /// This increases the win counter kept by settings based on the size of the game.
-        /// </summary>
-        private void IncreaseWinCounter()
-        {
-            switch (size)
-            {
-                case GameSize.small:
-                    Settings.Default.SmallWinsData++;
-                    break;
-                case GameSize.medium:
-                    Settings.Default.MediumWinsData++;
-                    break;
-                case GameSize.large:
-                    Settings.Default.LargeWinsData++;
-                    break;
-            }
-            Settings.Default.Save();
-        }
-        
-        /// <summary>
-        /// This increases the loss counter kept by settings based on the size of the game.
-        /// </summary>
-        private void IncreaseLossCounter()
-        {
-            switch (size)
-            {
-                case GameSize.small:
-                    Settings.Default.SmallLossData++;
-                    break;
-                case GameSize.medium:
-                    Settings.Default.MediumLossData++;
-                    break;
-                case GameSize.large:
-                    Settings.Default.LargeLossData++;
-                    break;
-            }
-            Settings.Default.Save();
-        }
 
         /// <summary>
         /// Reveal all mines or tiles and disable the game.
@@ -290,37 +309,58 @@ namespace MineSweeper
         private void GameOver()
         {
             //win
-            if (field.FoundAllNormalTiles)
+            if (_field.FoundAllNormalTiles)
             {
-                // Report win.
-                IncreaseWinCounter();
-                endGameButton.Image = Image.FromFile("../../Images/Cool.png");
+                ReportWin();
             }
             //loss
             else
             {
-                // If no click happened, generate random board.
-                if (!field.firstClick)
-                    field.PopulateField();
-                // Reveal all mines.
-                foreach (Tile mine in field.GetMines())
-                {
-                    field.Reveal(mine);
-                    connections[mine].ReplaceImage();
-                }
-                // Report loss.
-                endGameButton.Image = Image.FromFile("../../Images/Dead.png");
-                IncreaseLossCounter();
+                ReportLoss();
             }
+
+            DisableButtons();
+            ResetEndGameButton();
+        }
+
+        private void ReportWin()
+        {
+            _tracker.IncreaseWinCounter(_size);
+            endGameButton.Image = _imageProvider.GetImage("Cool");
+        }
+
+        private void ReportLoss()
+        {
+            // If no click happened, generate random board.
+            if (!_field.firstClick)
+                _field.PopulateField();
+            // Reveal all mines.
+            foreach (Tile mine in _field.GetMines())
+            {
+                _field.Reveal(mine);
+                _connections[mine].ReplaceImage();
+            }
+            // Report loss.
+            endGameButton.Image = _imageProvider.GetImage("Dead");
+            _tracker.IncreaseLossCounter(_size);
+        }
+
+        private void DisableButtons()
+        {
             // Disable other buttons.
             foreach (Button button in gamePanel.Controls)
             {
                 RemoveFunctionality(button);
             }
+        }
+
+        private void ResetEndGameButton()
+        {
             // End game button reset.
             endGameButton.Click -= EndGameButton_Click;
             endGameButton.Click += ResetGame_Click;
         }
+
         #endregion
 
         #region Exit Program
