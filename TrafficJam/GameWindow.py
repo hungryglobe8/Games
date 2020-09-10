@@ -1,5 +1,8 @@
 import pygame
 import math
+'''
+Casey Rand
+'''
 from pygame.locals import (
     MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, MOUSEMOTION, KEYDOWN
 )
