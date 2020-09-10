@@ -1,5 +1,6 @@
 import pygame
 import math
+import Car, Coordinate, Grid
 '''
 Casey Rand
 '''
@@ -13,21 +14,21 @@ GREEN    = (   0, 255,   0)
 RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 
-def attempt_drag(x, y, rectangle):
+def attempt_drag(mouse_pos, rectangle):
     # print("Attempt_Drag reached")
     # print(f"({x},{y})")
-    width = range(rectangle[0], rectangle[0] + rectangle[2])
-    height = range(rectangle[1], rectangle[1] + rectangle[3])
-    if x not in width:
-        if x < rectangle[0]:
-            rectangle[0] -= rectangle[2]
-        else:
-            rectangle[0] += rectangle[2]
-    if y not in height:
-        if y < rectangle[1]:
-            rectangle[1] -= rectangle[3]
-        else:
-            rectangle[1] += rectangle[3]
+    old_coor = Coordinate.Coordinate(rectangle[0], rectangle[1])
+
+    new_coor = Grid.mouse_to_grid(mouse_pos)
+    
+    print(old_coor)
+    print(new_coor)
+    if not new_coor in locations:
+        rectangle[0] = new_coor.x
+        rectangle[1] = new_coor.y
+        locations.remove(old_coor)
+        locations.append(new_coor)
+
 
 def draw_stick_figure(screen, x, y):
     # Head
@@ -71,7 +72,8 @@ done = False
 clock = pygame.time.Clock()
 
 # Keep track of rectangle locations.
-cars = {"green": [50,50,100,100], "red": [50,200,100,100]}
+locations = [Coordinate.Coordinate(0, 0), Coordinate.Coordinate(0, 1)]
+cars = {"green": [50,50,100,100], "red": [50,250,100,100]}
 selection = None
 mouse_down = drag = False
 # -------- Main Program Loop -----------
@@ -104,15 +106,15 @@ while not done:
     # --- Game logic should go here
     if selection is not None:
         print(f"{selection} is selected")
-        attempt_drag(x, y, cars[selection])
+        attempt_drag(pos, cars[selection])
 
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
     screen.fill(WHITE)
  
     # --- Drawing code should go here
-    # if (drag):
-    #     draw_stick_figure(screen, x, y)
+    if (drag):
+        draw_stick_figure(screen, x, y)
     pygame.draw.rect(screen, GREEN, cars["green"])
     pygame.draw.rect(screen, RED, cars["red"])
 
