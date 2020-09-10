@@ -13,9 +13,24 @@ namespace MineSweeper
     /// </summary>
     public class MineSweeperButton : Button
     {
-        public MineSweeperButton(Tile tile)
+        private readonly IImageProvider _imageProvider;
+        private readonly Dictionary<int, Color> _colors = new Dictionary<int, Color>()
+        {
+            {0, Color.Black },
+            {1, Color.Blue },
+            {2, Color.Green },
+            {3, Color.OrangeRed },
+            {4, Color.BlueViolet },
+            {5, Color.Brown },
+            {6, Color.Teal },
+            {7, Color.Red },
+            {8, Color.Blue }
+        };
+
+        public MineSweeperButton(Tile tile, IImageProvider imageProvider)
         {
             Tile = tile;
+            _imageProvider = imageProvider;
             Dock = DockStyle.Fill;
             Margin = new Padding(0);
         }
@@ -30,28 +45,17 @@ namespace MineSweeper
             {
                 case State.Revealed:
                     if (Tile.IsArmed)
-                        Image = Image.FromFile("../../Images/Bomb.bmp");
+                        Image = _imageProvider.GetImage("Bomb.bmp");
                     else
                     {
-                        var colors = new Dictionary<int, Color>(){
-                            {0, Color.Black },
-                            {1, Color.Blue },
-                            {2, Color.Green },
-                            {3, Color.OrangeRed },
-                            {4, Color.BlueViolet },
-                            {5, Color.Brown },
-                            {6, Color.Teal },
-                            {7, Color.Red },
-                            {8, Color.Blue }
-                        };
                         int danger = Tile.GetDanger();
                         Text = danger.ToString();
-                        ForeColor = colors[danger];
+                        ForeColor = _colors[danger];
                     }
                     break;
 
                 case State.Flagged:
-                    Image = Image.FromFile("../../Images/Flag.bmp");
+                    Image = _imageProvider.GetImage("Flag.bmp");
                     break;
 
                 case State.Unopened:

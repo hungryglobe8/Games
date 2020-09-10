@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace MineSweeper
 {
@@ -9,8 +10,12 @@ namespace MineSweeper
 
         public Image GetImage(string imageName)
         {
+            var extension = "";
+            if (!imageName.Contains("."))
+                extension = ".png";
+
             if (!_cache.ContainsKey(imageName))
-                _cache.Add(imageName, Image.FromFile($"../..Images/{imageName}.png"));
+                _cache.Add(imageName, Image.FromFile($"../../Images/{imageName}{extension}"));
 
             return _cache[imageName];
         }

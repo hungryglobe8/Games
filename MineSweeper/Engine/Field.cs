@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
+using System.Linq;
 
 namespace Engine
 {
@@ -23,7 +22,7 @@ namespace Engine
         private readonly IList<Tile> mines;
         // Store neighbors.
         private readonly IDictionary<Tile, IList<Tile>> neighbors;
-        public bool firstClick = false;
+        public bool FirstClick { get; private set; } = false;
 
         public int NumMines { private set; get; }
         public int NumFlagsLeft { private set; get; }
@@ -38,8 +37,8 @@ namespace Engine
         /// </summary>
         /// <param name="width">num of tiles in the x direction</param>
         /// <param name="height">num of tiles in the y direction</param>
-        /// <param name="_numMines"></param>
-        public Field(int width, int height, int _numMines)
+        /// <param name="numMines"></param>
+        public Field(int width, int height, int numMines)
         {
             Width = width;
             Height = height;
@@ -58,7 +57,7 @@ namespace Engine
                 }
             }
             mines = new List<Tile>();
-            NumMines = _numMines;
+            NumMines = numMines;
             NumFlagsLeft = NumMines;
             NumRevealed = 0;
         }
@@ -111,7 +110,7 @@ namespace Engine
             }
 
             // Field has been generated.
-            firstClick = true;
+            FirstClick = true;
         }
         #endregion
 
@@ -125,7 +124,7 @@ namespace Engine
         public ISet<Tile> Reveal(Tile tile)
         {
             // On first click, populate minefield.
-            if (!firstClick)
+            if (!FirstClick)
                 PopulateField(tile);
 
             ISet<Tile> revealedTiles = new HashSet<Tile>();
@@ -153,7 +152,7 @@ namespace Engine
                 NumRevealed++;
 
             // Recursively find all neighbors of 0 danger tiles.
-            if (tile.GetDanger() == 0)
+            if (tile.IsSafe)
             {
                 foreach (Tile neighbor in GetNeighbors(tile))
                 {
@@ -193,22 +192,37 @@ namespace Engine
         /// </summary>
         private void AddNeighbors(Tile tile)
         {
-            int x = tile.X;
-            int y = tile.Y;
-
-            //left
-            if (x - 1 >= 0)
-                AddNeighbor(tile, GetTile(x - 1, y));
-            //top
-            if (y - 1 >= 0)
-                AddNeighbor(tile, GetTile(x, y - 1));
-            //top left diagonal
-            if (x - 1 >= 0 && y - 1 >= 0)
-                AddNeighbor(tile, GetTile(x - 1, y - 1));
-            //bottom left diagonal
-            if (x - 1 >= 0 && y + 1 < tiles.GetLength(1))
-                AddNeighbor(tile, GetTile(x - 1, y + 1));
+            AddLeftNeighbor(tile);
+            AddTopNeighbor(tile);
+            AddTopLeftDiagonalNeighbor(tile);
+            AddBottomLeftDiagonal(tile);
         }
+
+        void AddLeftNeighbor(Tile tile)
+        {
+            if( tile.X - 1 >= 0)
+                AddNeighbor(tile, GetTile(tile.X - 1, tile.Y));
+        }
+
+        void AddTopNeighbor(Tile tile)
+        {
+            if(tile.Y - 1 >= 0)
+                AddNeighbor(tile, GetTile(tile.X, tile.Y - 1));
+        }
+
+        void AddTopLeftDiagonalNeighbor(Tile tile)
+        {
+            if (tile.X - 1 >= 0 && tile.Y - 1 >= 0)
+                AddNeighbor(tile, GetTile(tile.X - 1, tile.Y - 1));
+        }
+
+        void AddBottomLeftDiagonal(Tile tile)
+        {
+            if (tile.X - 1 >= 0 && tile.Y + 1 < tiles.GetLength(1))
+                AddNeighbor(tile, GetTile(tile.X - 1, tile.Y + 1));
+        }
+
+
 
         /// <summary>
         /// Add a single neighbor relationship between two tiles.
