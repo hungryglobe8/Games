@@ -11,7 +11,7 @@ namespace MineSweeper
     {
         const float BUTTON_SIZE = 20F;
         private Field _field;
-        private readonly Dictionary<Tile, MineSweeperButton> _connections = new Dictionary<Tile, MineSweeperButton>();
+        private Dictionary<Tile, MineSweeperButton> _connections = new Dictionary<Tile, MineSweeperButton>();
         private readonly IImageProvider _imageProvider;
         private GameSize _size;
         private StatisticsTracker _tracker = new StatisticsTracker();
@@ -61,7 +61,7 @@ namespace MineSweeper
                     {
                         // Add a new connection.
                         Tile tile = _field.GetTile(x, y);
-                        MineSweeperButton button = new MineSweeperButton(tile);
+                        MineSweeperButton button = new MineSweeperButton(tile, _imageProvider);
                         _connections.Add(tile, button);
 
                         gp.Controls.Add(button, x, y);
@@ -220,7 +220,7 @@ namespace MineSweeper
         /// <param name="size">new game size</param>
         private void MakeNewGameCloseOld(string size)
         {
-            if (_field.firstClick)
+            if (_field.FirstClick)
             {
                 // Warn user of loss.
                 DialogResult dialogResult = MessageBox.Show(
@@ -265,7 +265,7 @@ namespace MineSweeper
         private void ResetGame_Click(object sender, EventArgs e)
         {
             // Remove old values.
-            Dictionary<Tile, Button> connections = new Dictionary<Tile, Button>();
+            _connections = new Dictionary<Tile, MineSweeperButton>();
 
             FastChangeGamePanel(gp =>
             {
@@ -290,13 +290,14 @@ namespace MineSweeper
         /// <param name="action"></param>
         private void FastChangeGamePanel(Action<TableLayoutPanel> action)
         {
-            gamePanel.SuspendLayout();
+            /* I don't think either of these make much difference */
             gamePanel.Visible = false;
+            gamePanel.SuspendLayout();
 
             action(gamePanel);
-            
-            gamePanel.Visible = true;
+
             gamePanel.ResumeLayout();
+            gamePanel.Visible = true;
         }
         #endregion
 
@@ -332,7 +333,7 @@ namespace MineSweeper
         private void ReportLoss()
         {
             // If no click happened, generate random board.
-            if (!_field.firstClick)
+            if (!_field.FirstClick)
                 _field.PopulateField();
             // Reveal all mines.
             foreach (Tile mine in _field.GetMines())

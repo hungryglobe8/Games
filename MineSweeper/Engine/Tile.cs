@@ -14,6 +14,10 @@
         public State state;
 
         public bool IsArmed { private set; get; }
+        /// <summary>
+        /// Danger level of tile is 0
+        /// </summary>
+        public bool IsSafe => dangerLevel == 0;
         public int X { get; }
         public int Y { get; }
 
