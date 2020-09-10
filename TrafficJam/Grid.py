@@ -9,6 +9,7 @@ class Grid():
         self.width = width
         self.height = height
         self.cars = list()
+        self.occupied_squares = list()
         
     def within_grid(self, coor):
         x = coor.x
@@ -17,6 +18,12 @@ class Grid():
             return False
         else:
             return True
+
+    def add_loc(self, coor):
+        self.occupied_squares.append(coor)
+
+    def remove_loc(self, coor):
+        self.occupied_squares.remove(coor)
 
     def add_car(self, car):
         self.cars.append(car)
@@ -31,10 +38,10 @@ def game_window_coordinates(coor):
     y = (coor.y * Grid.square_size) + Grid.origin.y
     return Coordinate.Coordinate(x, y)
 
-def mouse_to_grid(mouse_pos):
+def location_to_coordinate(x, y):
     '''
-    Transform a mouse position to a grid's coordinate system.
+    Transform a location to the grid's coordinate system.
     '''
-    x = (mouse_pos[0] - Grid.origin.x) // Grid.square_size
-    y = (mouse_pos[1] - Grid.origin.x) // Grid.square_size
-    return Coordinate.Coordinate(x, y)
+    new_x = (x - Grid.origin.x) // Grid.square_size
+    new_y = (y - Grid.origin.x) // Grid.square_size
+    return Coordinate.Coordinate(new_x, new_y)

@@ -15,19 +15,17 @@ RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 
 def attempt_drag(mouse_pos, rectangle):
-    # print("Attempt_Drag reached")
-    # print(f"({x},{y})")
-    old_coor = Coordinate.Coordinate(rectangle[0], rectangle[1])
-
-    new_coor = Grid.mouse_to_grid(mouse_pos)
+    old_coor = Grid.location_to_coordinate(rectangle[0], rectangle[1])
+    new_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
     
     print(old_coor)
     print(new_coor)
-    if not new_coor in locations:
-        rectangle[0] = new_coor.x
-        rectangle[1] = new_coor.y
-        locations.remove(old_coor)
-        locations.append(new_coor)
+    if not new_coor in grid.occupied_squares:
+        game_coor = Grid.game_window_coordinates(new_coor)
+        rectangle[0] = game_coor.x
+        rectangle[1] = game_coor.y
+        grid.remove_loc(old_coor)
+        grid.add_loc(new_coor)
 
 
 def draw_stick_figure(screen, x, y):
@@ -72,7 +70,10 @@ done = False
 clock = pygame.time.Clock()
 
 # Keep track of rectangle locations.
-locations = [Coordinate.Coordinate(0, 0), Coordinate.Coordinate(0, 1)]
+grid = Grid.Grid(5, 5)
+grid.add_loc(Coordinate.Coordinate(0, 0))
+grid.add_loc(Coordinate.Coordinate(0, 2))
+
 cars = {"green": [50,50,100,100], "red": [50,250,100,100]}
 selection = None
 mouse_down = drag = False
