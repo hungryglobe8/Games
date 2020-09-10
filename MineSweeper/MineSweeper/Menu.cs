@@ -18,8 +18,7 @@ namespace MineSweeper
             Button button = (Button)sender;
             var gameSize = button.Text;
 
-            var imageProvider = new CachedImageProvider();
-            Form game = new GameWindow(gameSize, imageProvider);
+            Form game = new GameWindow(gameSize);
 
             Hide();
             game.Show();

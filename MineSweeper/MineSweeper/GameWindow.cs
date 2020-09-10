@@ -12,16 +12,13 @@ namespace MineSweeper
         const float BUTTON_SIZE = 20F;
         private Field _field;
         private Dictionary<Tile, MineSweeperButton> _connections = new Dictionary<Tile, MineSweeperButton>();
-        private readonly IImageProvider _imageProvider;
         private GameSize _size;
         private StatisticsTracker _tracker = new StatisticsTracker();
 
         #region Constructor
-        public GameWindow(string gameSize, IImageProvider imageProvider)
+        public GameWindow(string gameSize)
         {
             InitializeComponent();
-
-            _imageProvider = imageProvider;
 
             if (!Enum.TryParse(gameSize, out GameSize size))
             {
@@ -34,7 +31,16 @@ namespace MineSweeper
         private void SetupGame(GameSize size)
         {
             _field = Field.Create(size);
+            SetImageListKeys();
             CreateBoard(_field);
+        }
+
+        private void SetImageListKeys()
+        {
+            endGameButtonImageList.Images.SetKeyName(0, "normal");
+            endGameButtonImageList.Images.SetKeyName(1, "worried");
+            endGameButtonImageList.Images.SetKeyName(2, "dead");
+            endGameButtonImageList.Images.SetKeyName(3, "cool");
         }
 
         private void CreateBoard(Field field)
@@ -61,7 +67,7 @@ namespace MineSweeper
                     {
                         // Add a new connection.
                         Tile tile = _field.GetTile(x, y);
-                        MineSweeperButton button = new MineSweeperButton(tile, _imageProvider);
+                        MineSweeperButton button = new MineSweeperButton(tile);
                         _connections.Add(tile, button);
 
                         gp.Controls.Add(button, x, y);
@@ -72,25 +78,31 @@ namespace MineSweeper
             });
         }
 
+        /// <summary>
+        /// Reveal all button left position.
+        /// </summary>
         private void SetRevealButton(Point topButtonLocation)
         {
-            // Reveal all button left position.
             revealAllButton.Location = Point.Subtract(topButtonLocation, new Size(50, -5));
             revealAllBorder.Location = Point.Subtract(topButtonLocation, new Size(52, -3));
         }
 
+        /// <summary>
+        /// Set flag label and right position.
+        /// </summary>
         private void SetFlagLabel(Point topButtonLocation)
         {
-            // Set flag label and right position.
             flagCounterLabel.Text = _field.NumFlagsLeft.ToString();
             flagCounterLabel.Location = Point.Add(topButtonLocation, new Size(60, 5));
         }
 
+        /// <summary>
+        /// End game button centered over game panel.
+        /// </summary>
         private Point PlaceEndGameButton()
         {
-            // End game button centered over game panel.
             Point topButtonLocation = new Point(gamePanel.Size.Width / 2 + 10, 35);
-            endGameButton.Image = _imageProvider.GetImage("normal");
+            endGameButton.Image = endGameButtonImageList.Images["normal"];
             endGameButton.Location = topButtonLocation;
 
             return topButtonLocation;
@@ -184,13 +196,13 @@ namespace MineSweeper
             {
                 revealAllButton.Show();
                 revealAllBorder.Show();
-                endGameButton.Image = _imageProvider.GetImage("Worried");
+                endGameButton.Image = endGameButtonImageList.Images["worried"];
             }
             else
             {
                 revealAllButton.Hide();
                 revealAllBorder.Hide();
-                endGameButton.Image = _imageProvider.GetImage("normal");
+                endGameButton.Image = endGameButtonImageList.Images["normal"];
             }
         }
 
@@ -233,7 +245,7 @@ namespace MineSweeper
             //TODO: spawning a new game window from another game window isn't a great idea,
             //the old one isn't thrown out of memory just because you Hide it...
             //probably should just reinitialize the board: SetupGame?
-            new GameWindow(size, _imageProvider).Show();
+            new GameWindow(size).Show();
             Hide();
         }
         #endregion
@@ -327,7 +339,7 @@ namespace MineSweeper
         private void ReportWin()
         {
             _tracker.IncreaseWinCounter(_size);
-            endGameButton.Image = _imageProvider.GetImage("Cool");
+            endGameButton.Image = endGameButtonImageList.Images["cool"];
         }
 
         private void ReportLoss()
@@ -342,7 +354,7 @@ namespace MineSweeper
                 _connections[mine].ReplaceImage();
             }
             // Report loss.
-            endGameButton.Image = _imageProvider.GetImage("Dead");
+            endGameButton.Image = endGameButtonImageList.Images["dead"];
             _tracker.IncreaseLossCounter(_size);
         }
 

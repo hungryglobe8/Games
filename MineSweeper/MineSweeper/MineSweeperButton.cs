@@ -13,7 +13,6 @@ namespace MineSweeper
     /// </summary>
     public class MineSweeperButton : Button
     {
-        private readonly IImageProvider _imageProvider;
         private readonly Dictionary<int, Color> _colors = new Dictionary<int, Color>()
         {
             {0, Color.Black },
@@ -27,10 +26,9 @@ namespace MineSweeper
             {8, Color.Blue }
         };
 
-        public MineSweeperButton(Tile tile, IImageProvider imageProvider)
+        public MineSweeperButton(Tile tile)
         {
             Tile = tile;
-            _imageProvider = imageProvider;
             Dock = DockStyle.Fill;
             Margin = new Padding(0);
         }
@@ -45,7 +43,7 @@ namespace MineSweeper
             {
                 case State.Revealed:
                     if (Tile.IsArmed)
-                        Image = _imageProvider.GetImage("Bomb.bmp");
+                        Image = Image.FromFile("../../Images/Bomb.bmp");
                     else
                     {
                         int danger = Tile.GetDanger();
@@ -55,7 +53,7 @@ namespace MineSweeper
                     break;
 
                 case State.Flagged:
-                    Image = _imageProvider.GetImage("Flag.bmp");
+                    Image = Image.FromFile("../../Images/Flag.bmp");
                     break;
 
                 case State.Unopened:
