@@ -1,9 +1,10 @@
-import Car, Coordinate
+from car import Car
+from coordinate import Coordinate
 
 class Grid():
     # Class variables
     square_size = 100
-    origin = Coordinate.Coordinate(50,50)
+    origin = Coordinate(50,50)
 
     def __init__(self, width, height):
         self.width = width
@@ -28,20 +29,22 @@ class Grid():
     def add_car(self, car):
         self.cars.append(car)
 
-def game_window_coordinates(coor):
-    '''
-    Transform a grid's coordinates to the game window's coordinates.
-    (0,0) => (50, 50)
-    (1,1) => (150, 150)
-    '''
-    x = (coor.x * Grid.square_size) + Grid.origin.x
-    y = (coor.y * Grid.square_size) + Grid.origin.y
-    return Coordinate.Coordinate(x, y)
-
-def location_to_coordinate(x, y):
-    '''
-    Transform a location to the grid's coordinate system.
-    '''
-    new_x = (x - Grid.origin.x) // Grid.square_size
-    new_y = (y - Grid.origin.x) // Grid.square_size
-    return Coordinate.Coordinate(new_x, new_y)
+    @staticmethod
+    def game_window_coordinates(coor):
+        '''
+        Transform a grid's coordinates to the game window's coordinates.
+        (0,0) => (50, 50)
+        (1,1) => (150, 150)
+        '''
+        x = (coor.x * Grid.square_size) + Grid.origin.x
+        y = (coor.y * Grid.square_size) + Grid.origin.y
+        return Coordinate(x, y)
+        
+    @staticmethod
+    def location_to_coordinate(x, y):
+        '''
+        Transform a location to the grid's coordinate system.
+        '''
+        new_x = (x - Grid.origin.x) // Grid.square_size
+        new_y = (y - Grid.origin.x) // Grid.square_size
+        return Coordinate(new_x, new_y)

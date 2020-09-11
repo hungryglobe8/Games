@@ -1,12 +1,14 @@
 import pygame
 import math
-import Car, Coordinate, Grid
-'''
-Casey Rand
-'''
+from car import Car
+from coordinate import Coordinate
+from grid import *
 from pygame.locals import (
     MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, MOUSEMOTION, KEYDOWN
 )
+'''
+Project description here.
+'''
 # Define some colors
 BLACK    = (   0,   0,   0)
 WHITE    = ( 255, 255, 255)
@@ -70,9 +72,9 @@ done = False
 clock = pygame.time.Clock()
 
 # Keep track of rectangle locations.
-grid = Grid.Grid(5, 5)
-grid.add_loc(Coordinate.Coordinate(0, 0))
-grid.add_loc(Coordinate.Coordinate(0, 2))
+grid = Grid(5, 5)
+grid.add_loc(Coordinate(0, 0))
+grid.add_loc(Coordinate(0, 2))
 
 cars = {"green": [50,50,100,100], "red": [50,250,100,100]}
 selection = None
