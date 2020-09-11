@@ -114,8 +114,8 @@ while not done:
     screen.fill(WHITE)
  
     # --- Drawing code should go here
-    if (drag):
-        draw_stick_figure(screen, x, y)
+    # if (drag):
+    #     draw_stick_figure(screen, x, y)
     pygame.draw.rect(screen, GREEN, cars["green"])
     pygame.draw.rect(screen, RED, cars["red"])
 

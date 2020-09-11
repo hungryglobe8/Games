@@ -14,3 +14,19 @@ class Car():
         # orientation is checked in extend.
         self.coordinates = location.extend(size, orientation)
         self.size = size
+
+    def move_left(self):
+        for coord in self.coordinates:
+            coord = Coordinate.Coordinate(coord.x - 1, coord.y)
+
+    def move_right(self):
+        for coord in self.coordinates:
+            coord = Coordinate.Coordinate(coord.x + 1, coord.y)
+    
+    def move_up(self):
+        for coord in self.coordinates:
+            coord = Coordinate.Coordinate(coord.x, coord.y + 1)
+
+    def move_down(self):
+        for coord in self.coordinates:
+            coord = Coordinate.Coordinate(coord.x, coord.y - 1)

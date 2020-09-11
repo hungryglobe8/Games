@@ -1,3 +1,9 @@
 {
-    "python.analysis.memory.keepLibraryLocalVariables": true
+    "python.analysis.memory.keepLibraryLocalVariables": true,
+    "python.testing.pytestArgs": [
+        "TrafficJam"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
 }
