@@ -43,16 +43,33 @@ def test_move_right():
     assert sut.coordinates == [Coordinate(1, 0), Coordinate(2, 0)]
 
 def test_move_up():
-    sut = basic_car()
+    sut = basic_car(orient="vertical")
 
     sut.move_up()
 
     assert sut.coordinates == [Coordinate(0, -1), Coordinate(0, 0)]
 
 def test_move_down():
-    sut = basic_car()
+    sut = basic_car(orient="vertical")
 
     sut.move_down()
 
     assert sut.coordinates == [Coordinate(0, 1), Coordinate(0, 2)]
-    
+
+def test_cannot_move_horizontal_car_up_or_down():
+    sut = basic_car(orient="horizontal")
+    expected_coors = [Coordinate(0, 0), Coordinate(1, 0)]
+
+    sut.move_up()
+    assert sut.coordinates == expected_coors
+    sut.move_down()
+    assert sut.coordinates == expected_coors
+
+def test_cannot_move_vertical_car_left_or_right():
+    sut = basic_car(orient="vertical")
+    expected_coors = [Coordinate(0, 0), Coordinate(0, 1)]
+
+    sut.move_left()
+    assert sut.coordinates == expected_coors
+    sut.move_right()
+    assert sut.coordinates == expected_coors
