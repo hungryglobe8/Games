@@ -28,3 +28,41 @@ class Coordinate():
         else:
             raise ValueError("Orientation must be 'horizontal' or 'vertical'")
         return coors
+
+    @staticmethod
+    def shared_coordinate(coor_list1, coor_list2):
+        ''' Returns true if any coordinates are shared between lists. '''
+        return any(coor in coor_list1 for coor in coor_list2)
+
+square_size = 100
+origin = Coordinate(50,50)
+
+def transform_car_to_game(car):
+    start = transform_point_to_game(car.coordinates[0])
+    height = width = square_size
+    if car.orientation == "horizontal":
+        width *= car.size
+    elif car.orientation == "vertical":
+        height *= car.size 
+    else:
+        raise ValueError()
+    return [start.x, start.y, width, height]
+
+
+def transform_point_to_game(coor):
+    '''
+    Transform a point to the game window's coordinate system.
+    (0,0) => (50, 50)
+    (1,1) => (150, 150)
+    '''
+    x = (coor.x * square_size) + origin.x
+    y = (coor.y * square_size) + origin.y
+    return Coordinate(x, y)
+    
+def location_to_coordinate(x, y):
+    '''
+    Transform a location to the grid's coordinate system.
+    '''
+    new_x = (x - origin.x) // square_size
+    new_y = (y - origin.x) // square_size
+    return Coordinate(new_x, new_y)

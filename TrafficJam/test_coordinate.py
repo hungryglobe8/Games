@@ -24,6 +24,17 @@ def test_coordinate_inequality():
     coor2 = Coordinate(3, 3)
     assert coor1 != coor2
 
+def test_coordinate_within_coordinate_list():
+    coor_list = make_zero_coordinate().extend(3, "horizontal")
+
+    assert Coordinate(0, 0) in coor_list
+
+def test_any_coordinate_within_coordinate_list():
+    coor_list = make_zero_coordinate().extend(3, "horizontal")
+    other_list = make_zero_coordinate().extend(2, "vertical")
+
+    assert Coordinate.shared_coordinate(coor_list, other_list)
+
 def test_extend_horizontal():
     coor = make_zero_coordinate()
     coors = coor.extend(2, "horizontal")
