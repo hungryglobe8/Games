@@ -14,8 +14,8 @@ class Coordinate():
         ''' 
         Given a size and orientation, return a list of coordinates stemming from self.x and self.y. 
         For example, extend(2, "horizontal") from (0, 0) returns:
-            (0, 0), (1, 0), (2, 0)
-        Calling extend(2, "vertical") from (0, 0) returns:
+            (0, 0), (1, 0)
+        Calling extend(3, "vertical") from (0, 0) returns:
             (0, 0), (0, 1), (0, 2)
         '''
         coors = [(self)]
