@@ -1,6 +1,6 @@
 import pygame
 import math
-from car import Car
+from car import HorizontalCar, VerticalCar
 from coordinate import Coordinate
 from grid import Grid
 from pygame.locals import (
@@ -21,7 +21,7 @@ def attempt_drag(mouse_pos, car, grid):
     old_coor = Grid.location_to_coordinate(car_loc[0], car_loc[1])
     new_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
     
-    grid.attempt_move(old_coor, new_coor, car)
+    grid.drag_car(old_coor, new_coor, car)
 
 def draw_stick_figure(screen, x, y):
     # Head
@@ -66,9 +66,9 @@ clock = pygame.time.Clock()
 
 # Keep track of rectangle locations.
 grid = Grid(10, 10)
-car1 = Car(grid, Coordinate(0, 0), "horizontal", 2)
-car2 = Car(grid, Coordinate(3, 0), "horizontal", 3)
-car3 = Car(grid, Coordinate(5, 5), "vertical", 2)
+car1 = HorizontalCar(grid, Coordinate(0, 0), 2)
+car2 = HorizontalCar(grid, Coordinate(3, 0), 3)
+car3 = VerticalCar(grid, Coordinate(5, 5), 2)
 grid.add_car(car1)
 grid.add_car(car2)
 grid.add_car(car3)

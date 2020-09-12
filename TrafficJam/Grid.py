@@ -10,7 +10,6 @@ class Grid():
         self.width = width
         self.height = height
         self.cars = dict()
-        self.occupied_squares = list()
         
     def within_grid(self, coor):
         x = coor.x
@@ -25,12 +24,6 @@ class Grid():
             return False
         else:
             return True
-
-    def add_loc(self, coor):
-        self.occupied_squares.append(coor)
-
-    def remove_loc(self, coor):
-        self.occupied_squares.remove(coor)
 
     def add_car(self, car=None):
         if car == None:
@@ -47,43 +40,36 @@ class Grid():
 
     def update_car_location(self, car):
         self.cars[car] = Grid.transform_car_to_game(car)   
-        # append adds as list, not elements
-        self.occupied_squares.extend(car.coordinates)
 
-        res = ""
-        for square in self.occupied_squares:
-            res += str(square)
-        print(res)
+    def attempt_move(self, car, move, reverse):
+        move()
+        for existing_car in self.cars.keys():
+            if car.collides_with(existing_car):
+                # Undo move.
+                reverse()
+                return
+        # Update grid positions.
+        self.update_car_location(car)
 
-
-    def attempt_move(self, old_coor, new_coor, car):
+    def drag_car(self, old_coor, new_coor, car):
         '''
         TODO: mouse must be on box, new_coor must be open
         '''
         if (not self.within_grid(new_coor)):
             return
 
-        if (new_coor.x > car.coordinates[-1] or new_coor.y > car.coordinates[-1]):
-            car.increase_pos()
-            for existing_car in self.cars.keys():
-                if car.collides_with(existing_car):
-                    car.decrease_pos()
-        
-        elif (new_coor.x < car.coordinates[0] or new_coor.y < car.coordinates[0]):
-            car.decrease_pos()
-            for existing_car in self.cars.keys():
-                if car.collides_with(existing_car):
-                    car.increase_pos()
-
+        if isinstance(car, HorizontalCar):
+            if new_coor.x > car.coordinates[-1].x:
+                self.attempt_move(car, car.increase_pos, car.decrease_pos)
+            elif new_coor.x < car.coordinates[0].x:
+                self.attempt_move(car, car.decrease_pos, car.increase_pos)
+        elif isinstance(car, VerticalCar):
+            if new_coor.y > car.coordinates[-1].y:
+                self.attempt_move(car, car.increase_pos, car.decrease_pos)
+            elif new_coor.y < car.coordinates[0].y:
+                self.attempt_move(car, car.decrease_pos, car.increase_pos)
         else:
-            return
-
-        # remove old coordinates
-        for coor in car.coordinates:
-            self.occupied_squares.remove(coor)
-            
-        self.update_car_location(car)
-            
+            raise ValueError("Vehicle is of an undefined type.")           
             
     @staticmethod
     def transform_car_to_game(car):

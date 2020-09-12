@@ -20,7 +20,12 @@ class VehicleInterface:
         self.coordinates = extend(self.size)
 
     def collides_with(self, other_vehicle):
-        ''' Returns true if any coordinates are shared between two vehicles. '''
+        ''' 
+        Returns True if any coordinates are shared between two vehicles. 
+        Returns False if vehicles are the same. 
+        '''
+        if self == other_vehicle:
+            return False
         return any(coor in other_vehicle.coordinates for coor in self.coordinates)
 
 

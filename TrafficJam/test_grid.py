@@ -1,4 +1,5 @@
-from grid import *
+from grid import Grid
+from coordinate import Coordinate
 import test_car as t
 
 def test_init():
