@@ -1,5 +1,5 @@
 from coordinate import Coordinate
-from car import Car, HorizontalCar
+from car import VerticalCar, HorizontalCar
 from vehicle import VehicleInterface
 from grid import Grid
 import pytest
@@ -68,7 +68,15 @@ class TestVerticalCar:
         sut.increase_pos()
 
         assert sut.coordinates == (Coordinate(0, 1), Coordinate(0, 2))
-    
 
-def basic_car(grid=Grid(5, 5), coor=Coordinate(0, 0), orient="horizontal", size=2):
-     return Car(grid, coor, orient, size)
+def test_vehicle_collision():
+    car1 = basic_horizontal_car()
+    car2 = basic_vertical_car()
+
+    assert car1.collides_with(car2)
+
+def test_long_vehicle_collision():
+    car1 = basic_horizontal_car(size=3)
+    car2 = basic_vertical_car(coor=Coordinate(1, 0), size=3)
+
+    assert car1.collides_with(car2)

@@ -19,6 +19,11 @@ class VehicleInterface:
         self.start = start
         self.coordinates = extend(self.size)
 
+    def collides_with(self, other_vehicle):
+        ''' Returns true if any coordinates are shared between two vehicles. '''
+        return any(coor in other_vehicle.coordinates for coor in self.coordinates)
+
+
     def increase_pos(self):
         raise NotImplementedError()
 

@@ -1,4 +1,4 @@
-from car import Car
+from car import VerticalCar, HorizontalCar
 from coordinate import Coordinate
 
 class Grid():
@@ -38,8 +38,9 @@ class Grid():
             return True
 
         # Do not add car if space is already occupied.
-        if Coordinate.shared_coordinate(car.coordinates, self.occupied_squares):
-            return False
+        for existing_car in self.cars.keys():
+            if car.collides_with(existing_car):
+                return False
         else:
             self.update_car_location(car)
             return True
@@ -62,43 +63,35 @@ class Grid():
         if (not self.within_grid(new_coor)):
             return
 
-        # New coordinate must be on either side of the car.
-        if (new_coor not in self.available_squares(car)):
+        if (new_coor.x > car.coordinates[-1] or new_coor.y > car.coordinates[-1]):
+            car.increase_pos()
+            for existing_car in self.cars.keys():
+                if car.collides_with(existing_car):
+                    car.decrease_pos()
+        
+        elif (new_coor.x < car.coordinates[0] or new_coor.y < car.coordinates[0]):
+            car.decrease_pos()
+            for existing_car in self.cars.keys():
+                if car.collides_with(existing_car):
+                    car.increase(pos)
+
+        else:
             return
 
-        # Do nothing if new squre is occupied.
-        if (new_coor in self.occupied_squares):
-            return
-
-        # # remove old coordinates
+        # remove old coordinates
         for coor in car.coordinates:
             self.occupied_squares.remove(coor)
-
-        if new_coor == car.coordinates[0].left():
-            car.move_left()
-        elif new_coor == car.coordinates[-1].right():
-            car.move_right()
-        if new_coor == car.coordinates[0].up():
-            car.move_up()
-        elif new_coor == car.coordinates[-1].down():
-            car.move_down()
             
         self.update_car_location(car)
-
-    def available_squares(self, car):
-        if car.orientation == "horizontal":
-            return [car.coordinates[0].left(), car.coordinates[-1].right()]
-        if car.orientation == "vertical":
-            return [car.coordinates[0].up(), car.coordinates[-1].down()]
             
             
     @staticmethod
     def transform_car_to_game(car):
         start = Grid.transform_point_to_game(car.coordinates[0])
         height = width = Grid.square_size
-        if car.orientation == "horizontal":
+        if isinstance(car, HorizontalCar):
             width *= car.size
-        elif car.orientation == "vertical":
+        elif isinstance(car, VerticalCar):
             height *= car.size 
         else:
             raise ValueError()

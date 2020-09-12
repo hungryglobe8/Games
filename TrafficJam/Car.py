@@ -1,4 +1,4 @@
-from vehicle import *
+from vehicle import VehicleInterface
 
 orientations = {"h": "horizontal", "v": "vertical"}
 # Define some colors
