@@ -65,14 +65,16 @@ done = False
 clock = pygame.time.Clock()
 
 # Keep track of rectangle locations.
-grid = Grid(5, 5)
+grid = Grid(10, 10)
 car1 = Car(grid, Coordinate(0, 0), "horizontal", 2)
-car2 = Car(grid, Coordinate(0, 2), "horizontal", 3)
+car2 = Car(grid, Coordinate(3, 0), "horizontal", 3)
+car3 = Car(grid, Coordinate(5, 5), "vertical", 2)
 grid.add_car(car1)
 grid.add_car(car2)
+grid.add_car(car3)
 
 
-cars = {"green": car1, "red": car2}
+cars = {"green": car1, "red": car2, "blue": car3}
 selection = None
 mouse_down = drag = False
 # -------- Main Program Loop -----------
@@ -104,7 +106,7 @@ while not done:
  
     # --- Game logic should go here
     if selection is not None:
-        print(f"{selection} is selected")
+        #print(f"{selection} is selected")
         attempt_drag(pos, cars[selection], grid)
 
     # First, clear the screen to white. Don't put other drawing commands
@@ -116,6 +118,7 @@ while not done:
     #     draw_stick_figure(screen, x, y)
     pygame.draw.rect(screen, GREEN, grid.cars[car1])
     pygame.draw.rect(screen, RED, grid.cars[car2])
+    pygame.draw.rect(screen, BLUE, grid.cars[car3])
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()

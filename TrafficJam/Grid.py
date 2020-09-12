@@ -3,7 +3,7 @@ from coordinate import Coordinate
 
 class Grid():
     # Class variables
-    square_size = 100
+    square_size = 50
     origin = Coordinate(50,50)
 
     def __init__(self, width, height):
@@ -16,6 +16,12 @@ class Grid():
         x = coor.x
         y = coor.y
         if (x < 0 or x > self.width or y < 0 or y > self.height):
+            return False
+        else:
+            return True
+
+    def point_within_grid(self, point):
+        if (point < 0 or point > self.width):
             return False
         else:
             return True
@@ -43,27 +49,48 @@ class Grid():
         # append adds as list, not elements
         self.occupied_squares.extend(car.coordinates)
 
+        res = ""
+        for square in self.occupied_squares:
+            res += str(square)
+        print(res)
+
 
     def attempt_move(self, old_coor, new_coor, car):
         '''
         TODO: mouse must be on box, new_coor must be open
         '''
-        if (not self.within_grid(new_coor)) or new_coor == old_coor:
+        if (not self.within_grid(new_coor)):
             return
-        # remove old coordinates
+
+        # New coordinate must be on either side of the car.
+        if (new_coor not in self.available_squares(car)):
+            return
+
+        # Do nothing if new squre is occupied.
+        if (new_coor in self.occupied_squares):
+            return
+
+        # # remove old coordinates
         for coor in car.coordinates:
             self.occupied_squares.remove(coor)
 
-        if new_coor.x < old_coor.x:
+        if new_coor == car.coordinates[0].left():
             car.move_left()
-        elif new_coor.x > old_coor.x:
+        elif new_coor == car.coordinates[-1].right():
             car.move_right()
-        if new_coor.y < old_coor.y:
+        if new_coor == car.coordinates[0].up():
             car.move_up()
-        elif new_coor.y > old_coor.y:
+        elif new_coor == car.coordinates[-1].down():
             car.move_down()
             
         self.update_car_location(car)
+
+    def available_squares(self, car):
+        if car.orientation == "horizontal":
+            return [car.coordinates[0].left(), car.coordinates[-1].right()]
+        if car.orientation == "vertical":
+            return [car.coordinates[0].up(), car.coordinates[-1].down()]
+            
             
     @staticmethod
     def transform_car_to_game(car):

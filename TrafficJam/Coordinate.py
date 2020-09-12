@@ -10,6 +10,38 @@ class Coordinate():
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
 
+    def left(self): return Coordinate(self.x - 1, self.y)
+
+    def right(self): return Coordinate(self.x + 1, self.y)
+
+    def up(self): return Coordinate(self.x, self.y - 1)
+
+    def down(self): return Coordinate(self.x, self.y + 1)
+
+    def extend_right(self, size):
+        ''' 
+        Given a size, return an immutable list of coordinates stemming right from self.x and self.y. 
+        For example, extend_right(3) from (0, 0) returns:
+            ((0, 0), (1, 0), (2, 0))
+        '''
+        coors = [self]
+        for x in range(1, size):
+            coors.append(coors[x - 1].right())
+        return tuple(coors)
+
+
+    def extend_down(self, size):
+        ''' 
+        Given a size, return an immutable list of coordinates stemming down from self.x and self.y. 
+        For example, extend_down(2) from (0, 0) returns:
+            ((0, 0), (0, 1))
+        '''
+        coors = [self]
+        for x in range(1, size):
+            coors.append(coors[x - 1].down())
+        return tuple(coors)
+
+
     def extend(self, size, orientation):
         ''' 
         Given a size and orientation, return a list of coordinates stemming from self.x and self.y. 
