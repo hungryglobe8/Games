@@ -40,7 +40,7 @@ class VerticalCar(VehicleInterface):
         self.coordinates = coor.extend_down(size)
 
     def increase_pos(self):
-        super().move(self.start.up(), self.size.up().extend_down)
+        super().move(self.start.down(), self.start.down().extend_down)
 
     def decrease_pos(self):
-        super().move(self.start.down(), self.start.down().extend_down)
+        super().move(self.start.up(), self.start.up().extend_down)

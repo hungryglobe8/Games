@@ -56,14 +56,14 @@ class TestVerticalCar:
         isinstance(basic_vertical_car, VehicleInterface)
 
     def test_decrease_pos(self):
-        sut = basic_horizontal_car()
+        sut = basic_vertical_car()
 
         sut.decrease_pos()
 
         assert sut.coordinates == (Coordinate(0, -1), Coordinate(0, 0))
 
     def test_increase_pos(self):
-        sut = basic_horizontal_car()
+        sut = basic_vertical_car()
 
         sut.increase_pos()
 

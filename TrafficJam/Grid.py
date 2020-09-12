@@ -73,7 +73,7 @@ class Grid():
             car.decrease_pos()
             for existing_car in self.cars.keys():
                 if car.collides_with(existing_car):
-                    car.increase(pos)
+                    car.increase_pos()
 
         else:
             return

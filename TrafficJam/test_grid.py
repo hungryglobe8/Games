@@ -28,6 +28,6 @@ def test_add_two_cars_occupying_same_space_returns_false():
     grid.add_car(t.basic_horizontal_car(grid))
     grid.add_car(t.basic_vertical_car(grid))
     
-    assert len(grid.cars.items) == 1
+    assert len(grid.cars.items()) == 1
     assert len(grid.occupied_squares) == 2
 
