@@ -1,10 +1,12 @@
 import pygame
+# pylint: disable=no-member
 import math
-from button import *
+from button import Button
 from car import HorizontalCar, VerticalCar
 from coordinate import Coordinate
 from grid import Grid
-from pygame.locals import (
+pygame.init()
+from pygame.constants import (
     MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, MOUSEMOTION, KEYDOWN
 )
 '''
@@ -28,6 +30,28 @@ def attempt_drag(mouse_pos, car, grid):
     new_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
     
     grid.drag_car(old_coor, new_coor, car)
+
+def handle_button_clicks(mouse_pos, click):
+    for button in buttons:
+        if button.on_button(mouse_pos):
+            # normal button
+            if button is button1:
+                button.shiny = click
+                # activate car thingy
+            # toggle buttons
+            if button in car_orientation_buttons:
+                index = car_orientation_buttons.index(button)
+                other_button = car_orientation_buttons[(index + 1) % 2]
+                if not button.shiny:
+                    button.shiny = True
+                    other_button.shiny = False
+            if button in size_buttons:
+                index = size_buttons.index(button)
+                other_button = size_buttons[(index + 1) % 2]
+                if not button.shiny:
+                    button.shiny = True
+                    other_button.shiny = False
+
 
 def draw_grid(grid):
     block_size = Grid.square_size
@@ -64,9 +88,21 @@ clock = pygame.time.Clock()
 
 # Keep track of rectangle locations.
 grid = Grid(10, 10)
-button1 = Button(600, 100, 50, 50, "New Car")
+center = size[0] / 4
+bottom = size[1] - 130
+button1 = Button(center, bottom, 100, 50, "New Car")
+bottom += 60
+horizontal_button = Button(center - 60, bottom, 80, 25, "horizontal")
+vertical_button = Button(center + 80, bottom, 80, 25, "vertical")
+size_two_button = Button(center - 60, bottom + 35, 80, 25, "2")
+size_three_button = Button(center + 80, bottom + 35, 80, 25, "3")
+horizontal_button.shiny = True
+size_two_button.shiny = True
 
 cars = dict()
+buttons= [button1, horizontal_button, vertical_button, size_two_button, size_three_button]
+car_orientation_buttons = (horizontal_button, vertical_button)
+size_buttons = (size_two_button, size_three_button)
 selection = None
 mouse_down = drag = False
 # -------- Main Program Loop -----------
@@ -75,6 +111,7 @@ while not done:
     pos = pygame.mouse.get_pos()
     x = pos[0]
     y = pos[1]
+    print(f"({x},{y})")
     for event in pygame.event.get(): # User did something
         if event.type == QUIT: # If user clicked close
             done = True # Flag that we are done so we exit this loop
@@ -85,11 +122,11 @@ while not done:
                     print(f"Mouse is in {color} region.")
                     selection = color
                     break
-            if button1.on_button(pos):
-                print("User clicked button")
+            handle_button_clicks(pos, True)
             mouse_down = True
         elif event.type == MOUSEBUTTONUP:
             print("User released mouse")
+            handle_button_clicks(pos, False)
             selection = None
             mouse_down = False
             drag = False
@@ -110,6 +147,10 @@ while not done:
     # --- Drawing code should go here
     draw_grid(grid)
     button1.draw(screen)
+    for button in car_orientation_buttons:
+        button.draw(screen)
+    for button in size_buttons:
+        button.draw(screen)
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()

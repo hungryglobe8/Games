@@ -1,9 +1,6 @@
-from game_window import (
-    WHITE, BLACK
-)
 import pygame
-pygame.font.init()
-
+BLACK    = (   0,   0,   0)
+WHITE    = ( 255, 255, 255)
 # light shade of the button 
 COLOR_LIGHT = (170,170,170)  
 # dark shade of the button 
@@ -20,7 +17,7 @@ class Button(object):
         self.y = y
         self.w = w
         self.h = h
-        self.font = pygame.font.SysFont('arial', 20).init()
+        self.font = pygame.font.SysFont('arial', 20)
         self.text = text
         self.shiny = False
 

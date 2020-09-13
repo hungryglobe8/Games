@@ -3,7 +3,7 @@ import math
 from car import HorizontalCar, VerticalCar
 from coordinate import Coordinate
 from grid import Grid
-from pygame.locals import (
+from pygame.event import (
     MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, MOUSEMOTION, KEYDOWN
 )
 '''
