@@ -1,5 +1,6 @@
 from car import VerticalCar, HorizontalCar
 from coordinate import Coordinate
+import pickle
 
 class Grid():
     # Class variables
@@ -14,7 +15,7 @@ class Grid():
     def within_grid(self, coor):
         x = coor.x
         y = coor.y
-        if (x < 0 or x > self.width or y < 0 or y > self.height):
+        if (x < 0 or x > self.width - 1 or y < 0 or y > self.height - 1):
             return False
         else:
             return True
@@ -102,3 +103,25 @@ class Grid():
         new_x = (x - Grid.origin.x) // Grid.square_size
         new_y = (y - Grid.origin.x) // Grid.square_size
         return Coordinate(new_x, new_y)
+
+    @staticmethod
+    def load_grid(file_name):
+        '''
+        Load data from a binary file storing an instance of a grid.
+        The data has been serialized through a python package called pickle.
+        '''
+        f = open(file_name, "rb")
+        grid = pickle.load(f)
+        if not isinstance(grid, Grid):
+            raise FileNotFoundError("This file does not contain a grid object as its first object.")
+        f.close()
+        return grid
+
+    def save_grid(self, file_name):
+        '''
+        Dump grid data into a file with binary formatting.
+        Can be retrieved with load_grid.
+        '''
+        f = open(file_name, "wb")
+        pickle.dump(self, f) # serialize class object
+        f.close()

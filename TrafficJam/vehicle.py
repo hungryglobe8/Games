@@ -28,9 +28,18 @@ class VehicleInterface:
             return False
         return any(coor in other_vehicle.coordinates for coor in self.coordinates)
 
-
     def increase_pos(self):
+        '''
+        Move a vehicle one direction along its track.
+        (0, 0) -> (1, 0)
+        (0, 0) -> (0, 1)
+        '''
         raise NotImplementedError()
 
     def decrease_pos(self):
+        '''
+        Move a vehicle the other direction along its track.
+        (1, 0) -> (0, 0)
+        (0, 1) -> (0, 0)
+        '''
         raise NotImplementedError()

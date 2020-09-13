@@ -1,12 +1,19 @@
 from grid import Grid
 from coordinate import Coordinate
 import test_car as t
+import pytest
 
 def test_init():
     assert Grid(5, 5) is not None
 
 def make_normal_grid():
     return Grid(5, 5)
+
+@pytest.mark.parametrize("grid_size, expected_result", [(8, True), (6, False), (10, True)])
+def test_within_grid(grid_size, expected_result):
+    grid = Grid(grid_size, grid_size)
+
+    assert grid.within_grid(Coordinate(7,5)) == expected_result
 
 def test_add_car():
     grid = make_normal_grid()
@@ -30,5 +37,3 @@ def test_add_two_cars_occupying_same_space_returns_false():
     grid.add_car(t.basic_vertical_car(grid))
     
     assert len(grid.cars.items()) == 1
-    assert len(grid.occupied_squares) == 2
-

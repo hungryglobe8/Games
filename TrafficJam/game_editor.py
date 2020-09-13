@@ -1,5 +1,6 @@
 import pygame
 import math
+from button import *
 from car import HorizontalCar, VerticalCar
 from coordinate import Coordinate
 from grid import Grid
@@ -16,6 +17,11 @@ GREEN    = (   0, 255,   0)
 RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 
+# # Define a font
+# smallfont = pygame.font.SysFont('Corbel', 35)
+# # Render text
+# text = smallfont.render('New Car', True, color)
+
 def attempt_drag(mouse_pos, car, grid):
     car_loc = Grid.transform_car_to_game(car)
     old_coor = Grid.location_to_coordinate(car_loc[0], car_loc[1])
@@ -29,21 +35,6 @@ def draw_grid(grid):
         for y in range(1,grid.height + 1):
             rect = pygame.Rect(x * block_size, y * block_size, block_size, block_size)
             pygame.draw.rect(screen, BLACK, rect, 2)
-
-def draw_stick_figure(screen, x, y):
-    # Head
-    pygame.draw.ellipse(screen, BLACK, [1+x,y,10,10], 0)
- 
-    # Legs
-    pygame.draw.line(screen, BLACK ,[5+x,17+y], [10+x,27+y], 2)
-    pygame.draw.line(screen, BLACK, [5+x,17+y], [x,27+y], 2)
- 
-    # Body
-    pygame.draw.line(screen, RED, [5+x,17+y], [5+x,7+y], 2)
- 
-    # Arms
-    pygame.draw.line(screen, RED, [5+x,7+y], [9+x,17+y], 2)
-    pygame.draw.line(screen, RED, [5+x,7+y], [1+x,17+y], 2)
 
 def clicked_region(mouse_pos, car_shape):
     '''
@@ -73,15 +64,9 @@ clock = pygame.time.Clock()
 
 # Keep track of rectangle locations.
 grid = Grid(10, 10)
-car1 = HorizontalCar(grid, Coordinate(0, 0), 2)
-car2 = HorizontalCar(grid, Coordinate(3, 0), 3)
-car3 = VerticalCar(grid, Coordinate(5, 5), 2)
-grid.add_car(car1)
-grid.add_car(car2)
-grid.add_car(car3)
+button1 = Button(600, 100, 50, 50, "New Car")
 
-
-cars = {"green": car1, "red": car2, "blue": car3}
+cars = dict()
 selection = None
 mouse_down = drag = False
 # -------- Main Program Loop -----------
@@ -100,6 +85,8 @@ while not done:
                     print(f"Mouse is in {color} region.")
                     selection = color
                     break
+            if button1.on_button(pos):
+                print("User clicked button")
             mouse_down = True
         elif event.type == MOUSEBUTTONUP:
             print("User released mouse")
@@ -121,10 +108,8 @@ while not done:
     screen.fill(WHITE)
  
     # --- Drawing code should go here
-    pygame.draw.rect(screen, GREEN, grid.cars[car1])
-    pygame.draw.rect(screen, RED, grid.cars[car2])
-    pygame.draw.rect(screen, BLUE, grid.cars[car3])
     draw_grid(grid)
+    button1.draw(screen)
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
