@@ -1,7 +1,7 @@
 import pygame
 # pylint: disable=no-member
-import math
-from button import Button
+import math, random
+import button
 from car import HorizontalCar, VerticalCar
 from coordinate import Coordinate
 from grid import Grid
@@ -19,11 +19,6 @@ GREEN    = (   0, 255,   0)
 RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 
-# # Define a font
-# smallfont = pygame.font.SysFont('Corbel', 35)
-# # Render text
-# text = smallfont.render('New Car', True, color)
-
 def attempt_drag(mouse_pos, car, grid):
     car_loc = Grid.transform_car_to_game(car)
     old_coor = Grid.location_to_coordinate(car_loc[0], car_loc[1])
@@ -31,27 +26,15 @@ def attempt_drag(mouse_pos, car, grid):
     
     grid.drag_car(old_coor, new_coor, car)
 
-def handle_button_clicks(mouse_pos, click):
-    for button in buttons:
-        if button.on_button(mouse_pos):
-            # normal button
-            if button is button1:
-                button.shiny = click
-                # activate car thingy
-            # toggle buttons
-            if button in car_orientation_buttons:
-                index = car_orientation_buttons.index(button)
-                other_button = car_orientation_buttons[(index + 1) % 2]
-                if not button.shiny:
-                    button.shiny = True
-                    other_button.shiny = False
-            if button in size_buttons:
-                index = size_buttons.index(button)
-                other_button = size_buttons[(index + 1) % 2]
-                if not button.shiny:
-                    button.shiny = True
-                    other_button.shiny = False
+def add_car_to_game(mouse_pos, car):
+    pos = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
+    if car[1] == "horizontal":
+        grid.add_car(HorizontalCar(grid, pos, car[2], button.make_car_button.normal_colour))
+    elif car[1] == "vertical":
+        grid.add_car(VerticalCar(grid, pos, car[2], button.make_car_button.normal_colour))
 
+def random_color():
+    return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
 
 def draw_grid(grid):
     block_size = Grid.square_size
@@ -59,6 +42,24 @@ def draw_grid(grid):
         for y in range(1,grid.height + 1):
             rect = pygame.Rect(x * block_size, y * block_size, block_size, block_size)
             pygame.draw.rect(screen, BLACK, rect, 2)
+
+def within_grid(mouse_pos):
+    x = mouse_pos[0]
+    y = mouse_pos[1]
+    return x in range(grid_size[0], grid_size[0] + grid_size[2]) and \
+        y in range(grid_size[1], grid_size[1] + grid_size[3])
+
+def draw_box(screen, mouse_pos, color, orient, size):
+    x = mouse_pos[0]
+    y = mouse_pos[1]
+    if x in range(grid_size[0], grid_size[0] + grid_size[2]) and \
+        y in range(grid_size[1], grid_size[1] + grid_size[3]):   
+        if (orient == "vertical"):
+            pygame.draw.rect(screen, color, [x, y, Grid.square_size * 1, Grid.square_size * size])
+        else:
+            pygame.draw.rect(screen, color, [x, y, Grid.square_size * size, Grid.square_size * 1])
+
+
 
 def clicked_region(mouse_pos, car_shape):
     '''
@@ -70,11 +71,9 @@ def clicked_region(mouse_pos, car_shape):
     height = range(car_shape[1], car_shape[1] + car_shape[3])
     return x in width and y in height
 
-def round_down(x, init_pos, size):
-    return int(math.ceil((x - size/2)/ size)) * size - init_pos
-
 # Game window size.
 size = (700, 700)
+grid_size = [50, 50, 500, 500]
 screen = pygame.display.set_mode(size)
 
 # Window title.
@@ -88,22 +87,11 @@ clock = pygame.time.Clock()
 
 # Keep track of rectangle locations.
 grid = Grid(10, 10)
-center = size[0] / 4
-bottom = size[1] - 130
-button1 = Button(center, bottom, 100, 50, "New Car")
-bottom += 60
-horizontal_button = Button(center - 60, bottom, 80, 25, "horizontal")
-vertical_button = Button(center + 80, bottom, 80, 25, "vertical")
-size_two_button = Button(center - 60, bottom + 35, 80, 25, "2")
-size_three_button = Button(center + 80, bottom + 35, 80, 25, "3")
-horizontal_button.shiny = True
-size_two_button.shiny = True
 
 cars = dict()
-buttons= [button1, horizontal_button, vertical_button, size_two_button, size_three_button]
-car_orientation_buttons = (horizontal_button, vertical_button)
-size_buttons = (size_two_button, size_three_button)
 selection = None
+last_click = None
+# WARNING BAD = same reference
 mouse_down = drag = False
 # -------- Main Program Loop -----------
 while not done:
@@ -117,16 +105,23 @@ while not done:
             done = True # Flag that we are done so we exit this loop
         elif event.type == MOUSEBUTTONDOWN:
             print("User pressed a mouse button")
+            # Reset last car click.
+            if last_click is not None:
+                if within_grid(pos):
+                    add_car_to_game(pos, last_click)
+                last_click = None
             for color, car in cars.items():
                 if clicked_region(pos, grid.cars[car]):
                     print(f"Mouse is in {color} region.")
                     selection = color
                     break
-            handle_button_clicks(pos, True)
+            button.update_click(pos, True, screen)
             mouse_down = True
         elif event.type == MOUSEBUTTONUP:
             print("User released mouse")
-            handle_button_clicks(pos, False)
+            last_click = button.update_click(pos, False, screen)
+            if isinstance(last_click, tuple):
+                print(f"Button selected is {last_click[0]}")
             selection = None
             mouse_down = False
             drag = False
@@ -146,11 +141,14 @@ while not done:
  
     # --- Drawing code should go here
     draw_grid(grid)
-    button1.draw(screen)
-    for button in car_orientation_buttons:
-        button.draw(screen)
-    for button in size_buttons:
-        button.draw(screen)
+    for elm in button.buttons:
+        elm.draw(screen)
+    for car in grid.cars:
+        pygame.draw.rect(screen, car.color, grid.cars[car])
+
+
+    if isinstance(last_click, tuple):
+        draw_box(screen, pos, last_click[0], last_click[1], last_click[2])
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()

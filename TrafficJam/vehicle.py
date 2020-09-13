@@ -2,7 +2,7 @@ from coordinate import Coordinate
 
 class VehicleInterface:
 
-    def __init__(self, grid, coor, size):
+    def __init__(self, grid, coor, size, color):
         # add vehicle to a grid
         self.grid = grid
         # check type of coor
@@ -11,8 +11,12 @@ class VehicleInterface:
         self.start = coor
         # check size
         if (size != 2 and size != 3):
-            raise ValueError("Size should be two or three")
+            raise ValueError("Size should be two or three.")
         self.size = size
+        # color should be tuple with 3 elements
+        if (len(color) != 3):
+            raise ValueError("Color should be 3-tuple.")
+        self.color = color
 
     def move(self, start, extend):
         ''' Update the start coordinate and list of coordinates associated with a vehicle. '''

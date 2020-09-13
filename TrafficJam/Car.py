@@ -15,8 +15,8 @@ class HorizontalCar(VehicleInterface):
         size (between 2 and 3)
     Can move left or right on a grid, but not up and down.
     '''
-    def __init__(self, grid, coor, size):
-        VehicleInterface.__init__(self, grid, coor, size)
+    def __init__(self, grid, coor, size, color):
+        VehicleInterface.__init__(self, grid, coor, size, color)
         # Save all coordinates of car.
         self.coordinates = coor.extend_right(size)
 
@@ -34,8 +34,8 @@ class VerticalCar(VehicleInterface):
         size (between 2 and 3)
     Can move up or down on a grid, but not left and right.
     '''
-    def __init__(self, grid, coor, size):
-        VehicleInterface.__init__(self, grid, coor, size)
+    def __init__(self, grid, coor, size, color):
+        VehicleInterface.__init__(self, grid, coor, size, color)
         # Save all coordinates of car.
         self.coordinates = coor.extend_down(size)
 
