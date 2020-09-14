@@ -1,9 +1,11 @@
 import pygame
+# pylint: disable=no-member
 import math
-from car import HorizontalCar, VerticalCar
-from coordinate import Coordinate
-from grid import Grid
-from pygame.event import (
+from TrafficJam.Engine.car import HorizontalCar, VerticalCar
+from TrafficJam.Engine.coordinate import Coordinate
+from TrafficJam.Engine.grid import Grid
+pygame.init()
+from pygame.constants import (
     MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, MOUSEMOTION, KEYDOWN
 )
 '''
@@ -21,7 +23,7 @@ def attempt_drag(mouse_pos, car, grid):
     old_coor = Grid.location_to_coordinate(car_loc[0], car_loc[1])
     new_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
     
-    grid.drag_car(old_coor, new_coor, car)
+    grid.drag_vehicle(old_coor, new_coor, car)
 
 def draw_grid(grid):
     block_size = Grid.square_size

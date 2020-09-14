@@ -1,5 +1,6 @@
 import pygame
 import random
+from TrafficJam.Engine.car import HorizontalCar, VerticalCar
 pygame.init()
 BLACK    = (   0,   0,   0)
 WHITE    = ( 255, 255, 255)
@@ -88,6 +89,8 @@ def update_click(mouse_pos, click, screen):
                 else:
                     car_size = 3
                 if horizontal_button.shiny:
+                    # Hard with coordinate as part of constructor... When to fix?
+                    # return HorizontalCar(grid, car_size, make_car_button.normal_colour)
                     return (make_car_button.normal_colour, "horizontal", car_size)
                 elif vertical_button.shiny:
                     return (make_car_button.normal_colour, "vertical", car_size)

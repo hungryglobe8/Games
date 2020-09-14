@@ -1,4 +1,4 @@
-from coordinate import Coordinate
+from TrafficJam.Engine.coordinate import Coordinate
 
 def make_zero_coordinate():
     return Coordinate(0, 0)

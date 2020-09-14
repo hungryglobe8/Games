@@ -1,7 +1,7 @@
-from coordinate import Coordinate
-from car import VerticalCar, HorizontalCar
-from vehicle import VehicleInterface
-from grid import Grid
+from TrafficJam.Engine.car import VerticalCar, HorizontalCar
+from TrafficJam.Engine.vehicle import VehicleInterface
+from TrafficJam.Engine.grid import Grid
+from TrafficJam.Engine.coordinate import Coordinate
 import pytest
 
 def basic_vehicle(grid=Grid(5, 5), coor=Coordinate(0, 0), size=2):

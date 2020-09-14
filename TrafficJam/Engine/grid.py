@@ -1,5 +1,5 @@
-from car import VerticalCar, HorizontalCar
-from coordinate import Coordinate
+from Engine.car import VerticalCar, HorizontalCar
+from Engine.coordinate import Coordinate
 import pickle
 
 class Grid():
@@ -11,20 +11,6 @@ class Grid():
         self.width = width
         self.height = height
         self.cars = dict()
-        
-    def within_grid(self, coor):
-        x = coor.x
-        y = coor.y
-        if (x < 0 or x > self.width - 1 or y < 0 or y > self.height - 1):
-            return False
-        else:
-            return True
-
-    def point_within_grid(self, point):
-        if (point < 0 or point > self.width):
-            return False
-        else:
-            return True
 
     def add_car(self, car=None):
         if car == None:
@@ -33,7 +19,7 @@ class Grid():
 
         # Do not add car if space is already occupied.
         for existing_car in self.cars.keys():
-            if car.collides_with(existing_car):
+            if car.collides_with(existing_car) or not car.is_within_grid():
                 return False
         else:
             self.update_car_location(car)
@@ -43,7 +29,16 @@ class Grid():
         self.cars[car] = Grid.transform_car_to_game(car)   
 
     def attempt_move(self, car, move, reverse):
+        '''
+        Try to move a car in a given direction. If the car ends up out of bounds,
+        or colliding with another car which already exists, undo the move and don't
+        update the grid's list of cars.
+        '''
         move()
+        if not car.is_within_grid():
+            # Undo move.
+            reverse()
+            return
         for existing_car in self.cars.keys():
             if car.collides_with(existing_car):
                 # Undo move.
@@ -52,18 +47,18 @@ class Grid():
         # Update grid positions.
         self.update_car_location(car)
 
-    def drag_car(self, old_coor, new_coor, car):
+    def drag_vehicle(self, old_coor, new_coor, car):
         '''
-        TODO: mouse must be on box, new_coor must be open
+        Attempts to drag a vehicle towards a specific location. Only tries to move car
+        one tile at a time. Any collision will result in the complete stop of the car.
+        Accepts vehicles of types HorizontalCar and VerticalCar
         '''
-        if (not self.within_grid(new_coor)):
-            return
-
         if isinstance(car, HorizontalCar):
             if new_coor.x > car.coordinates[-1].x:
                 self.attempt_move(car, car.increase_pos, car.decrease_pos)
             elif new_coor.x < car.coordinates[0].x:
                 self.attempt_move(car, car.decrease_pos, car.increase_pos)
+
         elif isinstance(car, VerticalCar):
             if new_coor.y > car.coordinates[-1].y:
                 self.attempt_move(car, car.increase_pos, car.decrease_pos)

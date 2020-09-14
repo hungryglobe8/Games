@@ -1,10 +1,10 @@
 import pygame
 # pylint: disable=no-member
 import math, random
-import button
-from car import HorizontalCar, VerticalCar
-from coordinate import Coordinate
-from grid import Grid
+from View import button
+from Engine.car import HorizontalCar, VerticalCar
+from Engine.coordinate import Coordinate
+from Engine.grid import Grid
 pygame.init()
 from pygame.constants import (
     MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, MOUSEMOTION, KEYDOWN
@@ -19,12 +19,12 @@ GREEN    = (   0, 255,   0)
 RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 
-def attempt_drag(mouse_pos, car, grid):
+def attempt_drag(mouse_pos, car):
     car_loc = Grid.transform_car_to_game(car)
     old_coor = Grid.location_to_coordinate(car_loc[0], car_loc[1])
     new_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
     
-    grid.drag_car(old_coor, new_coor, car)
+    grid.drag_vehicle(old_coor, new_coor, car)
 
 def add_car_to_game(mouse_pos, car):
     pos = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
@@ -41,7 +41,7 @@ def draw_grid(grid):
     for x in range(1,grid.width + 1):
         for y in range(1,grid.height + 1):
             rect = pygame.Rect(x * block_size, y * block_size, block_size, block_size)
-            pygame.draw.rect(screen, BLACK, rect, 2)
+            pygame.draw.rect(screen, BLACK, rect, 3)
 
 def within_grid(mouse_pos):
     x = mouse_pos[0]
@@ -50,15 +50,16 @@ def within_grid(mouse_pos):
         y in range(grid_size[1], grid_size[1] + grid_size[3])
 
 def draw_box(screen, mouse_pos, color, orient, size):
-    x = mouse_pos[0]
-    y = mouse_pos[1]
-    if x in range(grid_size[0], grid_size[0] + grid_size[2]) and \
-        y in range(grid_size[1], grid_size[1] + grid_size[3]):   
+    old_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
+    x = old_coor.x
+    y = old_coor.y
+    new_coor = Grid.transform_point_to_game(old_coor)
+    if x in range(0, grid.width) and \
+        y in range(0, grid.height):   
         if (orient == "vertical"):
-            pygame.draw.rect(screen, color, [x, y, Grid.square_size * 1, Grid.square_size * size])
+            pygame.draw.rect(screen, color, [new_coor.x, new_coor.y, Grid.square_size * 1, Grid.square_size * size])
         else:
-            pygame.draw.rect(screen, color, [x, y, Grid.square_size * size, Grid.square_size * 1])
-
+            pygame.draw.rect(screen, color, [new_coor.x, new_coor.y, Grid.square_size * size, Grid.square_size * 1])
 
 
 def clicked_region(mouse_pos, car_shape):
@@ -86,9 +87,8 @@ done = False
 clock = pygame.time.Clock()
 
 # Keep track of rectangle locations.
-grid = Grid(10, 10)
+grid = Grid(5, 5)
 
-cars = dict()
 selection = None
 last_click = None
 # WARNING BAD = same reference
@@ -99,7 +99,6 @@ while not done:
     pos = pygame.mouse.get_pos()
     x = pos[0]
     y = pos[1]
-    print(f"({x},{y})")
     for event in pygame.event.get(): # User did something
         if event.type == QUIT: # If user clicked close
             done = True # Flag that we are done so we exit this loop
@@ -110,11 +109,12 @@ while not done:
                 if within_grid(pos):
                     add_car_to_game(pos, last_click)
                 last_click = None
-            for color, car in cars.items():
-                if clicked_region(pos, grid.cars[car]):
-                    print(f"Mouse is in {color} region.")
-                    selection = color
-                    break
+            else:
+                for car, loc in grid.cars.items():
+                    if clicked_region(pos, loc):
+                        print(f"Mouse is in {car.color} region.")
+                        selection = car
+                        break
             button.update_click(pos, True, screen)
             mouse_down = True
         elif event.type == MOUSEBUTTONUP:
@@ -133,19 +133,18 @@ while not done:
     # --- Game logic should go here
     if selection is not None:
         #print(f"{selection} is selected")
-        attempt_drag(pos, cars[selection], grid)
+        attempt_drag(pos, selection)
 
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.
     screen.fill(WHITE)
  
     # --- Drawing code should go here
-    draw_grid(grid)
     for elm in button.buttons:
         elm.draw(screen)
     for car in grid.cars:
         pygame.draw.rect(screen, car.color, grid.cars[car])
-
+    draw_grid(grid)
 
     if isinstance(last_click, tuple):
         draw_box(screen, pos, last_click[0], last_click[1], last_click[2])

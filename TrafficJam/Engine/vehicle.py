@@ -1,8 +1,8 @@
-from coordinate import Coordinate
+from Engine.coordinate import Coordinate
 
 class VehicleInterface:
 
-    def __init__(self, grid, coor, size, color):
+    def __init__(self, grid, coor, size, color=(200, 200, 200)):
         # add vehicle to a grid
         self.grid = grid
         # check type of coor
@@ -31,6 +31,21 @@ class VehicleInterface:
         if self == other_vehicle:
             return False
         return any(coor in other_vehicle.coordinates for coor in self.coordinates)
+        
+    def is_within_grid(self):
+        ''' Check if all of a cars coordinates are within the grid. If not, return false. '''
+        for coor in self.coordinates:
+            x = coor.x
+            y = coor.y
+            if (x < 0 or x > self.grid.width - 1 or y < 0 or y > self.grid.height - 1):
+                return False
+        return True
+        
+    # def is_within_grid(self, coor):
+    #     ''' Check whether a given coordinate is within the grid. '''
+    #     x = coor.x
+    #     y = coor.y
+    #     return not (x < 0 or x > self.width - 1 or y < 0 or y > self.height - 1)
 
     def increase_pos(self):
         '''
