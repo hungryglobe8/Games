@@ -1,4 +1,4 @@
-from Engine.vehicle import VehicleInterface
+from vehicle import VehicleInterface
 class HorizontalCar(VehicleInterface):
     '''
     Create a horizontal car that is part of a grid system. Must be initialized with: 
@@ -11,12 +11,16 @@ class HorizontalCar(VehicleInterface):
         # Save all coordinates of car.
         self.coordinates = coor.extend_right(size)
 
+    def set_init_position(self, start):
+        VehicleInterface.set_init_position()
+
     def increase_pos(self):
-        new_coor = self.start.right()
-        super().move(new_coor, new_coor.extend_right)
+        for coor in self.coordinates:
+            coor.shift_right()
 
     def decrease_pos(self):
-        super().move(self.start.left(), self.start.left().extend_right)
+        for coor in self.coordinates:
+            coor.shift_left()
 
 class VerticalCar(VehicleInterface):
     '''

@@ -1,6 +1,6 @@
 import pygame
 import random
-from TrafficJam.Engine.car import HorizontalCar, VerticalCar
+from car import HorizontalCar, VerticalCar
 pygame.init()
 BLACK    = (   0,   0,   0)
 WHITE    = ( 255, 255, 255)

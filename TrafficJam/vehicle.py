@@ -1,14 +1,10 @@
-from Engine.coordinate import Coordinate
+from coordinate import Coordinate
 
 class VehicleInterface:
 
     def __init__(self, grid, coor, size, color=(200, 200, 200)):
         # add vehicle to a grid
         self.grid = grid
-        # check type of coor
-        if (type(coor) != Coordinate):
-            raise TypeError(coor)
-        self.start = coor
         # check size
         if (size != 2 and size != 3):
             raise ValueError("Size should be two or three.")
@@ -18,10 +14,13 @@ class VehicleInterface:
             raise ValueError("Color should be 3-tuple.")
         self.color = color
 
-    def move(self, start, extend):
+    def set_init_position(self, start, coordinates):
         ''' Update the start coordinate and list of coordinates associated with a vehicle. '''
-        self.start = start
-        self.coordinates = extend(self.size)
+        # check type of coor
+        if (type(start) != Coordinate):
+            raise TypeError(coor)
+        self.start = coor
+        self.coordinates = coordinates
 
     def collides_with(self, other_vehicle):
         ''' 

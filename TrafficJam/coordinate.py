@@ -10,13 +10,21 @@ class Coordinate():
     def __eq__(self, other):
         return self.x == other.x and self.y == other.y
 
-    def left(self): return Coordinate(self.x - 1, self.y)
+    def shift_left(self): 
+        ''' Coordinate (0, 0) becomes (-1, 0) '''
+        self.x -= 1
 
-    def right(self): return Coordinate(self.x + 1, self.y)
+    def shift_right(self): 
+        ''' Coordinate (0, 0) becomes (1, 0) '''
+        self.x += 1
 
-    def up(self): return Coordinate(self.x, self.y - 1)
+    def shift_up(self): 
+        ''' Coordinate (0, 0) becomes (0, -1) '''
+        self.y -= 1
 
-    def down(self): return Coordinate(self.x, self.y + 1)
+    def shift_down(self): 
+        ''' Coordinate (0, 0) becomes (0, 1) '''
+        self.y += 1
 
     def extend_right(self, size):
         ''' 

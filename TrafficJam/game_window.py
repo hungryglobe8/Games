@@ -1,9 +1,9 @@
 import pygame
 # pylint: disable=no-member
 import math
-from TrafficJam.Engine.car import HorizontalCar, VerticalCar
-from TrafficJam.Engine.coordinate import Coordinate
-from TrafficJam.Engine.grid import Grid
+from car import HorizontalCar, VerticalCar
+from coordinate import Coordinate
+from grid import Grid
 pygame.init()
 from pygame.constants import (
     MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, MOUSEMOTION, KEYDOWN

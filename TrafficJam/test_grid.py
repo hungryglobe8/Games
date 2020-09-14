@@ -1,5 +1,5 @@
-from TrafficJam.Engine.coordinate import Coordinate
-from TrafficJam.Engine.grid import Grid
+from coordinate import Coordinate
+from grid import Grid
 import test_car as t
 import pytest
 

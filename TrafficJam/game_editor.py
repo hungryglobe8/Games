@@ -1,10 +1,10 @@
 import pygame
 # pylint: disable=no-member
 import math, random
-from View import button
-from Engine.car import HorizontalCar, VerticalCar
-from Engine.coordinate import Coordinate
-from Engine.grid import Grid
+import button
+from car import HorizontalCar, VerticalCar
+from coordinate import Coordinate
+from grid import Grid
 pygame.init()
 from pygame.constants import (
     MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, MOUSEMOTION, KEYDOWN

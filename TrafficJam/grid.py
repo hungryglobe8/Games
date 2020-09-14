@@ -1,5 +1,5 @@
-from Engine.car import VerticalCar, HorizontalCar
-from Engine.coordinate import Coordinate
+from car import VerticalCar, HorizontalCar
+from coordinate import Coordinate
 import pickle
 
 class Grid():
