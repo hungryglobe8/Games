@@ -1,5 +1,5 @@
-from vehicle import VehicleInterface
-class HorizontalCar(VehicleInterface):
+from vehicle import Vehicle
+class HorizontalCar(Vehicle):
     '''
     Create a horizontal car that is part of a grid system. Must be initialized with: 
         top-left location (as Coordinate),
@@ -7,12 +7,7 @@ class HorizontalCar(VehicleInterface):
     Can move left or right on a grid, but not up and down.
     '''
     def __init__(self, grid, coor, size, color=(200, 200, 200)):
-        VehicleInterface.__init__(self, grid, coor, size, color)
-        # Save all coordinates of car.
-        self.coordinates = coor.extend_right(size)
-
-    def set_init_position(self, start):
-        VehicleInterface.set_init_position()
+        Vehicle.__init__(self, grid, coor.extend_right(size), size, color)
 
     def increase_pos(self):
         for coor in self.coordinates:
@@ -22,7 +17,7 @@ class HorizontalCar(VehicleInterface):
         for coor in self.coordinates:
             coor.shift_left()
 
-class VerticalCar(VehicleInterface):
+class VerticalCar(Vehicle):
     '''
     Create a vertical car that is part of a grid system. Must be initialized with: 
         top-left location (as Coordinate),
@@ -30,12 +25,11 @@ class VerticalCar(VehicleInterface):
     Can move up or down on a grid, but not left and right.
     '''
     def __init__(self, grid, coor, size, color=(200, 250, 250)):
-        VehicleInterface.__init__(self, grid, coor, size, color)
-        # Save all coordinates of car.
-        self.coordinates = coor.extend_down(size)
+        Vehicle.__init__(self, grid, coor.extend_down(size), size, color)
 
     def increase_pos(self):
-        super().move(self.start.down(), self.start.down().extend_down)
-
+        for coor in self.coordinates:
+            coor.shift_up()
     def decrease_pos(self):
-        super().move(self.start.up(), self.start.up().extend_down)
+        for coor in self.coordinates:
+            coor.shift_down()

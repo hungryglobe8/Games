@@ -1,11 +1,11 @@
 from car import VerticalCar, HorizontalCar
-from vehicle import VehicleInterface
+from vehicle import Vehicle
 from grid import Grid
 from coordinate import Coordinate
 import pytest
 
 def basic_vehicle(grid=Grid(5, 5), coor=Coordinate(0, 0), size=2):
-    return VehicleInterface(grid, coor, size)
+    return Vehicle(grid, coor, size)
 
 class TestVehicle:
     def test_init_vehicle(self):
@@ -29,7 +29,7 @@ class TestHorizontalCar:
         assert basic_horizontal_car() is not None
 
     def test_type_horizontal_car(self):
-        isinstance(basic_horizontal_car, VehicleInterface)
+        isinstance(basic_horizontal_car, Vehicle)
 
     def test_decrease_pos(self):
         sut = basic_horizontal_car()
@@ -53,7 +53,7 @@ class TestVerticalCar:
         assert basic_vertical_car() is not None
 
     def test_type_vertical_car(self):
-        isinstance(basic_vertical_car, VehicleInterface)
+        isinstance(basic_vertical_car, Vehicle)
 
     def test_decrease_pos(self):
         sut = basic_vertical_car()

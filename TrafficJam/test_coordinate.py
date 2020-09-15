@@ -25,12 +25,12 @@ def test_coordinate_inequality():
     assert coor1 != coor2
 
 def test_coordinate_within_coordinate_list():
-    coor_list = make_zero_coordinate().extend(3, "horizontal")
+    coor_list = make_zero_coordinate().extend_right(3)
 
     assert Coordinate(0, 0) in coor_list
 
 def test_any_coordinate_from_list_within_other_coordinate_list():
-    coor_list = make_zero_coordinate().extend(3, "horizontal")
+    coor_list = make_zero_coordinate().extend_right(3)
     other_list = make_zero_coordinate().extend_down(2)
 
     assert Coordinate.shared_coordinate(coor_list, other_list)
@@ -38,7 +38,7 @@ def test_any_coordinate_from_list_within_other_coordinate_list():
 def test_extend_horizontal():
     coor = make_zero_coordinate()
 
-    coors = coor.extend(2, "horizontal")
+    coors = coor.extend_right(2)
 
     assert coors == [Coordinate(0, 0), Coordinate(1, 0)]
 
@@ -52,19 +52,19 @@ def test_extend_vertical():
 def test_get_left_coordinate():
     coor = make_zero_coordinate()
 
-    assert coor.left() == Coordinate(-1, 0)
+    assert coor.shift_left() == Coordinate(-1, 0)
 
 def test_get_right_coordinate():
     coor = make_zero_coordinate()
 
-    assert coor.right() == Coordinate(1, 0)
+    assert coor.shift_right() == Coordinate(1, 0)
 
 def test_get_up_coordinate():
     coor = make_zero_coordinate()
 
-    assert coor.up() == Coordinate(0, -1)
+    assert coor.shift_up() == Coordinate(0, -1)
 
 def test_get_down_coordinate():
     coor = make_zero_coordinate()
 
-    assert coor.down() == Coordinate(0, 1)
+    assert coor.shift_down() == Coordinate(0, 1)

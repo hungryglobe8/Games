@@ -33,8 +33,8 @@ class Coordinate():
             ((0, 0), (1, 0), (2, 0))
         '''
         coors = [self]
-        for x in range(1, size):
-            coors.append(coors[x - 1].right())
+        for num in range(1, size):
+            coors.append(Coordinate(self.x + num, self.y))
         return tuple(coors)
 
 
@@ -45,8 +45,8 @@ class Coordinate():
             ((0, 0), (0, 1))
         '''
         coors = [self]
-        for x in range(1, size):
-            coors.append(coors[x - 1].down())
+        for num in range(1, size):
+            coors.append(Coordinate(self.x, self.y + num))
         return tuple(coors)
 
 

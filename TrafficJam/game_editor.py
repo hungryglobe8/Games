@@ -28,10 +28,10 @@ def attempt_drag(mouse_pos, car):
 
 def add_car_to_game(mouse_pos, car):
     pos = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
-    if car[1] == "horizontal":
-        grid.add_car(HorizontalCar(grid, pos, car[2], button.make_car_button.normal_colour))
-    elif car[1] == "vertical":
-        grid.add_car(VerticalCar(grid, pos, car[2], button.make_car_button.normal_colour))
+    if car.orientation == "horizontal":
+        grid.add_car(HorizontalCar(grid, pos, car.size, car.color))
+    elif car.orientation == "vertical":
+        grid.add_car(VerticalCar(grid, pos, car.size, car.color))
 
 def random_color():
     return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
@@ -146,8 +146,8 @@ while not done:
         pygame.draw.rect(screen, car.color, grid.cars[car])
     draw_grid(grid)
 
-    if isinstance(last_click, tuple):
-        draw_box(screen, pos, last_click[0], last_click[1], last_click[2])
+    if isinstance(last_click, button.CarInfo):
+        draw_box(screen, pos, last_click.color, last_click.orientation, last_click.size)
 
     # --- Go ahead and update the screen with what we've drawn.
     pygame.display.flip()
