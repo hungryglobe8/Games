@@ -19,11 +19,9 @@ RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
 
 def attempt_drag(mouse_pos, car, grid):
-    car_loc = Grid.transform_car_to_game(car)
-    old_coor = Grid.location_to_coordinate(car_loc[0], car_loc[1])
     new_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
     
-    grid.drag_vehicle(old_coor, new_coor, car)
+    grid.drag_vehicle(new_coor, car)
 
 def draw_grid(grid):
     block_size = Grid.square_size
@@ -31,6 +29,9 @@ def draw_grid(grid):
         for y in range(1,grid.height + 1):
             rect = pygame.Rect(x * block_size, y * block_size, block_size, block_size)
             pygame.draw.rect(screen, BLACK, rect, 2)
+    if grid.exit is not None:
+        exit_coor = Grid.transform_point_to_game(grid.exit)
+        pygame.draw.lines(screen, GREEN, False, [(exit_coor.x, exit_coor.y + Grid.square_size), (exit_coor.x + Grid.square_size, exit_coor.y + Grid.square_size)], 3)
 
 def draw_stick_figure(screen, x, y):
     # Head
@@ -81,6 +82,7 @@ car3 = VerticalCar(grid, Coordinate(5, 5), 2)
 grid.add_car(car1)
 grid.add_car(car2)
 grid.add_car(car3)
+grid.add_exit(Coordinate(5, -1))
 
 
 cars = {"green": car1, "red": car2, "blue": car3}

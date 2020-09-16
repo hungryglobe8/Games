@@ -35,7 +35,13 @@ class Grid():
         update the grid's list of cars.
         '''
         move()
+        # Check for victory.
+        if self.exit in car.coordinates:
+            self.update_car_location(car)
+            self.game_over = True
+            return
         if not car.is_within_grid():
+            # or any(car.collides_with(existing_car) for existing_car in self.cars.keys()):
             # Undo move.
             reverse()
             return
@@ -47,7 +53,7 @@ class Grid():
         # Update grid positions.
         self.update_car_location(car)
 
-    def drag_vehicle(self, old_coor, new_coor, car):
+    def drag_vehicle(self, new_coor, car):
         '''
         Attempts to drag a vehicle towards a specific location. Only tries to move car
         one tile at a time. Any collision will result in the complete stop of the car.
@@ -65,7 +71,16 @@ class Grid():
             elif new_coor.y < car.coordinates[0].y:
                 self.attempt_move(car, car.decrease_pos, car.increase_pos)
         else:
-            raise ValueError("Vehicle is of an undefined type.")           
+            raise ValueError("Vehicle is of an undefined type.")    
+
+    def add_exit(self, coor):
+        ''' Create an exit for the main car. Must be outside of main grid, but bordering it. '''
+        if coor.within_range(0, 0, self.width, self.height):
+            raise ValueError("Exit must be outside of grid.")
+        if not coor.within_range(-1, -1, self.width + 1, self.height + 1):
+            raise ValueError("Exit is too far away from grid.")
+        self.exit = coor
+
             
     @staticmethod
     def transform_car_to_game(car):

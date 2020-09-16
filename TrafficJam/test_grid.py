@@ -37,3 +37,20 @@ def test_add_two_cars_occupying_same_space_returns_false():
     grid.add_car(t.basic_vertical_car(grid))
     
     assert len(grid.cars.items()) == 1
+
+def test_add_exit():
+    grid = make_normal_grid()
+
+    grid.add_exit(Coordinate(-1, 0))
+
+    assert grid.exit is not None
+
+def test_win_game():
+    grid = make_normal_grid()
+    selected_car = t.basic_horizontal_car(grid)
+    grid.add_car(selected_car)
+    grid.add_exit(Coordinate(-1, 0))
+
+    grid.drag_vehicle(Coordinate(-1, 0), selected_car)
+
+    assert grid.game_over

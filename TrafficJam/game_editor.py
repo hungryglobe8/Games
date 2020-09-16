@@ -24,7 +24,7 @@ def attempt_drag(mouse_pos, car):
     old_coor = Grid.location_to_coordinate(car_loc[0], car_loc[1])
     new_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
     
-    grid.drag_vehicle(old_coor, new_coor, car)
+    grid.drag_vehicle(new_coor, car)
 
 def add_car_to_game(mouse_pos, car):
     pos = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
