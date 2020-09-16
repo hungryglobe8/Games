@@ -4,6 +4,9 @@ import math
 from car import HorizontalCar, VerticalCar
 from coordinate import Coordinate
 from grid import Grid
+from tkinter import Tk
+from tkinter import messagebox
+Tk().wm_withdraw() #to hide the main window
 pygame.init()
 from pygame.constants import (
     MOUSEBUTTONDOWN, MOUSEBUTTONUP, QUIT, MOUSEMOTION, KEYDOWN
@@ -117,8 +120,12 @@ while not done:
  
     # --- Game logic should go here
     if selection is not None:
-        #print(f"{selection} is selected")
         attempt_drag(pos, cars[selection], grid)
+    if grid.game_over:
+        messagebox.showinfo('You won!!', "Congratulations")
+        grid.game_over = False
+        #Probably best to end functionality/ return to another window.
+        #done = True
 
     # First, clear the screen to white. Don't put other drawing commands
     # above this, or they will be erased with this command.

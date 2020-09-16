@@ -11,6 +11,7 @@ class Grid():
         self.width = width
         self.height = height
         self.cars = dict()
+        self.game_over = False
 
     def add_car(self, car=None):
         if car == None:
