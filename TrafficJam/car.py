@@ -7,7 +7,8 @@ class HorizontalCar(Vehicle):
     Can move left or right on a grid, but not up and down.
     '''
     def __init__(self, grid, coor, size, color=(200, 200, 200)):
-        Vehicle.__init__(self, grid, coor.extend_right(size), size, color)
+        coordinates = coor.extend_right(size)
+        Vehicle.__init__(self, grid, coordinates, color)
 
     def increase_pos(self):
         for coor in self.coordinates:
@@ -25,11 +26,13 @@ class VerticalCar(Vehicle):
     Can move up or down on a grid, but not left and right.
     '''
     def __init__(self, grid, coor, size, color=(200, 250, 250)):
-        Vehicle.__init__(self, grid, coor.extend_down(size), size, color)
+        coordinates = coor.extend_down(size)
+        Vehicle.__init__(self, grid, coordinates, color)
 
     def increase_pos(self):
         for coor in self.coordinates:
-            coor.shift_up()
+            coor.shift_down()
+
     def decrease_pos(self):
         for coor in self.coordinates:
-            coor.shift_down()
+            coor.shift_up()

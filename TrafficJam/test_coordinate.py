@@ -1,4 +1,5 @@
 from coordinate import Coordinate
+import pytest
 
 def make_zero_coordinate():
     return Coordinate(0, 0)
@@ -24,16 +25,14 @@ def test_coordinate_inequality():
     coor2 = Coordinate(3, 3)
     assert coor1 != coor2
 
+@pytest.mark.parametrize("test_coor", [Coordinate(-1, 0), Coordinate(0, -1), Coordinate(6, 5), Coordinate(5, 6)])
+def test_coordinate_within_range(test_coor):
+    assert not test_coor.within_range(0, 0, 5, 5)
+
 def test_coordinate_within_coordinate_list():
     coor_list = make_zero_coordinate().extend_right(3)
 
     assert Coordinate(0, 0) in coor_list
-
-def test_any_coordinate_from_list_within_other_coordinate_list():
-    coor_list = make_zero_coordinate().extend_right(3)
-    other_list = make_zero_coordinate().extend_down(2)
-
-    assert Coordinate.shared_coordinate(coor_list, other_list)
 
 def test_extend_horizontal():
     coor = make_zero_coordinate()
@@ -47,24 +46,41 @@ def test_extend_vertical():
 
     coors = coor.extend_down(3)
 
-    assert coors == (Coordinate(0, 0), Coordinate(0, 1), Coordinate(0, 2))
+    assert coors == [Coordinate(0, 0), Coordinate(0, 1), Coordinate(0, 2)]
 
-def test_get_left_coordinate():
+def test_shift_left():
     coor = make_zero_coordinate()
 
-    assert coor.shift_left() == Coordinate(-1, 0)
+    coor.shift_left()
 
-def test_get_right_coordinate():
+    assert coor == Coordinate(-1, 0)
+
+def test_shift_right():
     coor = make_zero_coordinate()
 
-    assert coor.shift_right() == Coordinate(1, 0)
+    coor.shift_right()
 
-def test_get_up_coordinate():
+    assert coor == Coordinate(1, 0)
+
+def test_shift_up():
     coor = make_zero_coordinate()
 
-    assert coor.shift_up() == Coordinate(0, -1)
+    coor.shift_up()
 
-def test_get_down_coordinate():
+    assert coor == Coordinate(0, -1)
+
+def test_shift_down():
     coor = make_zero_coordinate()
 
-    assert coor.shift_down() == Coordinate(0, 1)
+    coor.shift_down()
+
+    assert coor == Coordinate(0, 1)
+
+def test_shift_group_of_coordinates():
+    coor = make_zero_coordinate()
+    coors = coor.extend_down(3)
+
+    for coor in coors:
+        coor.shift_down()
+
+    assert coors == [Coordinate(0, 1), Coordinate(0, 2), Coordinate(0, 3)]

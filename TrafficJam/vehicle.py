@@ -1,17 +1,19 @@
 from coordinate import Coordinate
 
 class Vehicle:
-    def __init__(self, grid, coordinates, size, color=(200, 200, 200)):
+    def __init__(self, grid, coordinates, color=(200, 200, 200)):
         # add vehicle to a grid
         self.grid = grid
-        # check size
-        if (size != 2 and size != 3):
-            raise ValueError("Size should be two or three.")
-        self.size = size
         # color should be tuple with 3 elements
         if (len(color) != 3):
             raise ValueError("Color should be 3-tuple.")
         self.color = color
+        # check size
+        if (len(coordinates) != 2 and len(coordinates) != 3):
+            raise ValueError("Size should be two or three.")
+        self.size = len(coordinates)
+        if not any(isinstance(coor, Coordinate) for coor in coordinates):
+            raise TypeError("All values in coordinates should be type(Coordinate).")
         self.coordinates = coordinates
 
     def collides_with(self, other_vehicle):
@@ -25,18 +27,12 @@ class Vehicle:
         
     def is_within_grid(self):
         ''' Check if all of a cars coordinates are within the grid. If not, return false. '''
+        x_max = self.grid.width
+        y_max = self.grid.height
         for coor in self.coordinates:
-            x = coor.x
-            y = coor.y
-            if (x < 0 or x > self.grid.width - 1 or y < 0 or y > self.grid.height - 1):
+            if not coor.within_range(0, 0, x_max, y_max):
                 return False
         return True
-        
-    # def is_within_grid(self, coor):
-    #     ''' Check whether a given coordinate is within the grid. '''
-    #     x = coor.x
-    #     y = coor.y
-    #     return not (x < 0 or x > self.width - 1 or y < 0 or y > self.height - 1)
 
     def increase_pos(self):
         '''

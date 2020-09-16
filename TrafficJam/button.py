@@ -10,9 +10,9 @@ COLOR_LIGHT = (170,170,170)
 COLOR_DARK = (100,100,100)
 
 class CarInfo():
-    def __init__(self, color, orientation, size):
+    def __init__(self, car_type, color, size):
+        self.type = car_type
         self.color = color
-        self.orientation = orientation
         self.size = size
 
 # Wrap all button data in a class.
@@ -56,6 +56,8 @@ def draw_toggle(b_list, button1, screen):
     if not button1.shiny:
         button1.shiny = True
         button2.shiny = False
+        
+state = HorizontalCar
 
 # # Make list of buttons in the program
 size = (700, 700)
@@ -97,9 +99,9 @@ def update_click(mouse_pos, click, screen):
                 if horizontal_button.shiny:
                     # Hard with coordinate as part of constructor... When to fix?
                     # return HorizontalCar(grid, car_size, make_car_button.normal_colour)
-                    return CarInfo(make_car_button.normal_colour, "horizontal", car_size)
+                    return CarInfo(HorizontalCar, make_car_button.normal_colour, car_size)
                 elif vertical_button.shiny:
-                    return CarInfo(make_car_button.normal_colour, "vertical", car_size)
+                    return CarInfo(VerticalCar, make_car_button.normal_colour, car_size)
             # toggle buttons
             draw_toggle(car_orientation_buttons, button, screen)
             draw_toggle(size_buttons, button, screen)
