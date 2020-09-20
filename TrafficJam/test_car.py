@@ -45,9 +45,7 @@ class TestVehicle:
 
         assert not vehicle1.is_within_grid()
 
-def basic_horizontal_car(grid=Grid(5, 5), coor=None, size=2):
-    if coor is None:
-        coor = Coordinate(0, 0)
+def basic_horizontal_car(grid=Grid(5, 5), coor=Coordinate(0, 0), size=2):
     return HorizontalCar(grid, coor, size)
 
 class TestHorizontalCar:
@@ -75,8 +73,7 @@ class TestHorizontalCar:
 
         assert sut.coordinates == [Coordinate(1, 0), Coordinate(2, 0)]
 
-def basic_vertical_car(grid=Grid(5, 5), size=2):
-    coor = Coordinate(0, 0)
+def basic_vertical_car(grid=Grid(5, 5), coor=Coordinate(0, 0), size=2):
     return VerticalCar(grid, coor, size)
 
 class TestVerticalCar:

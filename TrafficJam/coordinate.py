@@ -32,7 +32,7 @@ class Coordinate():
         For example, extend_right(3) from (0, 0) returns:
             ((0, 0), (1, 0), (2, 0))
         '''
-        coors = [self]
+        coors = [Coordinate(self.x, self.y)]
         for num in range(1, size):
             coors.append(Coordinate(self.x + num, self.y))
         return coors
@@ -43,7 +43,7 @@ class Coordinate():
         For example, extend_down(2) from (0, 0) returns:
             ((0, 0), (0, 1))
         '''
-        coors = [self]
+        coors = [Coordinate(self.x, self.y)]
         for num in range(1, size):
             coors.append(Coordinate(self.x, self.y + num))
         return coors
