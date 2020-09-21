@@ -15,9 +15,38 @@ class CarInfo():
         self.color = color
         self.size = size
 
+class ToggleButton():
+    def __init__(self, button1, button2):
+        self.button1 = button1
+        self.button2 = button2
+
+    def which_toggled(self):
+        if self.button1.shiny:
+            return self.button1.text
+        else:
+            return self.button2.text
+
+    def draw(self, screen):
+        ''' Draw both buttons. '''
+        self.button1.draw(screen)
+        self.button2.draw(screen)
+
+    def on_button(self, pos):
+        ''' Check whether a given position is on either button. '''
+        return self.button1.on_button(pos) or self.button2.on_button(pos)
+
+    def toggle(self, pos):
+        ''' Click one of the two buttons in toggle button. '''
+        if self.button1.on_button(pos):
+            self.button1.shiny = True
+            self.button2.shiny = False
+        elif self.button2.on_button(pos):
+            self.button2.shiny = True
+            self.button1.shiny = False
+
 # Wrap all button data in a class.
 class Button():
-    def __init__(self, x, y, w, h, text, colour=None):
+    def __init__(self, x, y, w, h, text, colour=None, shiny=False):
         if colour is None:
             colour = COLOR_LIGHT
 
@@ -28,7 +57,7 @@ class Button():
         self.h = h
         self.font = pygame.font.SysFont('arial', 20)
         self.text = text
-        self.shiny = False
+        self.shiny = shiny
 
     def draw(self, screen):
         if self.shiny:
@@ -46,16 +75,6 @@ class Button():
     def on_button(self, pos):
         return self.x <= pos[0] and self.x + self.w > pos[0] and \
                self.y <= pos[1] and self.y + self.h > pos[1]
-
-def draw_toggle(b_list, button1, screen):
-    if button1 not in b_list:
-        return
-
-    index = b_list.index(button1)
-    button2 = b_list[(index + 1) % 2]
-    if not button1.shiny:
-        button1.shiny = True
-        button2.shiny = False
         
 state = HorizontalCar
 
@@ -65,16 +84,14 @@ center = size[0] / 4
 bottom = size[1] - 130
 make_car_button = Button(center, bottom, 100, 50, "New Car")
 bottom += 60
-horizontal_button = Button(center - 60, bottom, 80, 25, "horizontal")
+horizontal_button = Button(center - 60, bottom, 80, 25, "horizontal", shiny=True)
 vertical_button = Button(center + 80, bottom, 80, 25, "vertical")
-size_two_button = Button(center - 60, bottom + 35, 80, 25, "2")
+toggle1 = ToggleButton(horizontal_button, vertical_button)
+size_two_button = Button(center - 60, bottom + 35, 80, 25, "2", shiny=True)
 size_three_button = Button(center + 80, bottom + 35, 80, 25, "3")
-horizontal_button.shiny = True
-size_two_button.shiny = True
+toggle2 = ToggleButton(size_two_button, size_three_button)
 
-buttons= [make_car_button, horizontal_button, vertical_button, size_two_button, size_three_button]
-car_orientation_buttons = (horizontal_button, vertical_button)
-size_buttons = (size_two_button, size_three_button)
+buttons= [make_car_button, toggle1, toggle2]
 
 # Mouse click handler
 def update_click(mouse_pos, click, screen):
@@ -90,21 +107,16 @@ def update_click(mouse_pos, click, screen):
             if button is make_car_button:
                 button.shiny = click
                 button.normal_colour = random_color()
-                # activate car thingy
-                car_size = 0
-                if size_two_button.shiny:
-                    car_size = 2
-                else:
-                    car_size = 3
-                if horizontal_button.shiny:
-                    # Hard with coordinate as part of constructor... When to fix?
-                    # return HorizontalCar(grid, car_size, make_car_button.normal_colour)
-                    return CarInfo(HorizontalCar, make_car_button.normal_colour, car_size)
-                elif vertical_button.shiny:
-                    return CarInfo(VerticalCar, make_car_button.normal_colour, car_size)
+                # Get car options.
+                size = toggle1.which_toggled()
+                orientation = toggle2.which_toggled()
+                if orientation == "horizontal":
+                    return CarInfo(HorizontalCar, make_car_button.normal_colour, size)
+                elif orientation == "vertical":
+                    return CarInfo(VerticalCar, make_car_button.normal_colour, size)
             # toggle buttons
-            draw_toggle(car_orientation_buttons, button, screen)
-            draw_toggle(size_buttons, button, screen)
+            else:
+                button.toggle(mouse_pos)
 
 def random_color():
     return (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))

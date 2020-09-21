@@ -11,6 +11,7 @@ class Grid():
         self.width = width
         self.height = height
         self.cars = dict()
+        self.exit = None
         self.game_over = False
 
     def add_car(self, car=None):
@@ -37,7 +38,7 @@ class Grid():
         '''
         move()
         # Check for victory.
-        if self.exit in car.coordinates:
+        if self.exit is not None and self.exit in car.coordinates:
             self.update_car_location(car)
             self.game_over = True
             return
