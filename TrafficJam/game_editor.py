@@ -21,7 +21,7 @@ BLUE     = (   0,   0, 255)
 
 def attempt_drag(mouse_pos, car):
     car_loc = Grid.transform_car_to_game(car)
-    old_coor = Grid.location_to_coordinate(car_loc[0], car_loc[1])
+    game_coor = Grid.location_to_coordinate(car_loc[0], car_loc[1])
     new_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
     
     grid.drag_vehicle(new_coor, car)
@@ -47,17 +47,19 @@ def within_grid(mouse_pos):
         y in range(grid_size[1], grid_size[1] + grid_size[3])
 
 def draw_box(screen, mouse_pos, color, orient, size):
-    old_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
-    x = old_coor.x
-    y = old_coor.y
-    new_coor = Grid.transform_point_to_game(old_coor)
-    if x in range(0, grid.width) and \
-        y in range(0, grid.height):   
-        if (orient == VerticalCar):
-            pygame.draw.rect(screen, color, [new_coor.x, new_coor.y, Grid.square_size * 1, Grid.square_size * size])
-        else:
-            pygame.draw.rect(screen, color, [new_coor.x, new_coor.y, Grid.square_size * size, Grid.square_size * 1])
+    game_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
+    if (orient == VerticalCar):
+        car = VerticalCar(grid, game_coor, size, color)
+    elif (orient == HorizontalCar):
+        car = HorizontalCar(grid, game_coor, size, color)
 
+    if car.is_within_grid():
+        draw_car(screen, car) 
+
+def draw_car(screen, car):
+    for coor in car.coordinates:
+        window_coor = Grid.transform_point_to_game(coor)
+        pygame.draw.rect(screen, car.color, [window_coor.x, window_coor.y, Grid.square_size, Grid.square_size])
 
 def clicked_region(mouse_pos, car_shape):
     '''

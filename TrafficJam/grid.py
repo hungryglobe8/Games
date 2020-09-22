@@ -19,9 +19,13 @@ class Grid():
             print("Randomly generate car")
             return True
 
+        # Do not add car if it is outside of the grid.
+        if not car.is_within_grid():
+            return False
+
         # Do not add car if space is already occupied.
         for existing_car in self.cars.keys():
-            if car.collides_with(existing_car) or not car.is_within_grid():
+            if car.collides_with(existing_car):
                 return False
         else:
             self.update_car_location(car)

@@ -16,37 +16,43 @@ class CarInfo():
         self.size = size
 
 class ToggleButton():
-    def __init__(self, button1, button2):
-        self.button1 = button1
-        self.button2 = button2
+    '''
+    A toggle button defines the relationship between groups of buttons where only one can be selected at a time.
+    Clicking one toggle button will select it and remove focus from its fellow toggles.
+
+    initial_selection - the initial button from the toggles to be shiny (active)
+    button_dict - a dictionary of all buttons and the corresponding options that they connect to.
+    '''
+    def __init__(self, initial_selection, button_dict):
+        self.buttons = button_dict.keys()
+        self.options = button_dict
+        self.selected = initial_selection
+        self.selected.shiny = True
 
     def which_toggled(self):
-        if self.button1.shiny:
-            return self.button1.text
-        else:
-            return self.button2.text
+        return self.options[self.selected]
 
     def draw(self, screen):
         ''' Draw both buttons. '''
-        self.button1.draw(screen)
-        self.button2.draw(screen)
+        for button in self.buttons:
+            button.draw(screen)
 
     def on_button(self, pos):
         ''' Check whether a given position is on either button. '''
-        return self.button1.on_button(pos) or self.button2.on_button(pos)
+        return any(button.on_button(pos) for button in self.buttons)
 
     def toggle(self, pos):
-        ''' Click one of the two buttons in toggle button. '''
-        if self.button1.on_button(pos):
-            self.button1.shiny = True
-            self.button2.shiny = False
-        elif self.button2.on_button(pos):
-            self.button2.shiny = True
-            self.button1.shiny = False
+        ''' Click one of the buttons in toggle button. Deactivate the others. '''
+        for button in self.buttons:
+            if button.on_button(pos):
+                self.selected = button
+                button.shiny = True
+            else:
+                button.shiny = False
 
 # Wrap all button data in a class.
 class Button():
-    def __init__(self, x, y, w, h, text, colour=None, shiny=False):
+    def __init__(self, x, y, w, h, text, colour=None):
         if colour is None:
             colour = COLOR_LIGHT
 
@@ -57,7 +63,7 @@ class Button():
         self.h = h
         self.font = pygame.font.SysFont('arial', 20)
         self.text = text
-        self.shiny = shiny
+        self.shiny = False
 
     def draw(self, screen):
         if self.shiny:
@@ -84,12 +90,12 @@ center = size[0] / 4
 bottom = size[1] - 130
 make_car_button = Button(center, bottom, 100, 50, "New Car")
 bottom += 60
-horizontal_button = Button(center - 60, bottom, 80, 25, "horizontal", shiny=True)
+horizontal_button = Button(center - 60, bottom, 80, 25, "horizontal")
 vertical_button = Button(center + 80, bottom, 80, 25, "vertical")
-toggle1 = ToggleButton(horizontal_button, vertical_button)
-size_two_button = Button(center - 60, bottom + 35, 80, 25, "2", shiny=True)
+toggle1 = ToggleButton(vertical_button, {horizontal_button: HorizontalCar, vertical_button: VerticalCar})
+size_two_button = Button(center - 60, bottom + 35, 80, 25, "2")
 size_three_button = Button(center + 80, bottom + 35, 80, 25, "3")
-toggle2 = ToggleButton(size_two_button, size_three_button)
+toggle2 = ToggleButton(size_three_button, {size_two_button: 2, size_three_button: 3})
 
 buttons= [make_car_button, toggle1, toggle2]
 
@@ -108,12 +114,9 @@ def update_click(mouse_pos, click, screen):
                 button.shiny = click
                 button.normal_colour = random_color()
                 # Get car options.
-                size = toggle1.which_toggled()
-                orientation = toggle2.which_toggled()
-                if orientation == "horizontal":
-                    return CarInfo(HorizontalCar, make_car_button.normal_colour, size)
-                elif orientation == "vertical":
-                    return CarInfo(VerticalCar, make_car_button.normal_colour, size)
+                orientation = toggle1.which_toggled()
+                size = toggle2.which_toggled()
+                return CarInfo(orientation, make_car_button.normal_colour, size)
             # toggle buttons
             else:
                 button.toggle(mouse_pos)
