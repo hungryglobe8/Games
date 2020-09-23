@@ -23,14 +23,13 @@ class ToggleButton():
     initial_selection - the initial button from the toggles to be shiny (active)
     button_dict - a dictionary of all buttons and the corresponding options that they connect to.
     '''
-    def __init__(self, initial_selection, button_dict):
-        self.buttons = button_dict.keys()
-        self.options = button_dict
-        self.selected = initial_selection
+    def __init__(self, *args):
+        self.buttons = args
+        self.selected = args[0]
         self.selected.shiny = True
 
     def which_toggled(self):
-        return self.options[self.selected]
+        return self.selected
 
     def draw(self, screen):
         ''' Draw both buttons. '''
@@ -52,7 +51,7 @@ class ToggleButton():
 
 # Wrap all button data in a class.
 class Button():
-    def __init__(self, x, y, w, h, text, colour=None):
+    def __init__(self, x, y, w, h, text, colour=None, info=None):
         if colour is None:
             colour = COLOR_LIGHT
 
@@ -63,6 +62,7 @@ class Button():
         self.h = h
         self.font = pygame.font.SysFont('arial', 20)
         self.text = text
+        self.info = info
         self.shiny = False
 
     def draw(self, screen):
@@ -90,17 +90,17 @@ center = size[0] / 4
 bottom = size[1] - 130
 make_car_button = Button(center, bottom, 100, 50, "New Car")
 bottom += 60
-horizontal_button = Button(center - 60, bottom, 80, 25, "horizontal")
-vertical_button = Button(center + 80, bottom, 80, 25, "vertical")
-toggle1 = ToggleButton(vertical_button, {horizontal_button: HorizontalCar, vertical_button: VerticalCar})
-size_two_button = Button(center - 60, bottom + 35, 80, 25, "2")
-size_three_button = Button(center + 80, bottom + 35, 80, 25, "3")
-toggle2 = ToggleButton(size_three_button, {size_two_button: 2, size_three_button: 3})
+horizontal_button = Button(center - 60, bottom, 80, 25, "horizontal", info=HorizontalCar)
+vertical_button = Button(center + 80, bottom, 80, 25, "vertical", info=VerticalCar)
+toggle1 = ToggleButton(horizontal_button, vertical_button)
+size_two_button = Button(center - 60, bottom + 35, 80, 25, "2", info=2)
+size_three_button = Button(center + 80, bottom + 35, 80, 25, "3", info=3)
+toggle2 = ToggleButton(size_two_button, size_three_button)
 
 buttons= [make_car_button, toggle1, toggle2]
 
 # Mouse click handler
-def update_click(mouse_pos, click, screen):
+def update_click(mouse_pos, click):
     """
     Mouse got clicked
     Returns whether a change occurred.
@@ -114,8 +114,8 @@ def update_click(mouse_pos, click, screen):
                 button.shiny = click
                 button.normal_colour = random_color()
                 # Get car options.
-                orientation = toggle1.which_toggled()
-                size = toggle2.which_toggled()
+                orientation = toggle1.which_toggled().info
+                size = toggle2.which_toggled().info
                 return CarInfo(orientation, make_car_button.normal_colour, size)
             # toggle buttons
             else:
