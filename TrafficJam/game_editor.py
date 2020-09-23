@@ -32,8 +32,6 @@ clock = pygame.time.Clock()
 while not done:
     # --- Main event loop
     pos = pygame.mouse.get_pos()
-    x = pos[0]
-    y = pos[1]
     for event in pygame.event.get(): # User did something
         if event.type == QUIT: # If user clicked close
             done = True # Flag that we are done so we exit this loop

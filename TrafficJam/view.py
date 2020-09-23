@@ -33,6 +33,9 @@ def draw_grid(screen, grid):
         for y in range(1,grid.height + 1):
             rect = pygame.Rect(x * block_size, y * block_size, block_size, block_size)
             pygame.draw.rect(screen, BLACK, rect, 3)
+    if grid.exit is not None:
+        exit_coor = Grid.transform_point_to_game(grid.exit)
+        pygame.draw.lines(screen, GREEN, False, [(exit_coor.x, exit_coor.y + Grid.square_size), (exit_coor.x + Grid.square_size, exit_coor.y + Grid.square_size)], 3)
 
 
 def random_color():

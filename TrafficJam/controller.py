@@ -8,9 +8,9 @@ from grid import Grid
 pygame.init()
 
 class Controller():
-    def __init__(self):
+    def __init__(self, grid):
         # Set up a grid to interact with the game.
-        self.grid = Grid(5, 5)
+        self.grid = grid
         self.grid_size = [50, 50, 500, 500]
 
         self.selection = None
