@@ -54,3 +54,14 @@ def test_win_game():
     grid.drag_vehicle(Coordinate(-1, 0), selected_car)
 
     assert grid.game_over
+
+def test_save_grid():
+    grid = make_normal_grid()
+    save_file = "TrafficJam/Levels/Test/test_grid.game"
+
+    assert grid.save_grid(save_file) is None
+
+def test_load_grid():
+    save_file = "TrafficJam/Levels/Test/test_grid.game"
+
+    assert isinstance(Grid.load_grid(save_file), Grid)

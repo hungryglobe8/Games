@@ -89,6 +89,10 @@ size = (700, 700)
 center = size[0] / 4
 bottom = size[1] - 130
 make_car_button = Button(center, bottom, 100, 50, "New Car")
+move_exit = Button(center * 2, bottom, 100, 50, "Move Exit")
+save_game = Button(center * 3, bottom, 100, 50, "Save Game")
+load_game = Button(center * 3, bottom + 75, 100, 50, "Load Game")
+
 bottom += 60
 horizontal_button = Button(center - 60, bottom, 80, 25, "horizontal", info=HorizontalCar)
 vertical_button = Button(center + 80, bottom, 80, 25, "vertical", info=VerticalCar)
@@ -97,7 +101,7 @@ size_two_button = Button(center - 60, bottom + 35, 80, 25, "2", info=2)
 size_three_button = Button(center + 80, bottom + 35, 80, 25, "3", info=3)
 toggle2 = ToggleButton(size_two_button, size_three_button)
 
-buttons= [make_car_button, toggle1, toggle2]
+buttons= [make_car_button, move_exit, save_game, load_game, toggle1, toggle2]
 
 # Mouse click handler
 def update_click(mouse_pos, click):
@@ -113,10 +117,19 @@ def update_click(mouse_pos, click):
             if button is make_car_button:
                 button.shiny = click
                 button.normal_colour = random_color()
+                print(f"color is: {button.normal_colour}")
                 # Get car options.
                 orientation = toggle1.which_toggled().info
                 size = toggle2.which_toggled().info
                 return CarInfo(orientation, make_car_button.normal_colour, size)
+            elif button is move_exit:
+                button.shiny = click
+                button.normal_colour = ( 255,   0,   0)
+                return "line"
+            elif button is save_game:
+                return "save"
+            elif button is load_game:
+                return "load"
             # toggle buttons
             else:
                 button.toggle(mouse_pos)

@@ -81,12 +81,14 @@ class Grid():
 
     def add_exit(self, coor):
         ''' Create an exit for the main car. Must be outside of main grid, but bordering it. '''
-        if coor.within_range(0, 0, self.width, self.height):
-            raise ValueError("Exit must be outside of grid.")
-        if not coor.within_range(-1, -1, self.width + 1, self.height + 1):
-            raise ValueError("Exit is too far away from grid.")
+        if coor.within_range(0, self.width, 0, self.height):
+            print("Exit must be outside of grid.")
+            return
+        if not coor.within_range(-1, self.width + 1, -1, self.height + 1):
+            print("Exit is too far away from grid.")
+            return
+        # Only change exit if conditions above are not triggered.
         self.exit = coor
-
             
     @staticmethod
     def transform_car_to_game(car):
@@ -103,7 +105,7 @@ class Grid():
     @staticmethod
     def transform_point_to_game(coor):
         '''
-        Transform a grid's coordinates to the game window's coordinates.
+        Transform a grid's coordinates to the window's position.
         (0,0) => (50, 50)
         (1,1) => (150, 150)
         '''
@@ -112,10 +114,14 @@ class Grid():
         return Coordinate(x, y)
         
     @staticmethod
-    def location_to_coordinate(x, y):
+    def mouse_to_coordinate(pos):
         '''
-        Transform a location to the grid's coordinate system.
+        Transform a window position to the grid's coordinate system.
+        (50, 50) => (0, 0)
+        (150, 150) => (1, 1)
         '''
+        x = pos[0]
+        y = pos[1]
         new_x = (x - Grid.origin.x) // Grid.square_size
         new_y = (y - Grid.origin.x) // Grid.square_size
         return Coordinate(new_x, new_y)

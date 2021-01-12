@@ -30,7 +30,7 @@ class Vehicle:
         x_max = self.grid.width
         y_max = self.grid.height
         for coor in self.coordinates:
-            if not coor.within_range(0, 0, x_max, y_max):
+            if not coor.within_range(0, x_max, 0, y_max):
                 return False
         return True
 

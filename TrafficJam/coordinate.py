@@ -48,7 +48,7 @@ class Coordinate():
             coors.append(Coordinate(self.x, self.y + num))
         return coors
 
-    def within_range(self, x_min, y_min, x_max, y_max):
+    def within_range(self, x_min, x_max, y_min, y_max):
         '''
         Determine if a coordinate falls in the range of (0, x_max) and (0, y_max),
         with x_max and y_max being exclusive.

@@ -17,11 +17,11 @@ class Controller():
         self.last_click = None
 
     def attempt_drag(self, mouse_pos, car):
-        new_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
+        new_coor = Grid.mouse_to_coordinate(mouse_pos)
         self.grid.drag_vehicle(new_coor, car)
         
     def add_car_to_game(self, mouse_pos, car):
-        pos = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
+        pos = Grid.mouse_to_coordinate(mouse_pos)
         self.grid.add_car(car.type(self.grid, pos, car.size, car.color))
 
     def within_grid(self, mouse_pos):
@@ -45,6 +45,11 @@ class Controller():
         if isinstance(self.last_click, button.CarInfo) and self.within_grid(mouse_pos):
             self.add_car_to_game(mouse_pos, self.last_click)
             self.last_click = None
+        # Add new exit.
+        elif self.last_click == "line":
+            self.grid.add_exit(Grid.mouse_to_coordinate(mouse_pos))
+            self.last_click = None
+        # Normal gameplay.
         else:
             for car, loc in self.grid.cars.items():
                 if self.clicked_region(mouse_pos, loc):

@@ -17,6 +17,8 @@ WHITE    = ( 255, 255, 255)
 GREEN    = (   0, 255,   0)
 RED      = ( 255,   0,   0)
 BLUE     = (   0,   0, 255)
+DARKBLUE = (  12,  69, 121)
+GOAL     = RED
 
 def game(size, grid, show_buttons=False):
     # Game window size.
@@ -48,19 +50,32 @@ def game(size, grid, show_buttons=False):
         # --- Game logic should go here
         if controller.selection is not None:
             controller.attempt_drag(pos, controller.selection)
+        if grid.game_over:
+            controller.selection = None
+            messagebox.showinfo('You won!!', "Congratulations")
+            grid.game_over = False
 
         # Clear the screen to white.
         screen.fill(WHITE)
     
         # --- Drawing code should go here
-        for car in grid.cars:
-            pygame.draw.rect(screen, car.color, grid.cars[car])
+        # Handle buttons before drawing other things.
         if show_buttons:
             for elm in button.buttons:
                 elm.draw(screen)
             last_click = controller.last_click
             if isinstance(last_click, button.CarInfo):
                 draw_box(screen, grid, pos, last_click.color, last_click.type, last_click.size)
+            elif last_click == "line":
+                draw_line(screen, Grid.mouse_to_coordinate(pos), grid)
+            elif last_click == "save":
+                grid.save_grid("TrafficJam/Levels/Test/mytest.game")
+            elif last_click == "load":
+                grid = Grid.load_grid("TrafficJam/Levels/Test/mytest.game")
+
+        for car in grid.cars:
+            pygame.draw.rect(screen, car.color, grid.cars[car])
+
         draw_grid(screen, grid)
 
         # --- Go ahead and update the screen with what we've drawn.
@@ -70,7 +85,7 @@ def game(size, grid, show_buttons=False):
         clock.tick(60)
 
 def draw_box(screen, grid, mouse_pos, color, orient, size):
-    game_coor = Grid.location_to_coordinate(mouse_pos[0], mouse_pos[1])
+    game_coor = Grid.mouse_to_coordinate(mouse_pos)
     if (orient == VerticalCar):
         car = VerticalCar(grid, game_coor, size, color)
     elif (orient == HorizontalCar):
@@ -84,13 +99,32 @@ def draw_car(screen, vehicle):
         window_coor = Grid.transform_point_to_game(coor)
         pygame.draw.rect(screen, vehicle.color, [window_coor.x, window_coor.y, Grid.square_size, Grid.square_size])
         
+def draw_line(screen, grid_coor, grid):
+    width = grid.width
+    height = grid.height
+    game_coor = Grid.transform_point_to_game(grid_coor)
+    # bottom side
+    if grid_coor.within_range(0, width, -1, 0):
+        vertices = [(game_coor.x, game_coor.y + Grid.square_size), (game_coor.x + Grid.square_size, game_coor.y + Grid.square_size)]
+    # right side
+    elif grid_coor.within_range(-1, 0, 0, height):
+        vertices = [(game_coor.x + Grid.square_size, game_coor.y), (game_coor.x + Grid.square_size, game_coor.y + Grid.square_size)]
+    # top side
+    elif grid_coor.within_range(0, width, height, height + 1):
+        vertices = [(game_coor.x, game_coor.y), (game_coor.x + Grid.square_size, game_coor.y)]
+    # left side
+    elif grid_coor.within_range(width, width + 1, 0, height):
+        vertices = [(game_coor.x, game_coor.y), (game_coor.x, game_coor.y + Grid.square_size)]
+    else:
+        return
+    pygame.draw.lines(screen, GOAL, False, vertices, 5)
+
 def draw_grid(screen, grid):
     block_size = Grid.square_size
     for x in range(1,grid.width + 1):
         for y in range(1,grid.height + 1):
             rect = pygame.Rect(x * block_size, y * block_size, block_size, block_size)
             pygame.draw.rect(screen, BLACK, rect, 3)
+            
     if grid.exit is not None:
-        exit_coor = Grid.transform_point_to_game(grid.exit)
-        pygame.draw.lines(screen, GREEN, False, \
-            [(exit_coor.x, exit_coor.y + Grid.square_size), (exit_coor.x + Grid.square_size, exit_coor.y + Grid.square_size)], 3)
+        draw_line(screen, grid.exit, grid)
