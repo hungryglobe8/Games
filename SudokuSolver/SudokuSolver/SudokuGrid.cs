@@ -6,15 +6,36 @@ using System.Threading.Tasks;
 
 namespace SudokuSolver
 {
-    class SudokuGrid
+    public class SudokuGrid
     {
         public SudokuCell[,] cells;
         public SudokuCell activeCell;
 
         public SudokuGrid(int size)
         {
-            cells = new SudokuCell[size, size];
+            cells = CreateCells(size);
             activeCell = null;
+        }
+
+        /// <summary>
+        /// Create empty cells to fill a Sudoku board of size by size.
+        /// </summary>
+        private SudokuCell[,] CreateCells(int size)
+        {
+            SudokuCell[,] cells = new SudokuCell[size, size];
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    // Create size*size cells with locations.
+                    cells[i, j] = new SudokuCell
+                    {
+                        X = i,
+                        Y = j
+                    };
+                }
+            }
+            return cells;
         }
 
         #region FocusShifting

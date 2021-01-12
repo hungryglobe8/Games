@@ -18,36 +18,29 @@ namespace SudokuSolver
         {
             InitializeComponent();
 
-            CreateCells(grid.cells);
+            ConnectCells();
         }
 
         /// <summary>
-        /// Create empty cells to fill a Sudoku board.
+        /// Provide event listeners and some styling for cells in SudokuGrid.
         /// </summary>
-        private void CreateCells(SudokuCell[,] cells)
+        private void ConnectCells()
         {
-            for (int i = 0; i < 9; i++)
+            foreach (var cell in grid.cells)
             {
-                for (int j = 0; j < 9; j++)
-                {
-                    // Create 81 cells with styles and locations based on the index.
-                    cells[i, j] = new SudokuCell();
-                    cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
-                    cells[i, j].Size = new Size(40, 40);
-                    cells[i, j].ForeColor = SystemColors.ControlDarkDark;
-                    cells[i, j].Location = new Point(i * 40, j * 40);
-                    cells[i, j].BackColor = ((i / 3) + (j / 3)) % 2 == 0 ? SystemColors.Control : Color.DarkGray;
-                    cells[i, j].FlatStyle = FlatStyle.Flat;
-                    cells[i, j].FlatAppearance.BorderColor = Color.Black;
-                    cells[i, j].X = i;
-                    cells[i, j].Y = j;
+                cell.Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
+                cell.Size = new Size(40, 40);
+                cell.ForeColor = SystemColors.ControlDarkDark;
+                cell.Location = new Point(cell.X * 40, cell.Y * 40);
+                cell.BackColor = ((cell.X / 3) + (cell.Y / 3)) % 2 == 0 ? SystemColors.Control : Color.DarkGray;
+                cell.FlatStyle = FlatStyle.Flat;
+                cell.FlatAppearance.BorderColor = Color.Black;
 
-                    // Assign key press event for each cells
-                    cells[i, j].KeyPress += cell_keyPressed;
-                    cells[i, j].GotFocus += cell_gotFocus;
+                // Assign key press event for each cells
+                cell.KeyPress += cell_keyPressed;
+                cell.GotFocus += cell_gotFocus;
 
-                    gamePanel.Controls.Add(cells[i, j]);
-                }
+                gamePanel.Controls.Add(cell);
             }
         }
 

@@ -7,7 +7,7 @@ using System.Windows.Forms;
 
 namespace SudokuSolver
 {
-    class SudokuCell : Button
+    public class SudokuCell : Button
     {
         public int Value { get; set; }
         public bool IsLocked { get; set; }
