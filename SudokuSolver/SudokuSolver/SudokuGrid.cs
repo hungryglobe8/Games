@@ -19,19 +19,27 @@ namespace SudokuSolver
 
         #region FocusShifting
         /// <summary>
-        /// Check that a value is within the grid.
+        /// Attempt to shift the focus of the game to a new square, which also changes the activeCell.
+        /// If out of bounds, focus should not shift, but game continues running.
         /// </summary>
-        private bool ValueInRange(int value)
+        /// <param name="x">new x value to try</param>
+        /// <param name="y">new y value to try</param>
+        private void Shift(int x, int y)
         {
-            int MIN = 0;
-            int MAX = 9;
-            return value > MIN && value < MAX;
+            try
+            {
+                cells[x, y].Focus();
+            }
+            catch (Exception)
+            {
+                // Focus remains unchanged if already at borders of grid.
+            }
         }
 
-        public void ShiftUp()
-        {
-            cells[activeCell.X, ValueInRange(activeCell.Y - 1) ? activeCell.Y - 1 : 0].Focus();
-        }
+        public void ShiftUp() => Shift(activeCell.X, activeCell.Y - 1);
+        public void ShiftDown() => Shift(activeCell.X, activeCell.Y + 1);
+        public void ShiftLeft() => Shift(activeCell.X - 1, activeCell.Y);
+        public void ShiftRight() => Shift(activeCell.X + 1, activeCell.Y);
         #endregion
     }
 }

@@ -50,6 +50,7 @@ namespace SudokuSolver
                 }
             }
         }
+
         /// <summary>
         /// Save the active cell when it gains focus.
         /// </summary>
@@ -64,41 +65,35 @@ namespace SudokuSolver
         }
 
         /// <summary>
-        /// Check that a value is within the grid.
+        /// Override cmd key functionality if focus is in gamePanel.
+        /// Arrow keys move grid focus directionally.
+        /// Tab moves right, shift + tab moves left.
         /// </summary>
-        private bool ValueInRange(int value)
-        {
-            int MIN = 0;
-            int MAX = 9;
-            return value > MIN && value < MAX;
-        }
-
+        /// <returns></returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             // Only process cmd keys within game panel.
             if (gamePanel.ContainsFocus)
             {
-                var oldX = grid.activeCell.X;
-                var oldY = grid.activeCell.Y;
-                // Check that shifts will be in range [0:9].
+                // Attempt shifting of focus for arrow keys, tab or shift + tab.
                 switch (keyData)
                 {
                     case Keys.Up:
-                        grid.cells[oldX, ValueInRange(oldY - 1) ? oldY - 1: 0].Focus();
+                        grid.ShiftUp();
                         return true;
 
                     case Keys.Down:
-                        grid.cells[oldX, ValueInRange(oldY + 1) ? oldY + 1 : 8].Focus();
+                        grid.ShiftDown();
                         return true;
 
                     case Keys.Left:
                     case Keys.Shift | Keys.Tab:
-                        grid.cells[ValueInRange(oldX - 1) ? oldX - 1 : 0, oldY].Focus();
+                        grid.ShiftLeft();
                         return true;
 
                     case Keys.Right:
                     case Keys.Tab:
-                        grid.cells[ValueInRange(oldX + 1) ? oldX + 1 : 8, oldY].Focus();
+                        grid.ShiftRight();
                         return true;
 
                     default:
