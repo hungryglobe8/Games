@@ -76,7 +76,13 @@ namespace SudokuSolver
         /// </summary>
         private void lockButton_Click(object sender, EventArgs e)
         {
-
+            foreach (SudokuCell cell in cells)
+            {
+                if (cell.Text != string.Empty)
+                {
+                    cell.IsLocked = true;
+                }
+            }
         }
 
         private void solveButton_Click(object sender, EventArgs e)
