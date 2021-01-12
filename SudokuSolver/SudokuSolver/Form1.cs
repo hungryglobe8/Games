@@ -20,6 +20,7 @@ namespace SudokuSolver
         }
 
         SudokuCell[,] cells = new SudokuCell[9, 9];
+        SudokuCell activeCell = null;
         
         /// <summary>
         /// Create empty cells to fill a Sudoku board.
@@ -45,10 +46,19 @@ namespace SudokuSolver
                     // Assign key press event for each cells
                     cells[i, j].KeyPress += cell_keyPressed;
                     cells[i, j].KeyDown += cell_keyDown;
+                    cells[i, j].GotFocus += cell_gotFocus;
 
                     gamePanel.Controls.Add(cells[i, j]);
                 }
             }
+        }
+
+        /// <summary>
+        /// Save the active cell when it gains focus.
+        /// </summary>
+        private void cell_gotFocus(object sender, EventArgs e)
+        {
+            activeCell = sender as SudokuCell;
         }
 
         private void ShowMessage(string key)
@@ -56,32 +66,47 @@ namespace SudokuSolver
             MessageBox.Show("You pressed " + key + " key.");
         }
 
+        /// <summary>
+        /// Check that a value is within the grid.
+        /// </summary>
+        private bool ValueInRange(int value)
+        {
+            int MIN = 0;
+            int MAX = 9;
+            return value > MIN && value < MAX;
+        }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
+            // Only process cmd keys within game panel.
             if (gamePanel.ContainsFocus)
             {
+                var oldX = activeCell.X;
+                var oldY = activeCell.Y;
+                // Check that shifts will be in range [0:9].
                 switch (keyData)
                 {
                     case Keys.Up:
-                        ShowMessage("Up arrow");
-                        break;
+                        cells[oldX, ValueInRange(oldY - 1) ? oldY - 1: 0].Focus();
+                        return true;
 
                     case Keys.Down:
-                        ShowMessage("Down arrow");
-                        break;
+                        cells[oldX, ValueInRange(oldY + 1) ? oldY + 1 : 8].Focus();
+                        return true;
 
                     case Keys.Left:
-                        ShowMessage("Left arrow");
-                        break;
+                    case Keys.Shift | Keys.Tab:
+                        cells[ValueInRange(oldX - 1) ? oldX - 1 : 0, oldY].Focus();
+                        return true;
 
                     case Keys.Right:
-                        ShowMessage("Right arrow");
-                        break;
+                    case Keys.Tab:
+                        cells[ValueInRange(oldX + 1) ? oldX + 1 : 8, oldY].Focus();
+                        return true;
 
                     default:
                         return base.ProcessCmdKey(ref msg, keyData);
                 }
-                return true;
             }
             return false;
         }
@@ -90,7 +115,6 @@ namespace SudokuSolver
         {
             var cell = sender as SudokuCell;
 
-            MessageBox.Show("Key is: " + e.KeyData);
             // Move to a different cell with tab or arrows.
             switch (e.KeyData)
             {
