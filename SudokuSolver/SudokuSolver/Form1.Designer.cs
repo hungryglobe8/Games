@@ -32,6 +32,7 @@ namespace SudokuSolver
             this.gamePanel = new System.Windows.Forms.Panel();
             this.lockButton = new System.Windows.Forms.Button();
             this.solveButton = new System.Windows.Forms.Button();
+            this.clearButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // gamePanel
@@ -63,11 +64,23 @@ namespace SudokuSolver
             this.solveButton.UseVisualStyleBackColor = true;
             this.solveButton.Click += new System.EventHandler(this.solveButton_Click);
             // 
+            // clearButton
+            // 
+            this.clearButton.Font = new System.Drawing.Font("Perpetua Titling MT", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.clearButton.Location = new System.Drawing.Point(583, 357);
+            this.clearButton.Name = "clearButton";
+            this.clearButton.Size = new System.Drawing.Size(119, 48);
+            this.clearButton.TabIndex = 3;
+            this.clearButton.Text = "Clear";
+            this.clearButton.UseVisualStyleBackColor = true;
+            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(729, 476);
+            this.Controls.Add(this.clearButton);
             this.Controls.Add(this.solveButton);
             this.Controls.Add(this.lockButton);
             this.Controls.Add(this.gamePanel);
@@ -82,6 +95,7 @@ namespace SudokuSolver
         private System.Windows.Forms.Panel gamePanel;
         private System.Windows.Forms.Button lockButton;
         private System.Windows.Forms.Button solveButton;
+        private System.Windows.Forms.Button clearButton;
     }
 }
 

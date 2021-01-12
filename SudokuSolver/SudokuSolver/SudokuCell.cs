@@ -7,7 +7,9 @@ using System.Windows.Forms;
 
 namespace SudokuSolver
 {
+#pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     public class SudokuCell : Button
+#pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
         public int Value { get; set; }
         public bool IsLocked { get; set; }

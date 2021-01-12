@@ -40,9 +40,16 @@ namespace SudokuSolver
                 // Assign key press event for each cells
                 cell.KeyPress += cell_keyPressed;
                 cell.GotFocus += cell_gotFocus;
+                cell.Click += cell_clicked;
 
                 gamePanel.Controls.Add(cell);
             }
+        }
+
+        private void cell_clicked(object sender, EventArgs e)
+        {
+            var cell = sender as SudokuCell;
+            Console.WriteLine("val is: " + cell.Value);
         }
 
         /// <summary>
@@ -101,6 +108,7 @@ namespace SudokuSolver
         {
             var cell = sender as SudokuCell;
 
+            //grid.ModifyCell(cell)
             // Do nothing if the cell is locked
             if (cell.IsLocked)
                 return;
@@ -138,6 +146,18 @@ namespace SudokuSolver
         private void solveButton_Click(object sender, EventArgs e)
         {
             grid.Solve();
+            solveButton.Enabled = false;
+        }
+
+        private void clearButton_Click(object sender, EventArgs e)
+        {
+            foreach (SudokuCell cell in grid.cells)
+            {
+                cell.Value = 0;
+                cell.Text = string.Empty;
+                cell.ForeColor = SystemColors.ControlDarkDark;
+            }
+            solveButton.Enabled = true;
         }
     }
 }

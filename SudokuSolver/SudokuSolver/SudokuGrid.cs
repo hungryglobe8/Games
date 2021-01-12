@@ -10,12 +10,14 @@ namespace SudokuSolver
     {
         public SudokuCell[,] cells;
         public SudokuCell activeCell;
+        public int cellsLeft;
 
         public SudokuGrid(int size)
         {
             cells = CreateCells(size);
             // Set the activeCell to (0, 0).
             Shift(0, 0);
+            cellsLeft = size * size;
         }
 
         /// <summary>
@@ -38,7 +40,9 @@ namespace SudokuSolver
             }
             return cells;
         }
+        #region ModifyCells
 
+        #endregion
         #region ShiftFocus
         /// <summary>
         /// Attempt to shift the focus of the game to a new square, which also changes the activeCell.
@@ -108,16 +112,21 @@ namespace SudokuSolver
                     currentCell.Value = 0;
                     return false;
                 }
+                activeCell = currentCell;
 
                 value = possNums[random.Next(0, possNums.Count)];
+                currentCell.Text = value.ToString();
                 currentCell.Value = value;
                 
                 // Remove value from list of possibilities.
                 possNums.Remove(value);
                 // Active cell moves on.
                 ShiftOpen();
-                if (currentCell == activeCell)
+                if (currentCell == activeCell && IsValidMove(currentCell, value))
+                {
+                    currentCell.Text = value.ToString();
                     return true;
+                }
             } while (!IsValidMove(currentCell, value) || !SolveCell());
 
             currentCell.Text = value.ToString();
@@ -136,13 +145,26 @@ namespace SudokuSolver
 
         private bool IsValidMove(SudokuCell cell, int value)
         {
+            int x = cell.X;
+            int y = cell.Y;
+            // Check columns and rows don't have duplicates.
             for (int i = 0; i < 9; i++)
             {
-                if (cell.Y == i)
-                    continue;
-
-                if (cells[cell.X, i].Value == value)
+                if (i != x && cells[i, y].Value == value)
                     return false;
+
+                if (i != y && cells[x, i].Value == value)
+                    return false;
+            }
+            // Check boxes don't have duplicates.
+            // Ex: go from 5 - (2) to 5 - (2) + 3
+            for (int i = x - (x % 3); i < x - (x % 3) + 3; i++)
+            {
+                for (int j = y - (y % 3); j < y - (y % 3) + 3; j++)
+                {
+                    if (i != x && j != y && cells[i, j].Value == value)
+                        return false;
+                }
             }
             return true;
         }
