@@ -12,14 +12,15 @@ namespace SudokuSolver
 {
     public partial class Form1 : Form
     {
-        SudokuGrid grid = new SudokuGrid(9);
-
         public Form1()
         {
             InitializeComponent();
 
             ConnectCells();
         }
+
+        // Must be initialized before connect cells.
+        SudokuGrid grid = new SudokuGrid(9);
 
         /// <summary>
         /// Provide event listeners and some styling for cells in SudokuGrid.
@@ -62,7 +63,6 @@ namespace SudokuSolver
         /// Arrow keys move grid focus directionally.
         /// Tab moves right, shift + tab moves left.
         /// </summary>
-        /// <returns></returns>
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
             // Only process cmd keys within game panel.
@@ -73,25 +73,26 @@ namespace SudokuSolver
                 {
                     case Keys.Up:
                         grid.ShiftUp();
-                        return true;
+                        break;
 
                     case Keys.Down:
                         grid.ShiftDown();
-                        return true;
+                        break;
 
                     case Keys.Left:
                     case Keys.Shift | Keys.Tab:
                         grid.ShiftLeft();
-                        return true;
+                        break;
 
                     case Keys.Right:
                     case Keys.Tab:
                         grid.ShiftRight();
-                        return true;
+                        break;
 
                     default:
                         return base.ProcessCmdKey(ref msg, keyData);
                 }
+                return true;
             }
             return false;
         }
@@ -111,14 +112,16 @@ namespace SudokuSolver
                 if (value == 0)
                     cell.Clear();
                 else
+                {
+                    cell.Value = value;
                     cell.Text = value.ToString();
-
-                cell.ForeColor = SystemColors.ControlDarkDark;
+                    grid.ShiftOpen();
+                }
             }
         }
 
         /// <summary>
-        /// Lock certain cells of the grid as concrete answers.
+        /// Lock certain cells of the grid as concrete answers, with black text.
         /// </summary>
         private void lockButton_Click(object sender, EventArgs e)
         {
@@ -127,53 +130,14 @@ namespace SudokuSolver
                 if (cell.Text != string.Empty)
                 {
                     cell.IsLocked = true;
+                    cell.ForeColor = Color.Black;
                 }
             }
         }
 
         private void solveButton_Click(object sender, EventArgs e)
         {
-            SolveGame(grid.cells);
-        }
-
-        private void SolveGame(SudokuCell[,] cells)
-        {
-            while (true)
-            {
-                for (int i = 1; i < 10; i++)
-                {
-                    foreach (SudokuCell cell in cells)
-                    {
-                        if (!cell.IsLocked && IsValidMove(cell, i - 1, i))
-                        {
-                            cell.Value = i;
-                            cell.Text = i.ToString();
-                        }
-                    }
-                }
-
-                for (int i = 1; i < 10; i++)
-                {
-                    if (cells[i-1, 0].Value == 0)
-                    {
-                        continue;
-                    }
-                }
-                
-                // All cells are filled.
-                break;
-            }
-            Console.WriteLine("Made it out!");
-        }
-
-        private bool IsValidMove(SudokuCell cell, int row, int value)
-        {
-            for (int i = 0; i < 9; i++)
-            {
-                if (grid.cells[row, i].Value == value)
-                    return false;
-            }
-            return true;
+            grid.Solve();
         }
     }
 }

@@ -19,5 +19,21 @@ namespace SudokuSolver
             this.Text = string.Empty;
             this.IsLocked = false;
         }
+
+        public bool Equals(int x, int y)
+        {
+            return X == x && Y == y;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            if (!(obj is SudokuCell))
+                return false;
+
+            SudokuCell other = obj as SudokuCell;
+            return this.X == other.X && this.Y == other.Y;
+        }
     }
 }
