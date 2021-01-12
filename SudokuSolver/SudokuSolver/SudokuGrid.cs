@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,8 +41,38 @@ namespace SudokuSolver
             }
             return cells;
         }
+        
         #region ModifyCells
+        public bool ModifyCell(SudokuCell cell, int value)
+        {
+            // Do nothing if the cell is locked or already empty.
+            if (cell.IsLocked || (cell.Value == 0 && value == 0))
+                return false;
+            // Clear the cell if value is 0.
+            if (value == 0)
+            {
+                cell.Clear();
+                cellsLeft++;
+                return true;
+            }
 
+            // Modify and warn invalid moves.
+            if (IsValidMove(cell, value))
+            {
+                cell.Value = value;
+                cell.Text = value.ToString();
+                cell.ForeColor = SystemColors.ControlDarkDark;
+                ShiftOpen();
+                cellsLeft--;
+            }
+            else
+            {
+                cell.Value = value;
+                cell.Text = value.ToString();
+                cell.ForeColor = Color.Red;
+            }
+            return true;
+        }
         #endregion
         #region ShiftFocus
         /// <summary>
@@ -50,7 +81,7 @@ namespace SudokuSolver
         /// </summary>
         /// <param name="x">new x value to try</param>
         /// <param name="y">new y value to try</param>
-        private void Shift(int x, int y)
+        private void Shift(int x, int y, int? newX = null, int? newY = null)
         {
             try
             {
@@ -61,6 +92,8 @@ namespace SudokuSolver
             catch (Exception)
             {
                 // Focus remains unchanged if already at borders of grid.
+                if (newX.HasValue && newY.HasValue)
+                    cells[newX.Value, newY.Value].Focus();
             }
         }
 
@@ -99,6 +132,12 @@ namespace SudokuSolver
         Random random = new Random();
         private bool SolveCell()
         {
+            if (activeCell.IsLocked)
+            {
+                ShiftRight();
+                return SolveCell();
+            }
+            // Remember this cell if we have to return to it later on.
             SudokuCell currentCell = activeCell;
             int value = 0;
             List<int> possNums = new List<int>{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -114,12 +153,11 @@ namespace SudokuSolver
                 }
                 activeCell = currentCell;
 
-                value = possNums[random.Next(0, possNums.Count)];
-                currentCell.Text = value.ToString();
-                currentCell.Value = value;
-                
+                value = possNums[random.Next(0, possNums.Count)];         
                 // Remove value from list of possibilities.
                 possNums.Remove(value);
+                if (!ModifyCell(activeCell, value))
+                    continue;
                 // Active cell moves on.
                 ShiftOpen();
                 if (currentCell == activeCell && IsValidMove(currentCell, value))
@@ -143,6 +181,10 @@ namespace SudokuSolver
             Console.WriteLine("Made it out!");
         }
 
+        /// <summary>
+        /// Checks if a new number for a cell is a valid one, based on its neighbors.
+        /// </summary>
+        /// <returns>true if valid, false if not</returns>
         private bool IsValidMove(SudokuCell cell, int value)
         {
             int x = cell.X;
@@ -167,6 +209,31 @@ namespace SudokuSolver
                 }
             }
             return true;
+        }
+        #endregion
+
+        #region Locking
+        /// <summary>
+        /// Lock all cells on the grid.
+        /// </summary>
+        public void LockAll()
+        {
+            foreach (SudokuCell cell in cells)
+            {
+                LockSingle(cell);
+            }
+        }
+        
+        /// <summary>
+        /// Lock a single cell on the grid, if it has been filled already.
+        /// </summary>
+        public void LockSingle(SudokuCell cell)
+        {
+            if (cell.Text != string.Empty)
+            {
+                cell.IsLocked = true;
+                cell.ForeColor = Color.Black;
+            }
         }
         #endregion
     }

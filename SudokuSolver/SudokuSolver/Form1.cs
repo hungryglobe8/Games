@@ -108,45 +108,31 @@ namespace SudokuSolver
         {
             var cell = sender as SudokuCell;
 
-            //grid.ModifyCell(cell)
-            // Do nothing if the cell is locked
-            if (cell.IsLocked)
-                return;
-
             // Add the pressed key value in the cell only if it is a number
             if (int.TryParse(e.KeyChar.ToString(), out int value))
             {
-                // Clear the cell value if pressed key is zero
-                if (value == 0)
-                    cell.Clear();
-                else
-                {
-                    cell.Value = value;
-                    cell.Text = value.ToString();
-                    grid.ShiftOpen();
-                }
+                grid.ModifyCell(cell, value);
             }
         }
 
         /// <summary>
-        /// Lock certain cells of the grid as concrete answers, with black text.
+        /// Lock all cells as concrete answers, with black text.
+        /// Cannot be modified after locking, until clearing the board.
         /// </summary>
         private void lockButton_Click(object sender, EventArgs e)
         {
-            foreach (SudokuCell cell in grid.cells)
-            {
-                if (cell.Text != string.Empty)
-                {
-                    cell.IsLocked = true;
-                    cell.ForeColor = Color.Black;
-                }
-            }
+            grid.LockAll();
         }
 
+        /// <summary>
+        /// Fill in the board with a valid solution.
+        /// Lock all answers and disable solve button.
+        /// </summary>
         private void solveButton_Click(object sender, EventArgs e)
         {
             grid.Solve();
             solveButton.Enabled = false;
+            lockButton_Click(sender, e);
         }
 
         private void clearButton_Click(object sender, EventArgs e)
@@ -156,6 +142,7 @@ namespace SudokuSolver
                 cell.Value = 0;
                 cell.Text = string.Empty;
                 cell.ForeColor = SystemColors.ControlDarkDark;
+                cell.IsLocked = false;
             }
             solveButton.Enabled = true;
         }
