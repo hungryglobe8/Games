@@ -44,9 +44,63 @@ namespace SudokuSolver
 
                     // Assign key press event for each cells
                     cells[i, j].KeyPress += cell_keyPressed;
+                    cells[i, j].KeyDown += cell_keyDown;
 
                     gamePanel.Controls.Add(cells[i, j]);
                 }
+            }
+        }
+
+        private void ShowMessage(string key)
+        {
+            MessageBox.Show("You pressed " + key + " key.");
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (gamePanel.ContainsFocus)
+            {
+                switch (keyData)
+                {
+                    case Keys.Up:
+                        ShowMessage("Up arrow");
+                        break;
+
+                    case Keys.Down:
+                        ShowMessage("Down arrow");
+                        break;
+
+                    case Keys.Left:
+                        ShowMessage("Left arrow");
+                        break;
+
+                    case Keys.Right:
+                        ShowMessage("Right arrow");
+                        break;
+
+                    default:
+                        return base.ProcessCmdKey(ref msg, keyData);
+                }
+                return true;
+            }
+            return false;
+        }
+
+        private void cell_keyDown(object sender, KeyEventArgs e)
+        {
+            var cell = sender as SudokuCell;
+
+            MessageBox.Show("Key is: " + e.KeyData);
+            // Move to a different cell with tab or arrows.
+            switch (e.KeyData)
+            {
+                case Keys.Up:
+                    Console.WriteLine("up pressed");
+                    break;
+
+                default:
+                    Console.WriteLine("other");
+                    break;
             }
         }
 
