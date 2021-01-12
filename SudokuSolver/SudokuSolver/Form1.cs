@@ -12,26 +12,25 @@ namespace SudokuSolver
 {
     public partial class Form1 : Form
     {
+        SudokuGrid grid = new SudokuGrid(9);
+
         public Form1()
         {
             InitializeComponent();
 
-            CreateCells();
+            CreateCells(grid.cells);
         }
 
-        SudokuCell[,] cells = new SudokuCell[9, 9];
-        SudokuCell activeCell = null;
-        
         /// <summary>
         /// Create empty cells to fill a Sudoku board.
         /// </summary>
-        private void CreateCells()
+        private void CreateCells(SudokuCell[,] cells)
         {
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
                 {
-                    // Create 81 cells for with styles and locations based on the index
+                    // Create 81 cells with styles and locations based on the index.
                     cells[i, j] = new SudokuCell();
                     cells[i, j].Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
                     cells[i, j].Size = new Size(40, 40);
@@ -45,20 +44,18 @@ namespace SudokuSolver
 
                     // Assign key press event for each cells
                     cells[i, j].KeyPress += cell_keyPressed;
-                    cells[i, j].KeyDown += cell_keyDown;
                     cells[i, j].GotFocus += cell_gotFocus;
 
                     gamePanel.Controls.Add(cells[i, j]);
                 }
             }
         }
-
         /// <summary>
         /// Save the active cell when it gains focus.
         /// </summary>
         private void cell_gotFocus(object sender, EventArgs e)
         {
-            activeCell = sender as SudokuCell;
+            grid.activeCell = sender as SudokuCell;
         }
 
         private void ShowMessage(string key)
@@ -81,27 +78,27 @@ namespace SudokuSolver
             // Only process cmd keys within game panel.
             if (gamePanel.ContainsFocus)
             {
-                var oldX = activeCell.X;
-                var oldY = activeCell.Y;
+                var oldX = grid.activeCell.X;
+                var oldY = grid.activeCell.Y;
                 // Check that shifts will be in range [0:9].
                 switch (keyData)
                 {
                     case Keys.Up:
-                        cells[oldX, ValueInRange(oldY - 1) ? oldY - 1: 0].Focus();
+                        grid.cells[oldX, ValueInRange(oldY - 1) ? oldY - 1: 0].Focus();
                         return true;
 
                     case Keys.Down:
-                        cells[oldX, ValueInRange(oldY + 1) ? oldY + 1 : 8].Focus();
+                        grid.cells[oldX, ValueInRange(oldY + 1) ? oldY + 1 : 8].Focus();
                         return true;
 
                     case Keys.Left:
                     case Keys.Shift | Keys.Tab:
-                        cells[ValueInRange(oldX - 1) ? oldX - 1 : 0, oldY].Focus();
+                        grid.cells[ValueInRange(oldX - 1) ? oldX - 1 : 0, oldY].Focus();
                         return true;
 
                     case Keys.Right:
                     case Keys.Tab:
-                        cells[ValueInRange(oldX + 1) ? oldX + 1 : 8, oldY].Focus();
+                        grid.cells[ValueInRange(oldX + 1) ? oldX + 1 : 8, oldY].Focus();
                         return true;
 
                     default:
@@ -109,23 +106,6 @@ namespace SudokuSolver
                 }
             }
             return false;
-        }
-
-        private void cell_keyDown(object sender, KeyEventArgs e)
-        {
-            var cell = sender as SudokuCell;
-
-            // Move to a different cell with tab or arrows.
-            switch (e.KeyData)
-            {
-                case Keys.Up:
-                    Console.WriteLine("up pressed");
-                    break;
-
-                default:
-                    Console.WriteLine("other");
-                    break;
-            }
         }
 
         private void cell_keyPressed(object sender, KeyPressEventArgs e)
@@ -154,7 +134,7 @@ namespace SudokuSolver
         /// </summary>
         private void lockButton_Click(object sender, EventArgs e)
         {
-            foreach (SudokuCell cell in cells)
+            foreach (SudokuCell cell in grid.cells)
             {
                 if (cell.Text != string.Empty)
                 {
@@ -165,7 +145,47 @@ namespace SudokuSolver
 
         private void solveButton_Click(object sender, EventArgs e)
         {
+            SolveGame(grid.cells);
+        }
 
+        private void SolveGame(SudokuCell[,] cells)
+        {
+            while (true)
+            {
+                for (int i = 1; i < 10; i++)
+                {
+                    foreach (SudokuCell cell in cells)
+                    {
+                        if (!cell.IsLocked && IsValidMove(cell, i - 1, i))
+                        {
+                            cell.Value = i;
+                            cell.Text = i.ToString();
+                        }
+                    }
+                }
+
+                for (int i = 1; i < 10; i++)
+                {
+                    if (cells[i-1, 0].Value == 0)
+                    {
+                        continue;
+                    }
+                }
+                
+                // All cells are filled.
+                break;
+            }
+            Console.WriteLine("Made it out!");
+        }
+
+        private bool IsValidMove(SudokuCell cell, int row, int value)
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                if (grid.cells[row, i].Value == value)
+                    return false;
+            }
+            return true;
         }
     }
 }
