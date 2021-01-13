@@ -17,8 +17,7 @@ namespace SudokuSolver
         public SudokuGrid(int _size)
         {
             cells = CreateCells(_size);
-            // Set the activeCell to (0, 0).
-            Shift(0, 0);
+            SelectCell(cells[0, 0]);
             size = _size;
             cellsLeft = size * size;
         }
@@ -39,20 +38,15 @@ namespace SudokuSolver
                         X = i,
                         Y = j
                     };
-
-                    cells[i, j].Enter += cell_gotFocus;
                 }
             }
             return cells;
         }
 
         /// <summary>
-        /// Save the active cell when it gains focus.
+        /// Select a cell, making it the activeCell of the grid.
         /// </summary>
-        private void cell_gotFocus(object sender, EventArgs e)
-        {
-            activeCell = sender as SudokuCell;
-        }
+        public void SelectCell(SudokuCell cell) => activeCell = cell;
 
         #region ModifyCells
         public bool ModifyCell(SudokuCell cell, int value)
@@ -86,10 +80,11 @@ namespace SudokuSolver
             return true;
         }
         #endregion
+
         #region ShiftFocus
         /// <summary>
-        /// Attempt to shift the focus of the game to a new square, which also changes the activeCell.
-        /// If out of bounds, focus should not shift, but game continues running.
+        /// Attempt to select a new square, which also changes the activeCell.
+        /// If out of bounds, focus should wrap around the board on the same row or column.
         /// </summary>
         /// <param name="x">new x value to try</param>
         /// <param name="y">new y value to try</param>
@@ -97,18 +92,13 @@ namespace SudokuSolver
         {
             try
             {
-                cells[x, y].Focus();
-                // repetitive
-                activeCell = cells[x, y];
+                SelectCell(cells[x, y]);
             }
             catch (Exception)
             {
-                // Focus remains unchanged if already at borders of grid.
+                // Focus wraps around
                 if (newX.HasValue && newY.HasValue)
-                {
-                    cells[newX.Value, newY.Value].Focus();
-                    activeCell = cells[newX.Value, newY.Value];
-                }
+                    SelectCell(cells[newX.Value, newY.Value]);
             }
         }
 
@@ -142,6 +132,7 @@ namespace SudokuSolver
             return;
         }
         #endregion
+
         #region Solve
 
         Random random = new Random();

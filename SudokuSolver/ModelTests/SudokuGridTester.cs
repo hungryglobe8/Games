@@ -14,6 +14,7 @@ namespace ModelTests
         {
             SudokuGrid grid = new SudokuGrid(3);
             grid.activeCell = grid.cells[1, 1];
+            grid.activeCell.Select();
             return grid;
         }
 
@@ -40,6 +41,16 @@ namespace ModelTests
             var sut = new SudokuGrid(3);
 
             Assert.IsTrue(sut.activeCell.Equals(0, 0));
+        }
+
+        [TestMethod]
+        public void GotFocusEventTriggers()
+        {
+            var sut = SmallGrid();
+
+            sut.cells[2, 2].Focus();
+
+            Assert.IsTrue(sut.activeCell.Equals(2, 2));
         }
 
         #region ShiftTests

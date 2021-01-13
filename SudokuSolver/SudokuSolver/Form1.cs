@@ -49,6 +49,7 @@ namespace SudokuSolver
         {
             var cell = sender as SudokuCell;
             Console.WriteLine("val is: " + cell.Value);
+            grid.SelectCell(cell);
         }
 
         private void ShowMessage(string key)
@@ -90,6 +91,7 @@ namespace SudokuSolver
                     default:
                         return base.ProcessCmdKey(ref msg, keyData);
                 }
+                grid.activeCell.Focus();
                 return true;
             }
             return false;
@@ -103,6 +105,7 @@ namespace SudokuSolver
             if (int.TryParse(e.KeyChar.ToString(), out int value))
             {
                 grid.ModifyCell(cell, value);
+                grid.activeCell.Focus();
             }
         }
 
