@@ -11,13 +11,15 @@ namespace SudokuSolver
     {
         public SudokuCell[,] cells;
         public SudokuCell activeCell;
+        public int size;
         public int cellsLeft;
 
-        public SudokuGrid(int size)
+        public SudokuGrid(int _size)
         {
-            cells = CreateCells(size);
+            cells = CreateCells(_size);
             // Set the activeCell to (0, 0).
             Shift(0, 0);
+            size = _size;
             cellsLeft = size * size;
         }
 
@@ -37,11 +39,21 @@ namespace SudokuSolver
                         X = i,
                         Y = j
                     };
+
+                    cells[i, j].Enter += cell_gotFocus;
                 }
             }
             return cells;
         }
-        
+
+        /// <summary>
+        /// Save the active cell when it gains focus.
+        /// </summary>
+        private void cell_gotFocus(object sender, EventArgs e)
+        {
+            activeCell = sender as SudokuCell;
+        }
+
         #region ModifyCells
         public bool ModifyCell(SudokuCell cell, int value)
         {
@@ -93,14 +105,17 @@ namespace SudokuSolver
             {
                 // Focus remains unchanged if already at borders of grid.
                 if (newX.HasValue && newY.HasValue)
+                {
                     cells[newX.Value, newY.Value].Focus();
+                    activeCell = cells[newX.Value, newY.Value];
+                }
             }
         }
 
-        public void ShiftUp() => Shift(activeCell.X, activeCell.Y - 1);
-        public void ShiftDown() => Shift(activeCell.X, activeCell.Y + 1);
-        public void ShiftLeft() => Shift(activeCell.X - 1, activeCell.Y);
-        public void ShiftRight() => Shift(activeCell.X + 1, activeCell.Y);
+        public void ShiftUp() => Shift(activeCell.X, activeCell.Y - 1, activeCell.X, size - 1);
+        public void ShiftDown() => Shift(activeCell.X, activeCell.Y + 1, activeCell.X, 0);
+        public void ShiftLeft() => Shift(activeCell.X - 1, activeCell.Y, size - 1, activeCell.Y);
+        public void ShiftRight() => Shift(activeCell.X + 1, activeCell.Y, 0, activeCell.Y);
         
         /// <summary>
         /// Shift to the next available open cell.

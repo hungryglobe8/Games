@@ -39,7 +39,6 @@ namespace SudokuSolver
 
                 // Assign key press event for each cells
                 cell.KeyPress += cell_keyPressed;
-                cell.GotFocus += cell_gotFocus;
                 cell.Click += cell_clicked;
 
                 gamePanel.Controls.Add(cell);
@@ -50,14 +49,6 @@ namespace SudokuSolver
         {
             var cell = sender as SudokuCell;
             Console.WriteLine("val is: " + cell.Value);
-        }
-
-        /// <summary>
-        /// Save the active cell when it gains focus.
-        /// </summary>
-        private void cell_gotFocus(object sender, EventArgs e)
-        {
-            grid.activeCell = sender as SudokuCell;
         }
 
         private void ShowMessage(string key)
