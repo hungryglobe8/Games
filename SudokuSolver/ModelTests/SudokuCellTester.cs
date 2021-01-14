@@ -96,7 +96,8 @@ namespace ModelTests
         {
             var sut = BasicCell();
 
-            sut.IsLocked = true;
+            sut.SetValue(1, true);
+            sut.Lock();
             sut.SetValue(5, true);
 
             Assert.AreNotEqual(5, sut.Value);
@@ -119,7 +120,7 @@ namespace ModelTests
             var sut = BasicCell();
 
             sut.SetValue(5, true);
-            sut.IsLocked = true;
+            sut.Lock();
             sut.Clear();
 
             Assert.AreEqual(0, sut.Value);
@@ -135,6 +136,16 @@ namespace ModelTests
             sut.SetValue(5, false);
 
             Assert.IsFalse(sut.IsValid);
+        }
+
+        [TestMethod]
+        public void DoesNotLockEmpty()
+        {
+            var sut = BasicCell();
+
+            sut.Lock();
+
+            Assert.IsFalse(sut.IsLocked);
         }
     }
 }

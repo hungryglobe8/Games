@@ -13,7 +13,7 @@ namespace SudokuSolver
 #pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
         public int Value { get; private set; }
-        public bool IsLocked { get; set; }
+        public bool IsLocked { get; private set; }
         public bool IsValid { get; set; }
         public int X { get; private set; }
         public int Y { get; private set; }
@@ -50,6 +50,19 @@ namespace SudokuSolver
                 }
             }
 
+        }
+
+        /// <summary>
+        /// Lock a single cell on the grid, if it has a value.
+        /// </summary>
+        public void Lock()
+        {
+            if (Value != 0)
+            {
+                IsLocked = true;
+                // Change the color of locked cells.
+                ForeColor = Color.Black;
+            }
         }
 
         public bool Equals(int x, int y)

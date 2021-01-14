@@ -131,7 +131,7 @@ namespace SudokuSolver
 
         private void clearButton_Click(object sender, EventArgs e)
         {
-            grid.Clear();
+            grid.ClearBoard();
             solveButton.Enabled = true;
         }
     }

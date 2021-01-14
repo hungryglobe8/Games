@@ -32,7 +32,7 @@ namespace SudokuSolver
             {
                 for (int j = 0; j < size; j++)
                 {
-                    // Create size*size cells with locations.
+                    // Create size*size cells.
                     cells[i, j] = new SudokuCell(i, j);
                 }
             }
@@ -47,22 +47,24 @@ namespace SudokuSolver
         #region ModifyCells
         public bool ModifyCell(SudokuCell cell, int value)
         {
-            // Do nothing if the cell is locked or already empty.
-            if (cell.IsLocked || (cell.Value == 0 && value == 0))
+            // Do nothing if the cell is locked.
+            if (cell.IsLocked)
                 return false;
+
             // Clear the cell if value is 0.
             if (value == 0)
             {
+                // Increase num of cellsLeft if old Value was not 0.
+                if (cell.Value != 0)
+                    cellsLeft++;
                 cell.Clear();
-                cellsLeft++;
                 return true;
             }
 
             // Modify and warn invalid moves.
-            if (IsValidMove(cell, value))
+            if (GetConflicts(cell, value).Count > 0)
             {
                 cell.SetValue(value, true);
-                cell.Text = value.ToString();
                 cell.ForeColor = SystemColors.ControlDarkDark;
                 ShiftOpen();
                 cellsLeft--;
@@ -70,9 +72,9 @@ namespace SudokuSolver
             else
             {
                 cell.SetValue(value, false);
-                cell.Text = value.ToString();
                 cell.ForeColor = Color.Red;
             }
+            cell.Text = value.ToString();
             return true;
         }
         #endregion
@@ -127,14 +129,6 @@ namespace SudokuSolver
             }
             return;
         }
-
-        public void Clear()
-        {
-            foreach (SudokuCell cell in cells)
-            {
-                cell.Clear();
-            }
-        }
         #endregion
 
         #region Solve
@@ -170,12 +164,12 @@ namespace SudokuSolver
                     continue;
                 // Active cell moves on.
                 ShiftOpen();
-                if (currentCell == activeCell && IsValidMove(currentCell, value))
+                if (currentCell == activeCell && GetConflicts(currentCell, value).Count == 0)
                 {
                     currentCell.Text = value.ToString();
                     return true;
                 }
-            } while (!IsValidMove(currentCell, value) || !SolveCell());
+            } while (!(GetConflicts(currentCell, value).Count == 0) || !SolveCell());
 
             currentCell.Text = value.ToString();
             return true;
@@ -192,21 +186,22 @@ namespace SudokuSolver
         }
 
         /// <summary>
-        /// Checks if a new number for a cell is a valid one, based on its neighbors.
+        /// Checks for conflicts when changing the value of a cell, based on its neighbors.
         /// </summary>
-        /// <returns>true if valid, false if not</returns>
-        private bool IsValidMove(SudokuCell cell, int value)
+        /// <returns>list of conflicting cells</returns>
+        private ISet<SudokuCell> GetConflicts(SudokuCell cell, int value)
         {
+            ISet<SudokuCell> conflictingCells = new HashSet<SudokuCell>();
             int x = cell.X;
             int y = cell.Y;
             // Check columns and rows don't have duplicates.
             for (int i = 0; i < 9; i++)
             {
                 if (i != x && cells[i, y].Value == value)
-                    return false;
+                    conflictingCells.Add(cells[i, y]);
 
                 if (i != y && cells[x, i].Value == value)
-                    return false;
+                    conflictingCells.Add(cells[x, i]);
             }
             // Check boxes don't have duplicates.
             // Ex: go from 5 - (2) to 5 - (2) + 3
@@ -215,14 +210,25 @@ namespace SudokuSolver
                 for (int j = y - (y % 3); j < y - (y % 3) + 3; j++)
                 {
                     if (i != x && j != y && cells[i, j].Value == value)
-                        return false;
+                        conflictingCells.Add(cells[i, j]);
                 }
             }
-            return true;
+            return conflictingCells;
         }
         #endregion
 
-        #region Locking
+        /// <summary>
+        /// Resets all cells to their default state:
+        ///     unlocked, valid, values set to 0
+        /// </summary>
+        public void ClearBoard()
+        {
+            foreach (SudokuCell cell in cells)
+            {
+                cell.Clear();
+            }
+        }
+
         /// <summary>
         /// Lock all cells on the grid.
         /// </summary>
@@ -230,21 +236,8 @@ namespace SudokuSolver
         {
             foreach (SudokuCell cell in cells)
             {
-                LockSingle(cell);
+                cell.Lock();
             }
         }
-        
-        /// <summary>
-        /// Lock a single cell on the grid, if it has been filled already.
-        /// </summary>
-        public void LockSingle(SudokuCell cell)
-        {
-            if (cell.Value != 0)
-            {
-                cell.IsLocked = true;
-                cell.ForeColor = Color.Black;
-            }
-        }
-        #endregion
     }
 }
