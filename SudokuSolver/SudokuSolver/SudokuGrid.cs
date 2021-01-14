@@ -65,7 +65,7 @@ namespace SudokuSolver
             // Modify and warn invalid moves.
             if (IsValidMove(cell, value))
             {
-                cell.Value = value;
+                cell.SetValue(value);
                 cell.Text = value.ToString();
                 cell.ForeColor = SystemColors.ControlDarkDark;
                 ShiftOpen();
@@ -73,7 +73,7 @@ namespace SudokuSolver
             }
             else
             {
-                cell.Value = value;
+                cell.SetValue(value);
                 cell.Text = value.ToString();
                 cell.ForeColor = Color.Red;
             }
@@ -131,6 +131,14 @@ namespace SudokuSolver
             }
             return;
         }
+
+        public void Clear()
+        {
+            foreach (SudokuCell cell in cells)
+            {
+                cell.Clear();
+            }
+        }
         #endregion
 
         #region Solve
@@ -154,7 +162,7 @@ namespace SudokuSolver
                 // No answers left, return false and go back to an earlier cell.
                 if (possNums.Count < 1)
                 {
-                    currentCell.Value = 0;
+                    currentCell.Clear();
                     return false;
                 }
                 activeCell = currentCell;
@@ -235,7 +243,7 @@ namespace SudokuSolver
         /// </summary>
         public void LockSingle(SudokuCell cell)
         {
-            if (cell.Text != string.Empty)
+            if (cell.Value != 0)
             {
                 cell.IsLocked = true;
                 cell.ForeColor = Color.Black;

@@ -36,7 +36,7 @@ namespace ModelTests
         }
 
         [TestMethod]
-        public void FocusStartsTopLeft()
+        public void ActiveCellStartsTopLeft()
         {
             var sut = new SudokuGrid(3);
 
@@ -44,11 +44,11 @@ namespace ModelTests
         }
 
         [TestMethod]
-        public void GotFocusEventTriggers()
+        public void SelectCellChangesActiveCell()
         {
             var sut = SmallGrid();
 
-            sut.cells[2, 2].Focus();
+            sut.SelectCell(sut.cells[2, 2]);
 
             Assert.IsTrue(sut.activeCell.Equals(2, 2));
         }
@@ -136,6 +136,14 @@ namespace ModelTests
             sut.ShiftDown();
 
             Assert.IsTrue(sut.activeCell.Equals(1, 0));
+        }
+        #endregion
+
+        #region LockTests
+        [TestMethod]
+        public void SingleLock()
+        {
+
         }
         #endregion
     }

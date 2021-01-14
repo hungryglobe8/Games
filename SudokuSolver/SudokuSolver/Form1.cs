@@ -131,13 +131,7 @@ namespace SudokuSolver
 
         private void clearButton_Click(object sender, EventArgs e)
         {
-            foreach (SudokuCell cell in grid.cells)
-            {
-                cell.Value = 0;
-                cell.Text = string.Empty;
-                cell.ForeColor = SystemColors.ControlDarkDark;
-                cell.IsLocked = false;
-            }
+            grid.Clear();
             solveButton.Enabled = true;
         }
     }
