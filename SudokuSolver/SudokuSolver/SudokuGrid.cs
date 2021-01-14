@@ -33,11 +33,7 @@ namespace SudokuSolver
                 for (int j = 0; j < size; j++)
                 {
                     // Create size*size cells with locations.
-                    cells[i, j] = new SudokuCell
-                    {
-                        X = i,
-                        Y = j
-                    };
+                    cells[i, j] = new SudokuCell(i, j);
                 }
             }
             return cells;
@@ -65,7 +61,7 @@ namespace SudokuSolver
             // Modify and warn invalid moves.
             if (IsValidMove(cell, value))
             {
-                cell.SetValue(value);
+                cell.SetValue(value, true);
                 cell.Text = value.ToString();
                 cell.ForeColor = SystemColors.ControlDarkDark;
                 ShiftOpen();
@@ -73,7 +69,7 @@ namespace SudokuSolver
             }
             else
             {
-                cell.SetValue(value);
+                cell.SetValue(value, false);
                 cell.Text = value.ToString();
                 cell.ForeColor = Color.Red;
             }

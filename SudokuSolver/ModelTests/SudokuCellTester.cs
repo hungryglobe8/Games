@@ -11,37 +11,33 @@ namespace ModelTests
         [TestMethod]
         public void SudokuCellNotNull()
         {
-            Assert.IsNotNull(new SudokuCell());
+            Assert.IsNotNull(new SudokuCell(0, 0));
         }
 
         [TestMethod]
         public void SudokuCellIsButton()
         {
-            Assert.IsTrue(new SudokuCell() is Button);
-        }
-
-        private SudokuCell TopLeftCell()
-        {
-            return new SudokuCell
-            {
-                X = 0,
-                Y = 0
-            };
+            Assert.IsTrue(new SudokuCell(0, 0) is Button);
         }
 
         [TestMethod]
         public void SetXandY()
         {
-            var sut = TopLeftCell();
+            var sut = new SudokuCell(0, 0);
 
             Assert.AreEqual(0, sut.X);
             Assert.AreEqual(0, sut.Y);
         }
 
+        private SudokuCell BasicCell()
+        {
+            return new SudokuCell(0, 0);
+        }
+
         [TestMethod]
         public void EqualToValues()
         {
-            var sut = TopLeftCell();
+            var sut = BasicCell();
 
             Assert.IsTrue(sut.Equals(0, 0));
         }
@@ -49,10 +45,96 @@ namespace ModelTests
         [TestMethod]
         public void EqualToOtherSudokuCell()
         {
-            var sut = TopLeftCell();
-            var other = TopLeftCell();
+            var sut = BasicCell();
+            var other = BasicCell();
 
             Assert.IsTrue(sut.Equals(other));
+        }
+
+        [DataTestMethod]
+        [DataRow(0, 1)]
+        [DataRow(1, 0)]
+        [DataRow(1, 1)]
+        public void NotEqualToDiffCoor(int x, int y)
+        {
+            var sut = BasicCell();
+            var other = new SudokuCell(x, y);
+
+            Assert.IsFalse(sut.Equals(x, y));
+            Assert.IsFalse(sut.Equals(other));
+        }
+
+        [TestMethod]
+        public void NotEqualToNull()
+        {
+            var sut = BasicCell();
+
+            Assert.IsFalse(sut.Equals(null));
+        }
+
+        [TestMethod]
+        public void NotEqualToOtherType()
+        {
+            var sut = BasicCell();
+            var other = new Button();
+
+            Assert.IsFalse(sut.Equals(other));
+        }
+
+        [TestMethod]
+        public void SetValue()
+        {
+            var sut = BasicCell();
+
+            sut.SetValue(5, true);
+
+            Assert.AreEqual(5, sut.Value);
+        }
+
+        [TestMethod]
+        public void DoesNotSetValueIfLocked()
+        {
+            var sut = BasicCell();
+
+            sut.IsLocked = true;
+            sut.SetValue(5, true);
+
+            Assert.AreNotEqual(5, sut.Value);
+        }
+
+        [TestMethod]
+        public void ClearCell()
+        {
+            var sut = BasicCell();
+
+            sut.SetValue(5, true);
+            sut.Clear();
+
+            Assert.AreEqual(0, sut.Value);
+        }
+
+        [TestMethod]
+        public void ClearCellIfLocked()
+        {
+            var sut = BasicCell();
+
+            sut.SetValue(5, true);
+            sut.IsLocked = true;
+            sut.Clear();
+
+            Assert.AreEqual(0, sut.Value);
+            Assert.IsFalse(sut.IsLocked);
+        }
+
+        [TestMethod]
+        public void CheckValidityChanges()
+        {
+            var sut = BasicCell();
+            Assert.IsTrue(sut.IsValid);
+
+            sut.SetValue(5, false);
+
+            Assert.IsFalse(sut.IsValid);
         }
     }
 }

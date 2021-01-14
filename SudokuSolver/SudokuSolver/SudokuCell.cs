@@ -15,21 +15,41 @@ namespace SudokuSolver
         public int Value { get; private set; }
         public bool IsLocked { get; set; }
         public bool IsValid { get; set; }
-        public int X { get; set; }
-        public int Y { get; set; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
+        public SudokuCell(int x, int y)
+        {
+            X = x;
+            Y = y;
+            IsValid = true;
+            IsLocked = false;
+        }
 
         public void Clear()
         {
             this.Value = 0;
             this.ForeColor = SystemColors.ControlDarkDark;
             this.Text = string.Empty;
+            this.IsValid = true;
             this.IsLocked = false;
         }
 
-        public void SetValue(int value)
+        public void SetValue(int value, bool valid)
         {
             if (!IsLocked)
+            {
                 Value = value;
+                IsValid = valid;
+                if (!valid)
+                {
+                    this.ForeColor = Color.Red;
+                }
+                else
+                {
+                    this.ForeColor = SystemColors.ControlDarkDark;
+                }
+            }
+
         }
 
         public bool Equals(int x, int y)
