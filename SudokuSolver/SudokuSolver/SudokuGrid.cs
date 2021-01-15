@@ -16,6 +16,9 @@ namespace SudokuSolver
         public SudokuCell activeCell;
         public int size;
         public int cellsLeft;
+        // For picking possible solution paths.
+        private readonly Random random = new Random();
+
 
         /// <summary>
         /// Initializes a new instance of the SudokuSolver.SudokuGrid class. 
@@ -50,46 +53,42 @@ namespace SudokuSolver
         public void SelectCell(SudokuCell cell) => activeCell = cell;
 
         #region ModifyCells
-        public bool ModifyCell(SudokuCell cell, int value)
+        public bool ModifyCell(int value)
         {
-            // Do nothing if the cell is locked.
-            if (cell.IsLocked)
-                return false;
-
-            // Clear the cell if value is 0.
-            if (value == 0)
-            {
-                // Increase num of cellsLeft if old Value was not 0.
-                if (cell.Value != 0)
-                    cellsLeft++;
-                cell.Clear();
-                return true;
-            }
-
-            // Modify and warn invalid moves.
-            if (GetConflicts(cell, value).Count == 0)
-            {
-                cell.SetValue(value, true);
-                cell.ForeColor = SystemColors.ControlDarkDark;
+            if (activeCell.Value == 0 && value != 0)
                 cellsLeft--;
-                JumpForward();
-            }
+
+            // Highlight any invalid moves.
+            ISet<SudokuCell> conflicts = GetConflicts(activeCell, value);
+            if (conflicts.Count == 1)
+                activeCell.SetValidity(true);
             else
             {
-                cell.SetValue(value, false);
-                cell.ForeColor = Color.Red;
+                foreach (var cell in conflicts)
+                {
+                    cell.SetValidity(false);
+                }
             }
-            cell.Text = value.ToString();
+
+            // Set activeCell value.
+            activeCell.SetValue(value);
+            if (activeCell.IsValid)
+                JumpForward();
+
             return true;
         }
 
         /// <summary>
-        /// Clear the activeCell, if it is not locked.
+        /// Clear the activeCell, if it is not locked or already clear.
+        /// Increase the number of cells available.
         /// </summary>
         public void Delete()
         {
-            if (!activeCell.IsLocked)
+            if (!activeCell.IsLocked && activeCell.Value != 0)
+            {
                 activeCell.Clear();
+                cellsLeft++;
+            }
         }
         #endregion
 
@@ -150,7 +149,7 @@ namespace SudokuSolver
             return Jump(size - 1, ShiftDown, ShiftRight);
         }
         /// <summary>
-        /// Jump to the next available open or invalid cell to the right and down.
+        /// Jump to the next available open or invalid cell to the left and up.
         /// </summary>
         public bool JumpBackward()
         {
@@ -160,37 +159,28 @@ namespace SudokuSolver
 
         #region Solve
 
-        Random random = new Random();
         private bool SolveCell()
         {
-            if (activeCell.IsLocked)
-            {
-                if (!JumpForward())
-                    return true;
-                return SolveCell();
-            }
-
             // Remember this cell if we have to return to it later on.
             SudokuCell currentCell = activeCell;
-            int value = 0;
             // Only consider the possibilities currently available.
             List<int> possNums = GetPossibleNums(currentCell);
+            int value;
 
             do
             {
+                activeCell = currentCell;
                 // No answers left, return false and go back to an earlier cell.
                 if (possNums.Count < 1)
                 {
-                    currentCell.Clear();
-                    cellsLeft++;
+                    Delete();
                     return false;
                 }
-                activeCell = currentCell;
 
                 value = possNums[random.Next(0, possNums.Count)];
                 // Remove value from list of possibilities.
                 possNums.Remove(value);
-                if (!ModifyCell(activeCell, value))
+                if (!ModifyCell(value))
                     continue;
 
                 // Active cell moves on.
@@ -213,7 +203,7 @@ namespace SudokuSolver
             List<int> nums = Enumerable.Range(1, 9).ToList();
             for (int i = 1; i < 10; i++)
             {
-                if (GetConflicts(cell, i).Count != 0)
+                if (GetConflicts(cell, i).Count != 1)
                     nums.Remove(i);
             }
             return nums;
@@ -238,7 +228,7 @@ namespace SudokuSolver
         /// <returns>list of conflicting cells</returns>
         private ISet<SudokuCell> GetConflicts(SudokuCell cell, int value)
         {
-            ISet<SudokuCell> conflictingCells = new HashSet<SudokuCell>();
+            ISet<SudokuCell> conflictingCells = new HashSet<SudokuCell>() { cell };
             int x = cell.X;
             int y = cell.Y;
             // Check columns and rows don't have duplicates.
@@ -249,6 +239,10 @@ namespace SudokuSolver
 
                 if (i != y && cells[x, i].Value == value)
                     conflictingCells.Add(cells[x, i]);
+
+                // Check diagonals.
+                //if (i != x && x == y && cells[i, i].Value == value)
+                //    conflictingCells.Add(cells[i, i]);
             }
             // Check boxes don't have duplicates.
             // Ex: go from 5 - (2) to 5 - (2) + 3

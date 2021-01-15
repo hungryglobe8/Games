@@ -45,23 +45,20 @@ namespace SudokuSolver
             this.IsLocked = false;
         }
 
-        public void SetValue(int value, bool valid)
+        public bool SetValue(int value)
         {
             if (!IsLocked)
             {
                 this.Value = value;
-                this.IsValid = valid;
-                if (!valid)
-                {
-                    this.ForeColor = Color.Red;
-                }
-                else
-                {
-                    this.ForeColor = SystemColors.ControlDarkDark;
-                }
                 this.Text = value.ToString();
             }
+            return !IsLocked;
+        }
 
+        public void SetValidity(bool valid)
+        {
+            this.ForeColor = valid ? SystemColors.ControlDarkDark : Color.Red;
+            this.IsValid = valid;
         }
 
         /// <summary>

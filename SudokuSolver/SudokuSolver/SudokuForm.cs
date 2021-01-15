@@ -119,10 +119,11 @@ namespace SudokuSolver
             // Add the pressed key value to the cell only if it is a number.
             if (int.TryParse(e.KeyChar.ToString(), out int value))
             {
+                grid.SelectCell(cell);
                 if (value == 0)
                     grid.Delete();
                 else
-                    grid.ModifyCell(cell, value);
+                    grid.ModifyCell(value);
                 grid.activeCell.Focus();
             }
         }
