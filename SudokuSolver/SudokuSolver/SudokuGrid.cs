@@ -62,12 +62,12 @@ namespace SudokuSolver
             }
 
             // Modify and warn invalid moves.
-            if (GetConflicts(cell, value).Count > 0)
+            if (GetConflicts(cell, value).Count == 0)
             {
                 cell.SetValue(value, true);
                 cell.ForeColor = SystemColors.ControlDarkDark;
-                ShiftOpen();
                 cellsLeft--;
+                ShiftOpen();
             }
             else
             {
@@ -106,28 +106,27 @@ namespace SudokuSolver
         public void ShiftRight() => Shift(activeCell.X + 1, activeCell.Y, 0, activeCell.Y);
         
         /// <summary>
-        /// Shift to the next available open cell.
+        /// Shift to the next available open cell, including starting cell.
         /// If the end of the board is reached, perform no shift.
         /// </summary>
-        public void ShiftOpen()
+        public bool ShiftOpen()
         {
-            SudokuCell oldActive = activeCell;
-            // Loop until an empty cell or the end of the board is reached.
-            while (activeCell.Value != 0)
+            // All cells are filled.
+            if (cellsLeft == 0)
+                return false;
+
+            int count = 0;
+            // Loop until an empty or invalid cell is reached.
+            while (activeCell.Value != 0 || !activeCell.IsValid)
             {
-                // End of board.
-                if (activeCell.X == 8 && activeCell.Y == 8)
-                {
-                    Shift(oldActive.X, oldActive.Y);
-                    return;
-                }
                 // Edge of board.
-                if (activeCell.X == 8)
-                    Shift(0, activeCell.Y + 1);
-                else
-                    ShiftRight();
+                if (activeCell.X == size - 1)
+                    ShiftDown();
+                // Always shift right.
+                ShiftRight();
+                count++;
             }
-            return;
+            return true;
         }
         #endregion
 
@@ -164,7 +163,7 @@ namespace SudokuSolver
                     continue;
                 // Active cell moves on.
                 ShiftOpen();
-                if (currentCell == activeCell && GetConflicts(currentCell, value).Count == 0)
+                if (cellsLeft == 0)
                 {
                     currentCell.Text = value.ToString();
                     return true;
@@ -181,6 +180,8 @@ namespace SudokuSolver
         {
             // Start in the top left corner.
             Shift(0, 0);
+            // Move to first empty square.
+            ShiftOpen();
             SolveCell();
             Console.WriteLine("Made it out!");
         }
@@ -195,7 +196,7 @@ namespace SudokuSolver
             int x = cell.X;
             int y = cell.Y;
             // Check columns and rows don't have duplicates.
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < size; i++)
             {
                 if (i != x && cells[i, y].Value == value)
                     conflictingCells.Add(cells[i, y]);

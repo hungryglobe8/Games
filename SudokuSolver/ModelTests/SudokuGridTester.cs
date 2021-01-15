@@ -137,6 +137,20 @@ namespace ModelTests
 
             Assert.IsTrue(sut.activeCell.Equals(1, 0));
         }
+
+        [DataTestMethod]
+        [DataRow(2, 1, 2)]
+        [DataRow(2, 2, 0)]
+        public void ShiftOpen(int x, int y, int newY)
+        {
+            var grid = SmallGrid();
+            grid.SelectCell(grid.cells[x, y]);
+            grid.activeCell.SetValue(1, true);
+
+            grid.ShiftOpen();
+
+            Assert.IsTrue(grid.activeCell.Equals(0, newY));
+        }
         #endregion
 
         #region LockTests
@@ -146,5 +160,18 @@ namespace ModelTests
 
         }
         #endregion
+
+        [TestMethod]
+        public void FillGrid()
+        {
+            var sut = SmallGrid();
+
+            for (int i = 1; i < 10; i++)
+            {
+                sut.ModifyCell(sut.activeCell, i);
+            }
+
+            Assert.AreEqual(0, sut.cellsLeft);
+        }
     }
 }
