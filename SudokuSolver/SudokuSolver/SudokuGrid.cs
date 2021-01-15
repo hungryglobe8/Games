@@ -94,7 +94,7 @@ namespace SudokuSolver
             }
             catch (Exception)
             {
-                // Focus wraps around
+                // Focus wraps around.
                 if (newX.HasValue && newY.HasValue)
                     SelectCell(cells[newX.Value, newY.Value]);
             }
@@ -137,42 +137,62 @@ namespace SudokuSolver
         {
             if (activeCell.IsLocked)
             {
-                ShiftRight();
+                if (!ShiftOpen())
+                    return true;
                 return SolveCell();
             }
+
             // Remember this cell if we have to return to it later on.
             SudokuCell currentCell = activeCell;
             int value = 0;
-            List<int> possNums = new List<int>{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            // Only consider the possibilities currently available.
+            List<int> possNums = GetPossibleNums(currentCell);
 
-            // Try a new value from remaining possibilities.
             do
             {
                 // No answers left, return false and go back to an earlier cell.
                 if (possNums.Count < 1)
                 {
                     currentCell.Clear();
+                    cellsLeft++;
                     return false;
                 }
                 activeCell = currentCell;
 
-                value = possNums[random.Next(0, possNums.Count)];         
+                value = possNums[random.Next(0, possNums.Count)];
                 // Remove value from list of possibilities.
                 possNums.Remove(value);
                 if (!ModifyCell(activeCell, value))
                     continue;
+
                 // Active cell moves on.
-                ShiftOpen();
+                //ShiftOpen();
                 if (cellsLeft == 0)
                 {
                     currentCell.Text = value.ToString();
                     return true;
                 }
-            } while (!(GetConflicts(currentCell, value).Count == 0) || !SolveCell());
+            } while (GetConflicts(currentCell, value).Count != 0 || !SolveCell());
 
             currentCell.Text = value.ToString();
             return true;
         }
+
+        /// <summary>
+        /// Return a list of numbers without conflicts at a given cell.
+        /// </summary>
+        /// <returns>list of numbers 1-9 which could be valid in a cell</returns>
+        private List<int> GetPossibleNums(SudokuCell cell)
+        {
+            List<int> nums = Enumerable.Range(1, 9).ToList();
+            for (int i = 1; i < 10; i++)
+            {
+                if (GetConflicts(cell, i).Count != 0)
+                    nums.Remove(i);
+            }
+            return nums;
+        }
+
         /// <summary>
         /// Solve the game.
         /// </summary>
@@ -183,7 +203,6 @@ namespace SudokuSolver
             // Move to first empty square.
             ShiftOpen();
             SolveCell();
-            Console.WriteLine("Made it out!");
         }
 
         /// <summary>
@@ -228,6 +247,7 @@ namespace SudokuSolver
             {
                 cell.Clear();
             }
+            cellsLeft = size * size;
         }
 
         /// <summary>
