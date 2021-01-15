@@ -1,7 +1,7 @@
 ﻿
 namespace SudokuSolver
 {
-    partial class Form1
+    partial class SudokuForm
     {
         /// <summary>
         /// Required designer variable.
@@ -29,6 +29,7 @@ namespace SudokuSolver
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SudokuForm));
             this.gamePanel = new System.Windows.Forms.Panel();
             this.lockButton = new System.Windows.Forms.Button();
             this.solveButton = new System.Windows.Forms.Button();
@@ -75,17 +76,19 @@ namespace SudokuSolver
             this.clearButton.UseVisualStyleBackColor = true;
             this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
             // 
-            // Form1
+            // SudokuForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(729, 476);
             this.Controls.Add(this.clearButton);
             this.Controls.Add(this.solveButton);
             this.Controls.Add(this.lockButton);
             this.Controls.Add(this.gamePanel);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "SudokuForm";
+            this.Text = "Sudoku";
             this.ResumeLayout(false);
 
         }

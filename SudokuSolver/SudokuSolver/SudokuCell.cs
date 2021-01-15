@@ -25,6 +25,9 @@ namespace SudokuSolver
             IsLocked = false;
         }
 
+        /// <summary>
+        /// Get rid of ugly tab box.
+        /// </summary>
         protected override bool ShowFocusCues
         {
             get

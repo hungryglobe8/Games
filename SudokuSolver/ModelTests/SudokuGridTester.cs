@@ -141,15 +141,41 @@ namespace ModelTests
         [DataTestMethod]
         [DataRow(2, 1, 2)]
         [DataRow(2, 2, 0)]
-        public void ShiftOpen(int x, int y, int newY)
+        public void JumpForward(int x, int y, int newY)
         {
-            var grid = SmallGrid();
-            grid.SelectCell(grid.cells[x, y]);
-            grid.activeCell.SetValue(1, true);
+            var sut = SmallGrid();
+            sut.SelectCell(sut.cells[x, y]);
+            sut.activeCell.SetValue(1, true);
 
-            grid.ShiftOpen();
+            sut.JumpForward();
 
-            Assert.IsTrue(grid.activeCell.Equals(0, newY));
+            Assert.IsTrue(sut.activeCell.Equals(0, newY));
+        }
+
+        [DataTestMethod]
+        [DataRow(0, 1, 0)]
+        [DataRow(0, 2, 1)]
+        public void JumpBackward(int x, int y, int newY)
+        {
+            var sut = SmallGrid();
+            sut.SelectCell(sut.cells[x, y]);
+            sut.activeCell.SetValue(1, true);
+
+            sut.JumpBackward();
+
+            Assert.IsTrue(sut.activeCell.Equals(2, newY));
+        }
+
+        public void JumpSkipsCellWithValue()
+        {
+            var sut = SmallGrid();
+            sut.ModifyCell(sut.activeCell, 2);
+
+            sut.JumpBackward();
+            Assert.IsTrue(sut.activeCell.Equals(2, 2));
+
+            sut.JumpForward();
+            Assert.IsTrue(sut.activeCell.Equals(1, 0));
         }
         #endregion
 

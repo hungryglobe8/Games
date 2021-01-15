@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace SudokuSolver
 {
+    /// <summary>
+    /// SudokuGrid contains the business logic for creating, modifying, and solving a Sudoku game.
+    /// </summary>
     public class SudokuGrid
     {
         public SudokuCell[,] cells;
@@ -14,6 +17,9 @@ namespace SudokuSolver
         public int size;
         public int cellsLeft;
 
+        /// <summary>
+        /// Initializes a new instance of the SudokuSolver.SudokuGrid class. 
+        /// </summary>
         public SudokuGrid(int _size)
         {
             cells = CreateCells(_size);
@@ -32,7 +38,6 @@ namespace SudokuSolver
             {
                 for (int j = 0; j < size; j++)
                 {
-                    // Create size*size cells.
                     cells[i, j] = new SudokuCell(i, j);
                 }
             }
@@ -67,7 +72,7 @@ namespace SudokuSolver
                 cell.SetValue(value, true);
                 cell.ForeColor = SystemColors.ControlDarkDark;
                 cellsLeft--;
-                ShiftOpen();
+                JumpForward();
             }
             else
             {
@@ -76,6 +81,15 @@ namespace SudokuSolver
             }
             cell.Text = value.ToString();
             return true;
+        }
+
+        /// <summary>
+        /// Clear the activeCell, if it is not locked.
+        /// </summary>
+        public void Delete()
+        {
+            if (!activeCell.IsLocked)
+                activeCell.Clear();
         }
         #endregion
 
@@ -106,27 +120,41 @@ namespace SudokuSolver
         public void ShiftRight() => Shift(activeCell.X + 1, activeCell.Y, 0, activeCell.Y);
         
         /// <summary>
-        /// Shift to the next available open cell, including starting cell.
-        /// If the end of the board is reached, perform no shift.
+        /// Jump to the next available open or invalid cell.
+        /// Can jump forward or backward, and past grid's borders.
         /// </summary>
-        public bool ShiftOpen()
+        private bool Jump(int edge, Action verticalShift, Action horizontalShift)
         {
             // All cells are filled.
             if (cellsLeft == 0)
                 return false;
 
-            int count = 0;
-            // Loop until an empty or invalid cell is reached.
-            while (activeCell.Value != 0 || !activeCell.IsValid)
+            // Loop until a different empty or invalid cell is reached.
+            do
             {
                 // Edge of board.
-                if (activeCell.X == size - 1)
-                    ShiftDown();
-                // Always shift right.
-                ShiftRight();
-                count++;
-            }
+                if (activeCell.X == edge)
+                    verticalShift();
+                // Shift left or right.
+                horizontalShift();
+            } while (activeCell.Value != 0 || !activeCell.IsValid);
             return true;
+        }
+
+        /// <summary>
+        /// Jump to the next available open or invalid cell to the right and down.
+        /// </summary>
+        /// <returns></returns>
+        public bool JumpForward()
+        {
+            return Jump(size - 1, ShiftDown, ShiftRight);
+        }
+        /// <summary>
+        /// Jump to the next available open or invalid cell to the right and down.
+        /// </summary>
+        public bool JumpBackward()
+        {
+            return Jump(0, ShiftUp, ShiftLeft);
         }
         #endregion
 
@@ -137,7 +165,7 @@ namespace SudokuSolver
         {
             if (activeCell.IsLocked)
             {
-                if (!ShiftOpen())
+                if (!JumpForward())
                     return true;
                 return SolveCell();
             }
@@ -198,8 +226,9 @@ namespace SudokuSolver
         {
             // Start in the top left corner.
             Shift(0, 0);
-            // Move to first empty square.
-            ShiftOpen();
+            // Move to first empty square (possibly first).
+            JumpBackward();
+            JumpForward();
             SolveCell();
         }
 
