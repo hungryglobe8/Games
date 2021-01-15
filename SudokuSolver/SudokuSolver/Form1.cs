@@ -36,6 +36,7 @@ namespace SudokuSolver
                 cell.BackColor = ((cell.X / 3) + (cell.Y / 3)) % 2 == 0 ? SystemColors.Control : Color.DarkGray;
                 cell.FlatStyle = FlatStyle.Flat;
                 cell.FlatAppearance.BorderColor = Color.Black;
+                cell.TabStop = false;
 
                 // Assign key press event for each cells
                 cell.KeyPress += cell_keyPressed;

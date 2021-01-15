@@ -166,13 +166,11 @@ namespace SudokuSolver
                     continue;
 
                 // Active cell moves on.
-                //ShiftOpen();
                 if (cellsLeft == 0)
                 {
-                    currentCell.Text = value.ToString();
                     return true;
                 }
-            } while (GetConflicts(currentCell, value).Count != 0 || !SolveCell());
+            } while (!SolveCell());
 
             currentCell.Text = value.ToString();
             return true;

@@ -25,6 +25,14 @@ namespace SudokuSolver
             IsLocked = false;
         }
 
+        protected override bool ShowFocusCues
+        {
+            get
+            {
+                return false;
+            }
+        }
+
         public void Clear()
         {
             this.Value = 0;
@@ -38,8 +46,8 @@ namespace SudokuSolver
         {
             if (!IsLocked)
             {
-                Value = value;
-                IsValid = valid;
+                this.Value = value;
+                this.IsValid = valid;
                 if (!valid)
                 {
                     this.ForeColor = Color.Red;
@@ -48,6 +56,7 @@ namespace SudokuSolver
                 {
                     this.ForeColor = SystemColors.ControlDarkDark;
                 }
+                this.Text = value.ToString();
             }
 
         }
