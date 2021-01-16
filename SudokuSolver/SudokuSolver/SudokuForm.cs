@@ -12,15 +12,13 @@ namespace SudokuSolver
 {
     public partial class SudokuForm : Form
     {
-        private readonly SudokuGrid grid;
+        private SudokuGrid grid;
 
         public SudokuForm(int width, int height, int size)
         {
             InitializeComponent();
 
-            grid = new SudokuGrid(width, height, size);
-
-            ConnectCells();
+            CreateGame(width, height, size);
         }
 
         /// <summary>
@@ -159,11 +157,23 @@ namespace SudokuSolver
         private void smallToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(2, 2, 4);
         private void mediumToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(3, 2, 6);
         private void largeToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(3, 3, 9);
-
+        /// <summary>
+        /// Suspend the visuals of the gamePanel until a board has been generated and is ready to view.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <param name="size"></param>
         private void CreateGame(int width, int height, int size)
         {
-            new SudokuForm(width, height, size).Show();
-            Hide();
+            gamePanel.Visible = false;
+            gamePanel.Controls.Clear();
+            grid = new SudokuGrid(width, height, size);
+
+            ConnectCells();
+            gamePanel.ResumeLayout();
+            gamePanel.Visible = true;
+            //new SudokuForm(width, height, size).Show();
+            //this.Close();
         }
         #endregion
     }
