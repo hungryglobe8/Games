@@ -14,7 +14,7 @@ namespace SudokuSolver
     {
         public SudokuCell[,] cells;
         public SudokuCell activeCell;
-        public int size;
+        private readonly int width, height, size;
         public int cellsLeft;
         // For picking possible solution paths.
         private readonly Random random = new Random();
@@ -22,25 +22,33 @@ namespace SudokuSolver
         /// <summary>
         /// Initializes a new instance of the SudokuSolver.SudokuGrid class. 
         /// </summary>
-        public SudokuGrid(int _size)
+        public SudokuGrid(int width, int height, int size)
         {
-            cells = CreateCells(_size);
+            this.width = width;
+            this.height = height;
+            this.size = size;
+            this.cellsLeft = size * size;
+
+            this.cells = CreateCells();
             SelectCell(cells[0, 0]);
-            size = _size;
-            cellsLeft = size * size;
         }
 
         /// <summary>
         /// Create empty cells to fill a Sudoku board of size by size.
+        /// Regions of width by height are differentiated by shading.
         /// </summary>
-        private SudokuCell[,] CreateCells(int size)
+        private SudokuCell[,] CreateCells()
         {
             SudokuCell[,] cells = new SudokuCell[size, size];
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    cells[i, j] = new SudokuCell(i, j);
+                    cells[i, j] = new SudokuCell(i, j)
+                    {
+                        // Choose one of two backColors based on location.
+                        BackColor = ((i / width) + (j / height)) % 2 == 0 ? SystemColors.Control : Color.DarkGray
+                    };
                 }
             }
             return cells;
@@ -216,10 +224,10 @@ namespace SudokuSolver
         /// <summary>
         /// Return a list of numbers without conflicts at a given cell.
         /// </summary>
-        /// <returns>list of numbers 1-9 which could be valid in a cell</returns>
+        /// <returns>list of numbers 1-size which could be valid in a cell</returns>
         private List<int> GetPossibleNums(SudokuCell cell)
         {
-            List<int> nums = Enumerable.Range(1, 9).ToList();
+            List<int> nums = Enumerable.Range(1, size).ToList();
             for (int i = 1; i < 10; i++)
             {
                 if (GetConflicts(cell, i).Count != 0)
@@ -265,9 +273,9 @@ namespace SudokuSolver
             }
             // Check boxes don't have duplicates.
             // Ex: go from 5 - (2) to 5 - (2) + 3
-            for (int i = x - (x % 3); i < x - (x % 3) + 3; i++)
+            for (int i = x - (x % width); i < x - (x % width) + width; i++)
             {
-                for (int j = y - (y % 3); j < y - (y % 3) + 3; j++)
+                for (int j = y - (y % height); j < y - (y % height) + height; j++)
                 {
                     if (i != x && j != y && cells[i, j].Value == value)
                         conflictingCells.Add(cells[i, j]);

@@ -53,6 +53,20 @@ namespace ModelTests
             Assert.IsTrue(sut.activeCell.Equals(2, 2));
         }
 
+        #region SizeTests
+        [DataTestMethod]
+        [DataRow (3, 3, 9, 81)]
+        [DataRow (2, 2, 4, 16)]
+        [DataRow (2, 3, 6, 36)]
+        [DataRow]
+        public void CreateGridDiffSizes(int width, int height, int size, int numCells)
+        {
+            var sut = new SudokuGrid(width, height, size);
+
+            Assert.AreEqual(numCells, sut.cells.Length);
+        }
+        #endregion
+
         #region ShiftTests
         [TestMethod]
         public void ShiftRight()

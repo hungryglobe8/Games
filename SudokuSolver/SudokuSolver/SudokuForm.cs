@@ -20,7 +20,7 @@ namespace SudokuSolver
         }
 
         // Must be initialized before connect cells.
-        readonly SudokuGrid grid = new SudokuGrid(9);
+        readonly SudokuGrid grid = new SudokuGrid(2, 2, 4);
 
         /// <summary>
         /// Provide event listeners and some styling for cells in SudokuGrid.
@@ -34,7 +34,6 @@ namespace SudokuSolver
                 cell.ForeColor = SystemColors.ControlDarkDark;
                 cell.Location = new Point(cell.X * 40, cell.Y * 40);
                 //TODO-Move design to grid? Call specific due to specific checkboxes?
-                cell.BackColor = ((cell.X / 3) + (cell.Y / 3)) % 2 == 0 ? SystemColors.Control : Color.DarkGray;
                 cell.FlatStyle = FlatStyle.Flat;
                 cell.FlatAppearance.BorderColor = Color.Black;
                 cell.TabStop = false;
