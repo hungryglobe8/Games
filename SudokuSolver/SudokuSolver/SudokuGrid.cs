@@ -272,10 +272,10 @@ namespace SudokuSolver
                     conflictingCells.Add(yCell);
 
                 // Check diagonals.
-                if (x == y && leftDiagCell != cell && leftDiagCell.Value == value)
-                    conflictingCells.Add(leftDiagCell);
-                if (x + y == size - 1 && rightDiagCell != cell && rightDiagCell.Value == value)
-                    conflictingCells.Add(rightDiagCell);
+                //if (x == y && leftDiagCell != cell && leftDiagCell.Value == value)
+                //    conflictingCells.Add(leftDiagCell);
+                //if (x + y == size - 1 && rightDiagCell != cell && rightDiagCell.Value == value)
+                //    conflictingCells.Add(rightDiagCell);
             }
             // Check boxes don't have duplicates.
             // Ex: go from 5 - (2) to 5 - (2) + 3
