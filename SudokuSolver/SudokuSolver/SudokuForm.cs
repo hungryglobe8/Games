@@ -20,7 +20,7 @@ namespace SudokuSolver
         }
 
         // Must be initialized before connect cells.
-        readonly SudokuGrid grid = new SudokuGrid(2, 2, 4);
+        readonly SudokuGrid grid = new SudokuGrid(3, 2, 6);
 
         /// <summary>
         /// Provide event listeners and some styling for cells in SudokuGrid.

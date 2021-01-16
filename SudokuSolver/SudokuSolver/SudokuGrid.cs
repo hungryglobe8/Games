@@ -228,7 +228,7 @@ namespace SudokuSolver
         private List<int> GetPossibleNums(SudokuCell cell)
         {
             List<int> nums = Enumerable.Range(1, size).ToList();
-            for (int i = 1; i < 10; i++)
+            for (int i = 1; i < size + 1; i++)
             {
                 if (GetConflicts(cell, i).Count != 0)
                     nums.Remove(i);
@@ -261,15 +261,21 @@ namespace SudokuSolver
             // Check columns and rows don't have duplicates.
             for (int i = 0; i < size; i++)
             {
-                if (i != x && cells[i, y].Value == value)
-                    conflictingCells.Add(cells[i, y]);
+                SudokuCell xCell = cells[i, y];
+                SudokuCell yCell = cells[x, i];
+                SudokuCell leftDiagCell = cells[i, i];
+                SudokuCell rightDiagCell = cells[i, size - 1 - i];
+                if (cell != xCell && xCell.Value == value)
+                    conflictingCells.Add(xCell);
 
-                if (i != y && cells[x, i].Value == value)
-                    conflictingCells.Add(cells[x, i]);
+                if (cell != yCell && yCell.Value == value)
+                    conflictingCells.Add(yCell);
 
                 // Check diagonals.
-                //if (i != x && x == y && cells[i, i].Value == value)
-                //    conflictingCells.Add(cells[i, i]);
+                if (x == y && leftDiagCell != cell && leftDiagCell.Value == value)
+                    conflictingCells.Add(leftDiagCell);
+                if (x + y == size - 1 && rightDiagCell != cell && rightDiagCell.Value == value)
+                    conflictingCells.Add(rightDiagCell);
             }
             // Check boxes don't have duplicates.
             // Ex: go from 5 - (2) to 5 - (2) + 3
