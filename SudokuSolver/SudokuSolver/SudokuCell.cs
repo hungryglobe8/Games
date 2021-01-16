@@ -14,65 +14,101 @@ namespace SudokuSolver
     {
         public int Value { get; private set; }
         public bool IsLocked { get; private set; }
-        public bool IsValid { get; set; }
+        public bool IsValid => Conflicts.Count == 0;
+        public IList<SudokuCell> Conflicts { get; private set; }
         public int X { get; private set; }
         public int Y { get; private set; }
         public SudokuCell(int x, int y)
         {
             X = x;
             Y = y;
-            IsValid = true;
             IsLocked = false;
+            Conflicts = new List<SudokuCell>();
         }
 
         /// <summary>
         /// Get rid of ugly tab box.
         /// </summary>
-        protected override bool ShowFocusCues
+        protected override bool ShowFocusCues { get { return false; } }
+
+        /// <summary>
+        /// Change a cell's value, text and color, based on cell state.
+        ///     invalid - red takes highest priority
+        ///     locked - solid black is next priority
+        ///     normal - dark grey
+        /// </summary>
+        private void Write(int value)
         {
-            get
+            this.Value = value;
+            if (!IsValid)
+                this.ForeColor = Color.Red;
+            else if (IsLocked)
+                this.ForeColor = Color.Black;
+            else
+                this.ForeColor = SystemColors.ControlDarkDark;
+            this.Text = (value == 0) ? string.Empty : value.ToString();
+        }
+
+        private bool ValueWillNotChange(int value) => IsLocked || (Value == value);
+
+        /// <summary>
+        /// If cell is locked or its value equals newValue,
+        /// rewrite in case of collision and return false.
+        /// Else cell's value will change,
+        /// </summary>
+        /// <param name="newValue">new cell Value</param>
+        /// <returns>true if cell changed value, false otherwise</returns>
+        public bool SetValue(int newValue)
+        {
+            // Rewrite locked cells in case of conflicts.
+            if (ValueWillNotChange(newValue))
             {
+                Write(Value);
                 return false;
-            }
-        }
-
-        public void Clear()
-        {
-            this.Value = 0;
-            this.ForeColor = SystemColors.ControlDarkDark;
-            this.Text = string.Empty;
-            this.IsValid = true;
-            this.IsLocked = false;
-        }
-
-        public bool SetValue(int value)
-        {
-            if (!IsLocked)
+            }    
+            else
             {
-                this.Value = value;
-                this.Text = value.ToString();
+                Write(newValue);
+                return true;
             }
-            return !IsLocked;
         }
 
-        public void SetValidity(bool valid)
+        public void AddConflict(SudokuCell other)
         {
-            this.ForeColor = valid ? SystemColors.ControlDarkDark : Color.Red;
-            this.IsValid = valid;
+            this.Conflicts.Add(other);
+            other.Conflicts.Add(this);
+        }
+
+        public void Notify() => Write(Value);
+
+        public void RemoveConflict(SudokuCell other)
+        {
+            this.Conflicts.Remove(other);
+            other.Conflicts.Remove(this);
+        }
+        /// <summary>
+        /// Remove all conflicts from self and all conflict
+        /// references to self in other cells.
+        /// </summary>
+        public void RemoveConflicts()
+        {
+            foreach (var cell in Conflicts.ToList<SudokuCell>())
+            {
+                RemoveConflict(cell);
+                cell.Notify();
+            }
+            this.Conflicts.Clear();
         }
 
         /// <summary>
-        /// Lock a single cell on the grid, if it has a value.
+        /// Lock a single cell, if it has a value.
         /// </summary>
         public void Lock()
         {
             if (Value != 0)
-            {
                 IsLocked = true;
-                // Change the color of locked cells.
-                ForeColor = Color.Black;
-            }
         }
+        public void Unlock() => IsLocked = false;
 
         public bool Equals(int x, int y)
         {

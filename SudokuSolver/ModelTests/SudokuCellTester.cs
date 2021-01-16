@@ -86,7 +86,7 @@ namespace ModelTests
         {
             var sut = BasicCell();
 
-            sut.SetValue(5, true);
+            sut.SetValue(5);
 
             Assert.AreEqual(5, sut.Value);
         }
@@ -96,9 +96,9 @@ namespace ModelTests
         {
             var sut = BasicCell();
 
-            sut.SetValue(1, true);
+            sut.SetValue(1);
             sut.Lock();
-            sut.SetValue(5, true);
+            sut.SetValue(5);
 
             Assert.AreNotEqual(5, sut.Value);
         }
@@ -108,34 +108,50 @@ namespace ModelTests
         {
             var sut = BasicCell();
 
-            sut.SetValue(5, true);
-            sut.Clear();
+            sut.SetValue(5);
+            sut.SetValue(0);
 
             Assert.AreEqual(0, sut.Value);
         }
 
         [TestMethod]
-        public void ClearCellIfLocked()
+        public void CellWillNotClearIfLocked()
         {
             var sut = BasicCell();
 
-            sut.SetValue(5, true);
+            sut.SetValue(5);
             sut.Lock();
-            sut.Clear();
+            sut.SetValue(0);
 
-            Assert.AreEqual(0, sut.Value);
-            Assert.IsFalse(sut.IsLocked);
+            Assert.AreEqual(5, sut.Value);
+            Assert.IsTrue(sut.IsLocked);
         }
 
         [TestMethod]
-        public void CheckValidityChanges()
+        public void CreateConflictAffectsBothCells()
         {
             var sut = BasicCell();
-            Assert.IsTrue(sut.IsValid);
+            var other = BasicCell();
 
-            sut.SetValue(5, false);
+            sut.AddConflict(other);
 
             Assert.IsFalse(sut.IsValid);
+            Assert.IsFalse(other.IsValid);
+        }
+
+        [TestMethod]
+        public void RemoveConflictsClearsCell()
+        {
+            var sut = BasicCell();
+            var c1 = BasicCell();
+            var c2 = BasicCell();
+
+            sut.AddConflict(c1);
+            sut.AddConflict(c2);
+            Assert.AreEqual(2, sut.Conflicts.Count);
+
+            sut.RemoveConflicts();
+            Assert.IsTrue(sut.IsValid);
         }
 
         [TestMethod]

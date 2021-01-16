@@ -145,7 +145,7 @@ namespace ModelTests
         {
             var sut = SmallGrid();
             sut.SelectCell(sut.cells[x, y]);
-            sut.activeCell.SetValue(1, true);
+            sut.activeCell.SetValue(1);
 
             sut.JumpForward();
 
@@ -159,7 +159,7 @@ namespace ModelTests
         {
             var sut = SmallGrid();
             sut.SelectCell(sut.cells[x, y]);
-            sut.activeCell.SetValue(1, true);
+            sut.activeCell.SetValue(1);
 
             sut.JumpBackward();
 
@@ -169,7 +169,7 @@ namespace ModelTests
         public void JumpSkipsCellWithValue()
         {
             var sut = SmallGrid();
-            sut.ModifyCell(sut.activeCell, 2);
+            sut.ModifyCell(2);
 
             sut.JumpBackward();
             Assert.IsTrue(sut.activeCell.Equals(2, 2));
@@ -194,7 +194,7 @@ namespace ModelTests
 
             for (int i = 1; i < 10; i++)
             {
-                sut.ModifyCell(sut.activeCell, i);
+                sut.ModifyCell(i);
             }
 
             Assert.AreEqual(0, sut.cellsLeft);
