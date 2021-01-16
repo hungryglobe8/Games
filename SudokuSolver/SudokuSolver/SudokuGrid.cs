@@ -19,7 +19,6 @@ namespace SudokuSolver
         // For picking possible solution paths.
         private readonly Random random = new Random();
 
-
         /// <summary>
         /// Initializes a new instance of the SudokuSolver.SudokuGrid class. 
         /// </summary>
@@ -53,34 +52,56 @@ namespace SudokuSolver
         public void SelectCell(SudokuCell cell) => activeCell = cell;
 
         #region ModifyCells
+        /// <summary>
+        /// Modify a cell, returning true if the cell's value was changed.
+        /// Updates known conflicts and jump forward if the cell had none.
+        /// </summary>
+        /// <param name="value">new value for the cell</param>
+        /// <returns>true if the cell's value was changed, false otherwise</returns>
         public bool ModifyCell(int value)
         {
+            int oldValue = activeCell.Value;
             // Set activeCell value.
             if (activeCell.SetValue(value))
             {
-                // Remove old conflicts.
-                activeCell.RemoveConflicts();
-                // Highlight any new invalid moves.
-                ISet<SudokuCell> conflicts = GetConflicts(activeCell, value);
-                foreach (var cell in conflicts)
-                {
-                    cell.AddConflict(activeCell);
-                    cell.Notify();
-                }
-                activeCell.Notify();
-
+                // Cell value has changed from 0.
+                if (oldValue == 0)
+                    cellsLeft--;
+                // Conflicts must be updated with change.
+                UpdateConflicts(value);
+                // Check validity to jump forward.
                 if (activeCell.IsValid)
                     JumpForward();
-
-                cellsLeft--;
                 return true;
             }
-            else
+            return false;
+        }
+
+        /// <summary>
+        /// Remove old conflicts, look for new ones, and notify all involved cells.
+        /// </summary>
+        private void UpdateConflicts(int value)
+        {
+            // Remove old conflicts.
+            IList<SudokuCell> oldConflicts = activeCell.Conflicts.ToList<SudokuCell>();
+            UpdateStatus(oldConflicts, activeCell.RemoveConflict);
+
+            // Show new conflicts.
+            ISet<SudokuCell> newConflicts = GetConflicts(activeCell, value);
+            UpdateStatus(newConflicts, activeCell.AddConflict);
+
+            activeCell.Notify();
+        }
+
+        private void UpdateStatus(IEnumerable<SudokuCell> cells, Action<SudokuCell> myMethod)
+        {
+            foreach (var cell in cells)
             {
-                activeCell.Notify();
-                return false;
+                myMethod(cell);
+                cell.Notify();
             }
         }
+
 
         /// <summary>
         /// Clear the activeCell, if it is not locked or already clear.

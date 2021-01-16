@@ -79,26 +79,13 @@ namespace SudokuSolver
             other.Conflicts.Add(this);
         }
 
-        public void Notify() => Write(Value);
-
         public void RemoveConflict(SudokuCell other)
         {
             this.Conflicts.Remove(other);
             other.Conflicts.Remove(this);
         }
-        /// <summary>
-        /// Remove all conflicts from self and all conflict
-        /// references to self in other cells.
-        /// </summary>
-        public void RemoveConflicts()
-        {
-            foreach (var cell in Conflicts.ToList<SudokuCell>())
-            {
-                RemoveConflict(cell);
-                cell.Notify();
-            }
-            this.Conflicts.Clear();
-        }
+
+        public void Notify() => Write(Value);
 
         /// <summary>
         /// Lock a single cell, if it has a value.
