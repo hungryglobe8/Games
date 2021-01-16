@@ -12,15 +12,16 @@ namespace SudokuSolver
 {
     public partial class SudokuForm : Form
     {
-        public SudokuForm()
+        private readonly SudokuGrid grid;
+
+        public SudokuForm(int width, int height, int size)
         {
             InitializeComponent();
 
+            grid = new SudokuGrid(width, height, size);
+
             ConnectCells();
         }
-
-        // Must be initialized before connect cells.
-        readonly SudokuGrid grid = new SudokuGrid(3, 2, 6);
 
         /// <summary>
         /// Provide event listeners and some styling for cells in SudokuGrid.
@@ -153,5 +154,17 @@ namespace SudokuSolver
             grid.ClearBoard();
             solveButton.Enabled = true;
         }
+
+        #region CreateNewGame
+        private void smallToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(2, 2, 4);
+        private void mediumToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(3, 2, 6);
+        private void largeToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(3, 3, 9);
+
+        private void CreateGame(int width, int height, int size)
+        {
+            new SudokuForm(width, height, size).Show();
+            Hide();
+        }
+        #endregion
     }
 }

@@ -12,7 +12,7 @@ namespace ModelTests
         /// </summary>
         public SudokuGrid SmallGrid()
         {
-            SudokuGrid grid = new SudokuGrid(3);
+            SudokuGrid grid = new SudokuGrid(3, 3, 3);
             grid.activeCell = grid.cells[1, 1];
             grid.activeCell.Select();
             return grid;
@@ -21,7 +21,7 @@ namespace ModelTests
         [TestMethod]
         public void SudokuGridNotNull()
         {
-            Assert.IsNotNull(new SudokuGrid(1));
+            Assert.IsNotNull(new SudokuGrid(1, 1, 1));
         }
 
         [TestMethod]
@@ -38,7 +38,7 @@ namespace ModelTests
         [TestMethod]
         public void ActiveCellStartsTopLeft()
         {
-            var sut = new SudokuGrid(3);
+            var sut = new SudokuGrid(3, 3, 3);
 
             Assert.IsTrue(sut.activeCell.Equals(0, 0));
         }
