@@ -86,7 +86,7 @@ namespace SudokuSolver
                     // Delete last filled cell.
                     case Keys.Back:
                         grid.ShiftLeft();
-                        grid.Delete();
+                        grid.ModifyCell(0);
                         break;
 
                     default:
@@ -119,11 +119,8 @@ namespace SudokuSolver
             // Add the pressed key value to the cell only if it is a number.
             if (int.TryParse(e.KeyChar.ToString(), out int value))
             {
-                grid.SelectCell(cell);
-                if (value == 0)
-                    grid.Delete();
-                else
-                    grid.ModifyCell(value);
+                //grid.SelectCell(cell);
+                grid.ModifyCell(value);
                 grid.activeCell.Focus();
             }
         }

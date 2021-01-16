@@ -150,7 +150,8 @@ namespace ModelTests
             sut.AddConflict(c2);
             Assert.AreEqual(2, sut.Conflicts.Count);
 
-            sut.RemoveConflicts();
+            sut.RemoveConflict(c1);
+            sut.RemoveConflict(c2);
             Assert.IsTrue(sut.IsValid);
         }
 

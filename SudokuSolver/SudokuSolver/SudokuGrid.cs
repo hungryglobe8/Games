@@ -64,9 +64,13 @@ namespace SudokuSolver
             // Set activeCell value.
             if (activeCell.SetValue(value))
             {
-                // Cell value has changed from 0.
+                // Cell value changed from 0.
                 if (oldValue == 0)
                     cellsLeft--;
+                // Cell value changed to 0.
+                if (activeCell.Value == 0)
+                    cellsLeft++;
+
                 // Conflicts must be updated with change.
                 UpdateConflicts(value);
                 // Check validity to jump forward.
@@ -93,24 +97,13 @@ namespace SudokuSolver
             activeCell.Notify();
         }
 
-        private void UpdateStatus(IEnumerable<SudokuCell> cells, Action<SudokuCell> myMethod)
+        private void UpdateStatus(IEnumerable<SudokuCell> cells, Action<SudokuCell> action)
         {
             foreach (var cell in cells)
             {
-                myMethod(cell);
+                action(cell);
                 cell.Notify();
             }
-        }
-
-
-        /// <summary>
-        /// Clear the activeCell, if it is not locked or already clear.
-        /// Increase the number of cells available.
-        /// </summary>
-        public void Delete()
-        {
-            if (activeCell.SetValue(0))
-                cellsLeft++;
         }
         #endregion
 
@@ -158,7 +151,8 @@ namespace SudokuSolver
                     verticalShift();
                 // Shift left or right.
                 horizontalShift();
-            } while (activeCell.Value != 0 || !activeCell.IsValid);
+                // || !activeCell.IsValid
+            } while (activeCell.Value != 0);
             return true;
         }
 
@@ -185,7 +179,7 @@ namespace SudokuSolver
         {
             if (possNums.Count < 1)
             {
-                Delete();
+                ModifyCell(0);
                 return false;
             }
 
@@ -306,6 +300,7 @@ namespace SudokuSolver
             foreach (SudokuCell cell in cells)
             {
                 cell.Lock();
+                cell.Notify();
             }
         }
     }
