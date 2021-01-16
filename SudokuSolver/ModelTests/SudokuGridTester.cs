@@ -211,7 +211,7 @@ namespace ModelTests
                 sut.ModifyCell(i);
             }
 
-            Assert.AreEqual(0, sut.cellsLeft);
+            Assert.IsTrue(sut.AllCellsFilled());
         }
     }
 }
