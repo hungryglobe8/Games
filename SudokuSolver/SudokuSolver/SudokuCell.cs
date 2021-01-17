@@ -21,7 +21,7 @@ namespace SudokuSolver
     public delegate void CellValueChanged(CellValueChangedArgs e);
 
 #pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
-    public class SudokuCell : Button
+    public class SudokuCell
 #pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
         public int Value { get; private set; }
@@ -31,7 +31,7 @@ namespace SudokuSolver
         public ISet<SudokuCell> Neighbors { get; private set; }
         public int X { get; private set; }
         public int Y { get; private set; }
-        public event CellValueChanged ValueChange;
+        public event CellValueChanged ValueChanged;
 
         public SudokuCell(int x, int y)
         {
@@ -41,11 +41,6 @@ namespace SudokuSolver
             Neighbors = new HashSet<SudokuCell>();
             Conflicts = new List<SudokuCell>();
         }
-
-        /// <summary>
-        /// Get rid of ugly tab box.
-        /// </summary>
-        protected override bool ShowFocusCues { get { return false; } }
 
         /// <summary>
         /// Change a cell's value, text and color, based on cell state.

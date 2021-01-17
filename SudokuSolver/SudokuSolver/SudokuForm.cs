@@ -50,7 +50,7 @@ namespace SudokuSolver
             }
         }
 
-        private void cell_ValueChanged(CellValueChangedArgs e)
+        private void cell_valueChanged(CellValueChangedArgs e)
         {
             var button = gamePanel.Controls.Find($"{e.Cell.X},{e.Cell.Y}", false).FirstOrDefault();
             if (button == null)
@@ -74,7 +74,7 @@ namespace SudokuSolver
                 switch (keyData)
                 {
                     case Keys.Up:
-                        grid.ShiftUp();
+                        grid.SelectCell(grid.movement.Up);
                         break;
                     case Keys.Down:
                         grid.ShiftDown();

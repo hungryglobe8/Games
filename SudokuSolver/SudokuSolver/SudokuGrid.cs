@@ -14,6 +14,7 @@ namespace SudokuSolver
     {
         public SudokuCell[,] cells;
         private object groups;
+        public Movement movement;
         public SudokuCell activeCell;
         public readonly int width, height, size;
         // For picking possible solution paths.
@@ -30,6 +31,7 @@ namespace SudokuSolver
 
             this.cells = CreateCells();
             this.groups = CreateGroups();
+            this.movement = new Movement(this);
             SelectCell(cells[0, 0]);
         }
 
@@ -83,6 +85,7 @@ namespace SudokuSolver
             }
             return cells;
         }
+
 
         private void AddNeighbors(SudokuCell cell)
         {
@@ -141,7 +144,7 @@ namespace SudokuSolver
         /// <summary>
         /// Select a cell, making it the activeCell of the grid.
         /// </summary>
-        public void SelectCell(SudokuCell cell) => activeCell = cell;
+        public void SelectCell(Func<SudokuCell, SudokuCell> Movement) => activeCell = Movement(activeCell);
 
         #region ModifyCells
         /// <summary>
@@ -212,30 +215,7 @@ namespace SudokuSolver
         #endregion
 
         #region ShiftFocus
-        /// <summary>
-        /// Attempt to select a new square, which also changes the activeCell.
-        /// If out of bounds, focus should wrap around the board on the same row or column.
-        /// </summary>
-        /// <param name="x">new x value to try</param>
-        /// <param name="y">new y value to try</param>
-        private void Shift(int x, int y, int? newX = null, int? newY = null)
-        {
-            try
-            {
-                SelectCell(cells[x, y]);
-            }
-            catch (Exception)
-            {
-                // Focus wraps around.
-                if (newX.HasValue && newY.HasValue)
-                    SelectCell(cells[newX.Value, newY.Value]);
-            }
-        }
 
-        public void ShiftUp() => Shift(activeCell.X, activeCell.Y - 1, activeCell.X, size - 1);
-        public void ShiftDown() => Shift(activeCell.X, activeCell.Y + 1, activeCell.X, 0);
-        public void ShiftLeft() => Shift(activeCell.X - 1, activeCell.Y, size - 1, activeCell.Y);
-        public void ShiftRight() => Shift(activeCell.X + 1, activeCell.Y, 0, activeCell.Y);
 
         /// <summary>
         /// Jump to the next available open or invalid cell.
