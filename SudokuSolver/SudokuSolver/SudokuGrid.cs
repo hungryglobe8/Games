@@ -15,7 +15,7 @@ namespace SudokuSolver
         public SudokuCell[,] cells;
         private object groups;
         public SudokuCell activeCell;
-        private readonly int width, height, size;
+        public readonly int width, height, size;
         // For picking possible solution paths.
         private readonly Random random = new Random();
 

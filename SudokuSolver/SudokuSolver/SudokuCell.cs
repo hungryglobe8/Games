@@ -8,6 +8,18 @@ using System.Windows.Forms;
 
 namespace SudokuSolver
 {
+    public class CellValueChangedArgs : EventArgs
+    {
+        public CellValueChangedArgs(SudokuCell cell)
+        {
+            Cell = cell;
+            CellValue = cell.Value;
+        }
+        public SudokuCell Cell { get; }
+        public int CellValue { get; set; }
+    }
+    public delegate void CellValueChanged(CellValueChangedArgs e);
+
 #pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     public class SudokuCell : Button
 #pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
@@ -19,6 +31,8 @@ namespace SudokuSolver
         public ISet<SudokuCell> Neighbors { get; private set; }
         public int X { get; private set; }
         public int Y { get; private set; }
+        public event CellValueChanged ValueChange;
+
         public SudokuCell(int x, int y)
         {
             X = x;

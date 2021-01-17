@@ -28,21 +28,35 @@ namespace SudokuSolver
         {
             foreach (var cell in grid.cells)
             {
-                cell.Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
-                cell.Size = new Size(40, 40);
-                cell.ForeColor = SystemColors.ControlDarkDark;
-                cell.Location = new Point(cell.X * 40, cell.Y * 40);
+                SudokuButton button = new SudokuButton(cell);
+                button.Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
+                button.Size = new Size(40, 40);
+                button.ForeColor = SystemColors.ControlDarkDark;
+                button.Location = new Point(button.Cell.X * 40, button.Cell.Y * 40);
+                // Choose one of two backColors based on location.
+                button.BackColor = ((button.Cell.X / grid.width) + (button.Cell.Y / grid.height)) % 2 == 0 ? SystemColors.Control : Color.DarkGray;
                 //TODO-Move design to grid? Call specific due to specific checkboxes?
-                cell.FlatStyle = FlatStyle.Flat;
-                cell.FlatAppearance.BorderColor = Color.Black;
-                cell.TabStop = false;
+                button.FlatStyle = FlatStyle.Flat;
+                button.FlatAppearance.BorderColor = Color.Black;
+                button.TabStop = false;
 
                 // Assign key press event for each cells
-                cell.KeyPress += cell_keyPressed;
-                cell.Click += cell_clicked;
+                button.KeyPress += cell_keyPressed;
+                button.Click += cell_clicked;
+                button.Cell.ValueChanged += cell_valueChanged;
 
-                gamePanel.Controls.Add(cell);
+                button.Name = $"{button.Cell.X},{button.Cell.Y}";
+                gamePanel.Controls.Add(button);
             }
+        }
+
+        private void cell_ValueChanged(CellValueChangedArgs e)
+        {
+            var button = gamePanel.Controls.Find($"{e.Cell.X},{e.Cell.Y}", false).FirstOrDefault();
+            if (button == null)
+                return;
+
+            button.Text = e.CellValue.ToString();
         }
 
         /// <summary>
