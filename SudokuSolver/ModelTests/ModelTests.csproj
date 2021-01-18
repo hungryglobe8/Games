@@ -50,6 +50,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MovementTester.cs" />
     <Compile Include="SudokuCellTester.cs" />
     <Compile Include="SudokuGridTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

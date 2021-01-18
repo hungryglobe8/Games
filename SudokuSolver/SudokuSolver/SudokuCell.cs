@@ -42,24 +42,6 @@ namespace SudokuSolver
             Conflicts = new List<SudokuCell>();
         }
 
-        /// <summary>
-        /// Change a cell's value, text and color, based on cell state.
-        ///     invalid - red takes highest priority
-        ///     locked - solid black is next priority
-        ///     normal - dark grey
-        /// </summary>
-        private void Write(int value)
-        {
-            this.Value = value;
-            if (!IsValid)
-                this.ForeColor = Color.Red;
-            else if (IsLocked)
-                this.ForeColor = Color.Black;
-            else
-                this.ForeColor = SystemColors.ControlDarkDark;
-            this.Text = (value == 0) ? string.Empty : value.ToString();
-        }
-
         private bool ValueWillNotChange(int value) => IsLocked || (Value == value);
 
         /// <summary>
@@ -74,12 +56,11 @@ namespace SudokuSolver
             // Rewrite locked cells in case of conflicts.
             if (ValueWillNotChange(newValue))
             {
-                Write(Value);
                 return false;
             }    
             else
             {
-                Write(newValue);
+                Value = newValue;
                 return true;
             }
         }
@@ -101,8 +82,6 @@ namespace SudokuSolver
             this.Conflicts.Remove(other);
             other.Conflicts.Remove(this);
         }
-
-        public void Notify() => Write(Value);
 
         /// <summary>
         /// Lock a single cell, if it has a value.

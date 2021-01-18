@@ -74,7 +74,7 @@ namespace SudokuSolver
                 switch (keyData)
                 {
                     case Keys.Up:
-                        grid.SelectCell(grid.movement.Up);
+                        grid.ShiftUp();
                         break;
                     case Keys.Down:
                         grid.ShiftDown();
@@ -104,7 +104,6 @@ namespace SudokuSolver
                     default:
                         return base.ProcessCmdKey(ref msg, keyData);
                 }
-                grid.activeCell.Focus();
                 return true;
             }
             return false;
@@ -116,8 +115,8 @@ namespace SudokuSolver
         /// </summary>
         private void cell_clicked(object sender, EventArgs e)
         {
-            var cell = sender as SudokuCell;
-            grid.SelectCell(cell);
+            var cell = sender as SudokuButton;
+            //grid.SelectCell(cell);
         }
 
         /// <summary>
@@ -127,13 +126,13 @@ namespace SudokuSolver
         /// </summary>
         private void cell_keyPressed(object sender, KeyPressEventArgs e)
         {
-            var cell = sender as SudokuCell;
+            var cell = sender as SudokuButton;
             // Add the pressed key value to the cell only if it is a number.
             if (int.TryParse(e.KeyChar.ToString(), out int value))
             {
                 //grid.SelectCell(cell);
                 grid.ModifyCell(value);
-                grid.activeCell.Focus();
+                cell.Focus();
             }
         }
 
