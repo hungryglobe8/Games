@@ -15,7 +15,9 @@ namespace SudokuSolver
         public SudokuCell[,] cells;
         public SudokuCell activeCell;
         public readonly int width, height, size;
-        private Movement movement;
+        //private Movement movement;
+        private IDictionary<Direction, Func<SudokuCell, SudokuCell>> mapping;
+
         // For picking possible solution paths.
         private readonly Random random = new Random();
 
@@ -28,9 +30,29 @@ namespace SudokuSolver
             this.height = height;
             this.size = size;
 
-            this.cells = CreateCells();
-            this.movement = new Movement(cells);
-            activeCell = cells[0, 0];
+            this.cells = CreateCells(size);
+            var movement = new Movement(cells);
+            this.mapping = new Dictionary<Direction, Func<SudokuCell, SudokuCell>>
+            {
+                { Direction.Up, cell => movement.Up(cell) },
+                { Direction.Down, cell => movement.Down(cell) },
+                { Direction.Left, cell => movement.Left(cell) },
+                { Direction.Right, cell => movement.Right(cell) },
+                { Direction.JumpForward, cell => movement.JumpForward(cell) },
+                { Direction.JumpBackward, cell => movement.JumpBackward(cell) }
+            };
+
+            this.activeCell = cells[0, 0];
+        }
+        /// <summary>
+        /// Create empty cells to fill a Sudoku board of size by size.
+        /// Regions of width by height are differentiated by shading.
+        /// </summary>
+        public static SudokuCell[,] CreateCells(int size)
+        {
+            SudokuCell[,] cells = new SudokuCell[size, size];
+            cells.Process(cell => new SudokuCell(cell.X, cell.Y));
+            return cells;
         }
 
         //private bool CoorsInBox(int x, int y, int i)
@@ -40,30 +62,11 @@ namespace SudokuSolver
         //    return x_range + y_range == i;
         //}
 
-        /// <summary>
-        /// Create empty cells to fill a Sudoku board of size by size.
-        /// Regions of width by height are differentiated by shading.
-        /// </summary>
-        private SudokuCell[,] CreateCells()
-        {
-            SudokuCell[,] cells = new SudokuCell[size, size];
-            for (int i = 0; i < size; i++)
-            {
-                for (int j = 0; j < size; j++)
-                {
-                    cells[i, j] = new SudokuCell(i, j);
-                }
-            }
-            return cells;
-        }
-
-        private void Shift(Func<SudokuCell, SudokuCell> movement) => activeCell = movement(activeCell);
-        public void ShiftUp() => Shift(movement.Up);
-        public void ShiftDown() => Shift(movement.Down);
-        public void ShiftLeft() => Shift(movement.Left);
-        public void ShiftRight() => Shift(movement.Right);
 
         public void Select(int x, int y) => activeCell = cells[x, y];
+
+        public void Shift(Direction dir) => activeCell = mapping[dir](activeCell);
+
         //private void AddBoxes(SudokuCell cell)
         //{
         //    int x = cell.X;
@@ -102,7 +105,7 @@ namespace SudokuSolver
                 //UpdateConflicts(value);
                 // Check validity to jump forward.
                 if (activeCell.IsValid)
-                    JumpForward();
+                    Shift(Direction.JumpForward);
                 return true;
             }
             return false;
@@ -110,36 +113,24 @@ namespace SudokuSolver
 
         private void CheckConflicts()
         {
-            foreach (var neighbor in activeCell.Neighbors)
-            {
-                if (activeCell.Value == neighbor.Value)
-                {
-                    activeCell.IsValid = false;
-                    neighbor.IsValid = false;
-                }
-                else
-                {
-                    neighbor.IsValid = true;
-                }
+            return;
+            //int oldValue = activeCell.Value;
+            //SudokuCell row, col = activeCell;
+            //for (int i = 1; i < size; i++)
+            //{
+            //    SudokuCell row = movement.ShiftRight(row);
+            //    SudokuCell col = movement.ShiftUp(col);
+            //    if (activeCell.Value == row.Value)
+            //    {
+            //        activeCell.IsValid = false;
+            //        row.IsValid = false;
+            //    }
+            //    else if ()
+            //    {
+            //        neighbor.IsValid = true;
+            //    }
                 //activeCell.Notify();
                 //neighbor.Notify();
-            }
-        }
-
-        /// <summary>
-        /// Remove old conflicts, look for new ones, and notify all involved cells.
-        /// </summary>
-        private void UpdateConflicts(int value)
-        {
-            // Remove old conflicts.
-            IList<SudokuCell> oldConflicts = activeCell.Conflicts.ToList<SudokuCell>();
-            UpdateStatus(oldConflicts, activeCell.RemoveConflict);
-
-            // Show new conflicts.
-            ISet<SudokuCell> newConflicts = GetConflicts(activeCell, value);
-            UpdateStatus(newConflicts, activeCell.AddConflict);
-
-            //activeCell.Notify();
         }
 
         private void UpdateStatus(IEnumerable<SudokuCell> cells, Action<SudokuCell> action)
@@ -151,31 +142,7 @@ namespace SudokuSolver
         }
         #endregion
 
-        #region ShiftFocus
-
-
-        /// <summary>
-        /// Jump to the next available open or invalid cell.
-        /// Can jump forward or backward, and past grid's borders.
-        /// </summary>
-        private bool Jump(int edge, Action verticalShift, Action horizontalShift)
-        {
-            // All cells are filled.
-            if (AllCellsFilled())
-                return false;
-
-            // Loop until a different empty or invalid cell is reached.
-            do
-            {
-                // Edge of board.
-                if (activeCell.X == edge)
-                    verticalShift();
-                // Shift left or right.
-                horizontalShift();
-                // || !activeCell.IsValid
-            } while (activeCell.Value != 0);
-            return true;
-        }
+        //public bool AllCellsReady(SudokuCell[,] cells) => cell.Value == 0;
 
         public bool AllCellsFilled()
         {
@@ -186,23 +153,6 @@ namespace SudokuSolver
             }
             return true;
         }
-
-        /// <summary>
-        /// Jump to the next available open or invalid cell to the right and down.
-        /// </summary>
-        /// <returns></returns>
-        public bool JumpForward()
-        {
-            return Jump(size - 1, ShiftDown, ShiftRight);
-        }
-        /// <summary>
-        /// Jump to the next available open or invalid cell to the left and up.
-        /// </summary>
-        public bool JumpBackward()
-        {
-            return Jump(0, ShiftUp, ShiftLeft);
-        }
-        #endregion
 
         #region Solve
 
@@ -267,8 +217,8 @@ namespace SudokuSolver
             // Start in the top left corner.
             activeCell = cells[0, 0];
             // Move to first empty square (possibly first).
-            JumpBackward();
-            JumpForward();
+            Shift(Direction.JumpBackward);
+            Shift(Direction.JumpForward);
             SolveCell();
         }
 
@@ -328,6 +278,11 @@ namespace SudokuSolver
             }
         }
 
+        private void DoSomething(SudokuCell sudokuCell, Func<object, object> p)
+        {
+            throw new NotImplementedException();
+        }
+
         //private static void DoSomething(this SudokuCell[,] cells)
         //{
         //    foreach (var cell in cells)
@@ -342,10 +297,18 @@ namespace SudokuSolver
         /// </summary>
         public void LockAll()
         {
-            foreach (SudokuCell cell in cells)
+            cells.ToEnumerable<SudokuCell>().LockCells();
+        }
+
+    }
+        public static class Extend
+        {
+            private static void DoSomething(this SudokuCell[,] cells)
             {
-                cell.Lock();
+                foreach (var cell in cells)
+                {
+                    cell.Unlock();
+                }
             }
         }
-    }
 }

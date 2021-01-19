@@ -127,33 +127,33 @@ namespace ModelTests
             Assert.IsTrue(sut.IsLocked);
         }
 
-        [TestMethod]
-        public void CreateConflictAffectsBothCells()
-        {
-            var sut = BasicCell();
-            var other = BasicCell();
+        //[TestMethod]
+        //public void CreateConflictAffectsBothCells()
+        //{
+        //    var sut = BasicCell();
+        //    var other = BasicCell();
 
-            sut.AddConflict(other);
+        //    sut.AddConflict(other);
 
-            Assert.IsFalse(sut.IsValid);
-            Assert.IsFalse(other.IsValid);
-        }
+        //    Assert.IsFalse(sut.IsValid);
+        //    Assert.IsFalse(other.IsValid);
+        //}
 
-        [TestMethod]
-        public void RemoveConflictsClearsCell()
-        {
-            var sut = BasicCell();
-            var c1 = BasicCell();
-            var c2 = BasicCell();
+        //[TestMethod]
+        //public void RemoveConflictsClearsCell()
+        //{
+        //    var sut = BasicCell();
+        //    var c1 = BasicCell();
+        //    var c2 = BasicCell();
 
-            sut.AddConflict(c1);
-            sut.AddConflict(c2);
-            Assert.AreEqual(2, sut.Conflicts.Count);
+        //    sut.AddConflict(c1);
+        //    sut.AddConflict(c2);
+        //    Assert.AreEqual(2, sut.Conflicts.Count);
 
-            sut.RemoveConflict(c1);
-            sut.RemoveConflict(c2);
-            Assert.IsTrue(sut.IsValid);
-        }
+        //    sut.RemoveConflict(c1);
+        //    sut.RemoveConflict(c2);
+        //    Assert.IsTrue(sut.IsValid);
+        //}
 
         [TestMethod]
         public void DoesNotLockEmpty()

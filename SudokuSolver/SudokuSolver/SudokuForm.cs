@@ -74,30 +74,30 @@ namespace SudokuSolver
                 switch (keyData)
                 {
                     case Keys.Up:
-                        grid.ShiftUp();
+                        grid.Shift(Direction.Up);
                         break;
                     case Keys.Down:
-                        grid.ShiftDown();
+                        grid.Shift(Direction.Down);
                         break;
                     case Keys.Left:
-                        grid.ShiftLeft();
+                        grid.Shift(Direction.Left);
                         break;
                     case Keys.Right:
-                        grid.ShiftRight();
+                        grid.Shift(Direction.Right);
                         break;
 
                     // Find last open space.
                     case Keys.Shift | Keys.Tab:
-                        grid.JumpBackward();
+                        grid.Shift(Direction.JumpBackward);
                         break;
                     // Find next open space.
                     case Keys.Tab:
-                        grid.JumpForward();
+                        grid.Shift(Direction.JumpForward);
                         break;
 
                     // Delete last filled cell.
                     case Keys.Back:
-                        grid.ShiftLeft();
+                        grid.Shift(Direction.JumpBackward);
                         grid.ModifyCell(0);
                         break;
 

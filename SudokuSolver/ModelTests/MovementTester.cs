@@ -11,21 +11,24 @@ namespace ModelTests
     [Microsoft.VisualStudio.TestTools.UnitTesting.TestClass]
     public class MovementTester
     {
-        SudokuCell middle = new SudokuCell(1, 1);
+        private SudokuCell[,] cells;
+        private Movement movement;
 
-        public Movement GetMovement()
+        [TestInitialize]
+        public void Init()
         {
-            SudokuGrid grid = new SudokuGrid(3, 3, 3);
-            Movement movement = new Movement(grid.cells);
-            return movement;
+            cells = SudokuGrid.CreateCells(3);
+            movement = new Movement(cells);
         }
+
+        private SudokuCell GetMiddleCell() => cells[1, 1];
 
         [TestMethod]
         public void MoveUp()
         {
-            var sut = GetMovement();
+            var sut = GetMiddleCell();
 
-            var cell = sut.Up(middle);
+            var cell = movement.Up(sut);
 
             Assert.IsTrue(cell.Equals(1, 0));
         }
@@ -33,9 +36,9 @@ namespace ModelTests
         [TestMethod]
         public void MoveUpWrapsAround()
         {
-            var sut = GetMovement();
+            var sut = cells[1, 0];
 
-            var cell = sut.Up(sut.Up(middle));
+            var cell = movement.Up(sut);
 
             Assert.IsTrue(cell.Equals(1, 2));
         }
@@ -43,9 +46,9 @@ namespace ModelTests
         [TestMethod]
         public void MoveDown()
         {
-            var sut = GetMovement();
+            var sut = GetMiddleCell();
 
-            var cell = sut.Down(middle);
+            var cell = movement.Down(sut);
 
             Assert.IsTrue(cell.Equals(1, 2));
         }
@@ -53,9 +56,9 @@ namespace ModelTests
         [TestMethod]
         public void MoveDownWrapsAround()
         {
-            var sut = GetMovement();
+            var sut = cells[1, 2];
 
-            var cell = sut.Down(sut.Down(middle));
+            var cell = movement.Down(sut);
 
             Assert.IsTrue(cell.Equals(1, 0));
         }
@@ -63,9 +66,9 @@ namespace ModelTests
         [TestMethod]
         public void MoveLeft()
         {
-            var sut = GetMovement();
+            var sut = GetMiddleCell();
 
-            var cell = sut.Left(middle);
+            var cell = movement.Left(sut);
 
             Assert.IsTrue(cell.Equals(0, 1));
         }
@@ -73,18 +76,19 @@ namespace ModelTests
         [TestMethod]
         public void MoveLeftWrapsAround()
         {
-            var sut = GetMovement();
+            var sut = cells[0, 1];
 
-            var cell = sut.Left(sut.Left(middle));
+            var cell = movement.Left(sut);
 
             Assert.IsTrue(cell.Equals(2, 1));
         }
+
         [TestMethod]
         public void MoveRight()
         {
-            var sut = GetMovement();
+            var sut = GetMiddleCell();
 
-            var cell = sut.Right(middle);
+            var cell = movement.Right(sut);
 
             Assert.IsTrue(cell.Equals(2, 1));
         }
@@ -92,52 +96,59 @@ namespace ModelTests
         [TestMethod]
         public void MoveRightWrapsAround()
         {
-            var sut = GetMovement();
+            var sut = cells[2, 1];
 
-            var cell = sut.Right(sut.Right(middle));
+            var cell = movement.Right(sut);
 
             Assert.IsTrue(cell.Equals(0, 1));
         }
 
+        [DataTestMethod]
+        [DataRow(2, 1, 2)]
+        [DataRow(2, 2, 0)]
+        public void JumpForward(int x, int y, int newY)
+        {
+            var sut = cells[x, y];
 
-        //[DataTestMethod]
-        //[DataRow(2, 1, 2)]
-        //[DataRow(2, 2, 0)]
-        //public void JumpForward(int x, int y, int newY)
-        //{
-        //    var sut = SmallGrid();
-        //    sut.SelectCell(sut.cells[x, y]);
-        //    sut.activeCell.SetValue(1);
+            var cell = movement.JumpForward(sut);
 
-        //    sut.JumpForward();
+            Assert.IsTrue(cell.Equals(0, newY));
+        }
 
-        //    Assert.IsTrue(sut.activeCell.Equals(0, newY));
-        //}
+        [DataTestMethod]
+        [DataRow(0, 1, 0)]
+        [DataRow(0, 2, 1)]
+        public void JumpBackward(int x, int y, int newY)
+        {
+            var sut = cells[x, y];
 
-        //[DataTestMethod]
-        //[DataRow(0, 1, 0)]
-        //[DataRow(0, 2, 1)]
-        //public void JumpBackward(int x, int y, int newY)
-        //{
-        //    var sut = SmallGrid();
-        //    sut.SelectCell(sut.cells[x, y]);
-        //    sut.activeCell.SetValue(1);
+            var cell = movement.JumpBackward(sut);
 
-        //    sut.JumpBackward();
+            Assert.IsTrue(cell.Equals(2, newY));
+        }
 
-        //    Assert.IsTrue(sut.activeCell.Equals(2, newY));
-        //}
+        [TestMethod]
+        public void JumpForwardSkipsCellWithValue()
+        {
+            var middle = GetMiddleCell();
+            middle.SetValue(2);
+            var sut = cells[0, 1];
 
-        //public void JumpSkipsCellWithValue()
-        //{
-        //    var sut = SmallGrid();
-        //    sut.ModifyCell(2);
+            var actual = movement.JumpForward(sut);
 
-        //    sut.JumpBackward();
-        //    Assert.IsTrue(sut.activeCell.Equals(2, 2));
+            Assert.IsTrue(actual.Equals(2, 1));
+        }
 
-        //    sut.JumpForward();
-        //    Assert.IsTrue(sut.activeCell.Equals(1, 0));
-        //}
+        [TestMethod]
+        public void JumpBackwardSkipsCellWithValue()
+        {
+            var middle = GetMiddleCell();
+            middle.SetValue(2);
+            var sut = cells[2, 1];
+
+            var actual = movement.JumpBackward(sut);
+
+            Assert.IsTrue(actual.Equals(0, 1));
+        }
     }
 }

@@ -27,8 +27,6 @@ namespace SudokuSolver
         public int Value { get; private set; }
         public bool IsLocked { get; private set; }
         public bool IsValid { get; set; }
-        public IList<SudokuCell> Conflicts { get; private set; }
-        public ISet<SudokuCell> Neighbors { get; private set; }
         public int X { get; private set; }
         public int Y { get; private set; }
         public event CellValueChanged ValueChanged;
@@ -38,8 +36,6 @@ namespace SudokuSolver
             X = x;
             Y = y;
             IsLocked = false;
-            Neighbors = new HashSet<SudokuCell>();
-            Conflicts = new List<SudokuCell>();
         }
 
         private bool ValueWillNotChange(int value) => IsLocked || (Value == value);
@@ -63,24 +59,6 @@ namespace SudokuSolver
                 Value = newValue;
                 return true;
             }
-        }
-
-        public void AddNeighbor(SudokuCell other)
-        {
-            this.Neighbors.Add(other);
-            other.Neighbors.Add(this);
-        }
-
-        public void AddConflict(SudokuCell other)
-        {
-            this.Conflicts.Add(other);
-            other.Conflicts.Add(this);
-        }
-
-        public void RemoveConflict(SudokuCell other)
-        {
-            this.Conflicts.Remove(other);
-            other.Conflicts.Remove(this);
         }
 
         /// <summary>
