@@ -46,7 +46,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayExtensions.cs" />
+    <Compile Include="Block.cs" />
+    <Compile Include="GridOperations.cs" />
     <Compile Include="Movement.cs" />
     <Compile Include="SudokuButton.cs">
       <SubType>Component</SubType>

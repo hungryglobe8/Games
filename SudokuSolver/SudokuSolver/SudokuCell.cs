@@ -41,24 +41,12 @@ namespace SudokuSolver
         private bool ValueWillNotChange(int value) => IsLocked || (Value == value);
 
         /// <summary>
-        /// If cell is locked or its value equals newValue,
-        /// rewrite in case of collision and return false.
-        /// Else cell's value will change,
+        /// If cell is locked, do not set its value.
         /// </summary>
-        /// <param name="newValue">new cell Value</param>
-        /// <returns>true if cell changed value, false otherwise</returns>
-        public bool SetValue(int newValue)
+        public void SetValue(int newValue)
         {
-            // Rewrite locked cells in case of conflicts.
-            if (ValueWillNotChange(newValue))
-            {
-                return false;
-            }    
-            else
-            {
+            if (!IsLocked)
                 Value = newValue;
-                return true;
-            }
         }
 
         /// <summary>

@@ -84,7 +84,7 @@ namespace ModelTests
                 sut.ModifyCell(i);
             }
 
-            Assert.IsTrue(sut.AllCellsFilled());
+            Assert.IsTrue(sut.AllCellsFilled);
         }
     }
 }

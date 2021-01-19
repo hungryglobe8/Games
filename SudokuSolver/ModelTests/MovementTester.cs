@@ -17,7 +17,7 @@ namespace ModelTests
         [TestInitialize]
         public void Init()
         {
-            cells = SudokuGrid.CreateCells(3);
+            cells = GridOperations.Create(3);
             movement = new Movement(cells);
         }
 

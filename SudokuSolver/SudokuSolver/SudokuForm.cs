@@ -142,7 +142,7 @@ namespace SudokuSolver
         /// </summary>
         private void lockButton_Click(object sender, EventArgs e)
         {
-            grid.LockAll();
+            grid.cells.LockAll();
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace SudokuSolver
         /// </summary>
         private void clearButton_Click(object sender, EventArgs e)
         {
-            grid.ClearBoard();
+            grid.cells.Clear();
             solveButton.Enabled = true;
         }
 

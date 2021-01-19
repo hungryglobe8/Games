@@ -17,9 +17,9 @@ namespace SudokuSolver
         public readonly int width, height, size;
         //private Movement movement;
         private IDictionary<Direction, Func<SudokuCell, SudokuCell>> mapping;
-
         // For picking possible solution paths.
         private readonly Random random = new Random();
+        public bool AllCellsFilled => cells.All(cell => cell.Value != 0);
 
         /// <summary>
         /// Initializes a new instance of the SudokuSolver.SudokuGrid class. 
@@ -30,7 +30,7 @@ namespace SudokuSolver
             this.height = height;
             this.size = size;
 
-            this.cells = CreateCells(size);
+            this.cells = GridOperations.Create(size);
             var movement = new Movement(cells);
             this.mapping = new Dictionary<Direction, Func<SudokuCell, SudokuCell>>
             {
@@ -44,16 +44,6 @@ namespace SudokuSolver
 
             this.activeCell = cells[0, 0];
         }
-        /// <summary>
-        /// Create empty cells to fill a Sudoku board of size by size.
-        /// Regions of width by height are differentiated by shading.
-        /// </summary>
-        public static SudokuCell[,] CreateCells(int size)
-        {
-            SudokuCell[,] cells = new SudokuCell[size, size];
-            cells.Process(cell => new SudokuCell(cell.X, cell.Y));
-            return cells;
-        }
 
         //private bool CoorsInBox(int x, int y, int i)
         //{
@@ -65,7 +55,16 @@ namespace SudokuSolver
 
         public void Select(int x, int y) => activeCell = cells[x, y];
 
-        public void Shift(Direction dir) => activeCell = mapping[dir](activeCell);
+        /// <summary>
+        /// Return the cell returned by moving according to a specific direction.
+        /// </summary>
+        public SudokuCell Shift(Direction dir, SudokuCell cell) => mapping[dir](activeCell);
+
+        /// <summary>
+        /// Change the active cell of the grid according to a specific direction.
+        /// </summary>
+        /// <param name="dir"></param>
+        public void Shift(Direction dir) => activeCell = Shift(dir, activeCell);
 
         //private void AddBoxes(SudokuCell cell)
         //{
@@ -82,11 +81,6 @@ namespace SudokuSolver
         //}
 
 
-        /// <summary>
-        /// Select a cell, making it the activeCell of the grid.
-        /// </summary>
-        //public void SelectCell(Func<SudokuCell, SudokuCell> Movement) => activeCell = Movement(activeCell);
-
         #region ModifyCells
         /// <summary>
         /// Modify a cell, returning true if the cell's value was changed.
@@ -98,21 +92,38 @@ namespace SudokuSolver
         {
             int oldValue = activeCell.Value;
             // Set activeCell value.
-            if (activeCell.SetValue(value))
-            {
-                // Conflicts must be updated with change.
-                CheckConflicts();
-                //UpdateConflicts(value);
-                // Check validity to jump forward.
-                if (activeCell.IsValid)
-                    Shift(Direction.JumpForward);
-                return true;
-            }
-            return false;
+            activeCell.SetValue(value);
+            // Conflicts must be updated with change.
+            var result = GetCells(activeCell, Direction.Up);
+            //CheckConflicts(oldValue, activeCell, mapping[Direction.Up]());
+            //CheckConflicts(oldValue, ShiftActive(Direction.Left));
+            //CheckConflicts(oldValue, ShiftActive(Direction.Up));
+            //UpdateConflicts(value);
+            // Check validity to jump forward.
+            if (activeCell.IsValid)
+                Shift(Direction.JumpForward);
+            return true;
         }
 
-        private void CheckConflicts()
+        public IList<SudokuCell> GetCells(SudokuCell cell, Direction dir)
         {
+            List<SudokuCell> cellList = new List<SudokuCell>();
+            for (int i = 0; i < size; i++)
+            {
+                cellList.Add(cell);
+                cell = Shift(dir, cell);
+            }
+            return cellList;
+        }
+
+        private void CheckConflicts(int oldValue, SudokuCell cell, Func<SudokuCell, SudokuCell> move)
+        {
+            int count = 0;
+            List<SudokuCell> oldConflicts = new List<SudokuCell>();
+            while (count < 9)
+            {
+                //cell = Shift();
+            }
             return;
             //int oldValue = activeCell.Value;
             //SudokuCell row, col = activeCell;
@@ -129,30 +140,10 @@ namespace SudokuSolver
             //    {
             //        neighbor.IsValid = true;
             //    }
-                //activeCell.Notify();
-                //neighbor.Notify();
-        }
-
-        private void UpdateStatus(IEnumerable<SudokuCell> cells, Action<SudokuCell> action)
-        {
-            foreach (var cell in cells)
-            {
-                action(cell);
-            }
+            //activeCell.Notify();
+            //neighbor.Notify();
         }
         #endregion
-
-        //public bool AllCellsReady(SudokuCell[,] cells) => cell.Value == 0;
-
-        public bool AllCellsFilled()
-        {
-            foreach (var cell in cells)
-            {
-                if (cell.Value == 0)
-                    return false;
-            }
-            return true;
-        }
 
         #region Solve
 
@@ -185,7 +176,7 @@ namespace SudokuSolver
                     return false;
 
                 // Break from loop if no more cells are left.
-                if (AllCellsFilled())
+                if (AllCellsFilled)
                 {
                     return true;
                 }
@@ -263,52 +254,5 @@ namespace SudokuSolver
             return conflictingCells;
         }
         #endregion
-
-        /// <summary>
-        /// Resets all cells to their default state:
-        ///     unlocked, values set to 0
-        /// cellsLeft gets reset.
-        /// </summary>
-        public void ClearBoard()
-        {
-            foreach (SudokuCell cell in cells)
-            {
-                cell.Unlock();
-                cell.SetValue(0);
-            }
-        }
-
-        private void DoSomething(SudokuCell sudokuCell, Func<object, object> p)
-        {
-            throw new NotImplementedException();
-        }
-
-        //private static void DoSomething(this SudokuCell[,] cells)
-        //{
-        //    foreach (var cell in cells)
-        //    {
-        //        cell.Unlock();
-        //        cell.Notify();
-        //    }
-        //}
-
-        /// <summary>
-        /// Lock all cells on the grid.
-        /// </summary>
-        public void LockAll()
-        {
-            cells.ToEnumerable<SudokuCell>().LockCells();
-        }
-
     }
-        public static class Extend
-        {
-            private static void DoSomething(this SudokuCell[,] cells)
-            {
-                foreach (var cell in cells)
-                {
-                    cell.Unlock();
-                }
-            }
-        }
 }
