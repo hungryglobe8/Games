@@ -12,7 +12,7 @@ namespace SudokuSolver
 {
     public partial class SudokuForm : Form
     {
-        private SudokuGrid grid;
+        public SudokuGrid grid { get; private set; }
 
         public SudokuForm(int width, int height, int size)
         {
@@ -29,36 +29,39 @@ namespace SudokuSolver
             foreach (var cell in grid.cells)
             {
                 SudokuButton button = new SudokuButton(cell);
-                button.Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
-                button.Size = new Size(40, 40);
-                button.ForeColor = SystemColors.ControlDarkDark;
-                button.Location = new Point(button.Cell.X * 40, button.Cell.Y * 40);
-                // Choose one of two backColors based on location.
+                //TODO-Call specific design due to specific checkboxes?
+                // Choose one of two backColors based on location and grid boundaries.
                 button.BackColor = ((button.Cell.X / grid.width) + (button.Cell.Y / grid.height)) % 2 == 0 ? SystemColors.Control : Color.DarkGray;
-                //TODO-Move design to grid? Call specific due to specific checkboxes?
-                button.FlatStyle = FlatStyle.Flat;
-                button.FlatAppearance.BorderColor = Color.Black;
-                button.TabStop = false;
-
-                // Assign key press event for each cells
+                // Assign key press event for each button
                 button.KeyPress += cell_keyPressed;
                 button.Click += cell_clicked;
-                button.Cell.ValueChanged += cell_valueChanged;
 
-                button.Name = $"{button.Cell.X},{button.Cell.Y}";
                 gamePanel.Controls.Add(button);
             }
         }
 
-        private void cell_valueChanged(CellValueChangedArgs e)
+        /// <summary>
+        /// Focus on a specific button by providing the corresponding cell.
+        /// </summary>
+        private void Select(SudokuCell cell)
         {
-            var button = gamePanel.Controls.Find($"{e.Cell.X},{e.Cell.Y}", false).FirstOrDefault();
+            var button = gamePanel.Controls.Find(cell.ToString(), false).First();
             if (button == null)
-                return;
-
-            button.Text = e.CellValue.ToString();
+                throw new ArgumentException("Cell did not have a matching control.");
+            button.Focus();
         }
 
+        /// <summary>
+        /// Notify the grid that the active cell has changed.
+        /// Focus is called through the fact that SudokuCells are buttons.
+        /// </summary>
+        private void cell_clicked(object sender, EventArgs e)
+        {
+            var button = sender as SudokuButton;
+            grid.Select(button.Cell.X, button.Cell.Y);
+        }
+
+        #region KeyPress
         /// <summary>
         /// Override cmd key functionality if focus is in gamePanel.
         /// Arrow keys move grid focus directionally, wrapping around.
@@ -104,37 +107,26 @@ namespace SudokuSolver
                     default:
                         return base.ProcessCmdKey(ref msg, keyData);
                 }
+                Select(grid.activeCell);
                 return true;
             }
             return false;
         }
 
         /// <summary>
-        /// Notify the grid that the active cell has changed.
-        /// Focus is called through the fact that SudokuCells are buttons.
-        /// </summary>
-        private void cell_clicked(object sender, EventArgs e)
-        {
-            var cell = sender as SudokuButton;
-            //grid.SelectCell(cell);
-        }
-
-        /// <summary>
-        /// Notify the grid that a keystroke was made.
-        ///     0 - Attempt to delete a cell.
-        ///     other numbers - Attempt to modify a cell.
+        /// Attempt to modify the grid if a numeric key is pressed.
         /// </summary>
         private void cell_keyPressed(object sender, KeyPressEventArgs e)
         {
-            var cell = sender as SudokuButton;
+            var button = sender as SudokuButton;
             // Add the pressed key value to the cell only if it is a number.
             if (int.TryParse(e.KeyChar.ToString(), out int value))
             {
-                //grid.SelectCell(cell);
                 grid.ModifyCell(value);
-                cell.Focus();
+                Select(grid.activeCell);
             }
         }
+        #endregion
 
         /// <summary>
         /// Lock all cells as concrete answers, with black text.
@@ -162,7 +154,7 @@ namespace SudokuSolver
         /// </summary>
         private void clearButton_Click(object sender, EventArgs e)
         {
-            grid.cells.Clear();
+            grid.cells.ClearAll();
             solveButton.Enabled = true;
         }
 

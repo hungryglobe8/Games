@@ -10,7 +10,6 @@ namespace SudokuSolver
     {
         /// <summary>
         /// Create empty cells to fill a Sudoku board of size by size.
-        /// Regions of width by height are differentiated by shading.
         /// </summary>
         public static SudokuCell[,] Create(int size)
         {
@@ -34,8 +33,14 @@ namespace SudokuSolver
         }
 
         public static bool All(this SudokuCell[,] cells, Func<SudokuCell, bool> condition) => cells.ToEnumerable<SudokuCell>().All(condition);
+        public static bool Any(this SudokuCell[,] cells, Func<SudokuCell, bool> condition) => cells.ToEnumerable<SudokuCell>().Any(condition);
 
-        public static void Process(this SudokuCell[,] cells, Action<SudokuCell> action)
+        /// <summary>
+        /// Perform an action that has no return on each member of a SudokuCell[,].
+        /// </summary>
+        /// <param name="cells">2D array of SudokuCells</param>
+        /// <param name="action">e.g. cell => cell.Lock()</param>
+        private static void Process(this SudokuCell[,] cells, Action<SudokuCell> action)
         {
             foreach (var cell in cells)
             {
@@ -44,30 +49,27 @@ namespace SudokuSolver
         }
 
         /// <summary>
-        /// Lock all cells on the grid.
+        /// Lock all cells with values on the grid.
         /// </summary>
-        public static void LockAll(this SudokuCell[,] cells)
-        {
-            foreach (var cell in cells)
-            {
-                cell.SetValue(1);
-                cell.Lock();
-                //cell.Notify();
-            }
-        }
+        public static void LockAll(this SudokuCell[,] cells) => cells.Process(cell => cell.Lock());
 
         /// <summary>
         /// Resets all cells to their default state:
-        ///     unlocked, values set to 0
-        /// cellsLeft gets reset.
+        ///     unlocked, valid, values set to 0
         /// </summary>
-        public static void Clear(this SudokuCell[,] cells)
+        public static void ClearAll(this SudokuCell[,] cells) => cells.Process(cell => cell.Clear());
+
+        /// <summary>
+        /// Fills all cells with unique values.
+        /// </summary>
+        public static void AutoFill(this SudokuCell[,] cells)
         {
-            foreach (var cell in cells)
+            int value = 1;
+            cells.Process(cell =>
             {
-                cell.Unlock();
-                cell.SetValue(0);
-            }
+                cell.SetValue(value);
+                value++;
+            });
         }
     }
 }

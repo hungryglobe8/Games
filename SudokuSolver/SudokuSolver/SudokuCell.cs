@@ -26,9 +26,10 @@ namespace SudokuSolver
     {
         public int Value { get; private set; }
         public bool IsLocked { get; private set; }
-        public bool IsValid { get; set; }
+        public bool IsValid => conflicts.Count == 0;
         public int X { get; private set; }
         public int Y { get; private set; }
+        public ISet<SudokuCell> conflicts;
         public event CellValueChanged ValueChanged;
 
         public SudokuCell(int x, int y)
@@ -36,9 +37,8 @@ namespace SudokuSolver
             X = x;
             Y = y;
             IsLocked = false;
+            conflicts = new HashSet<SudokuCell>();
         }
-
-        private bool ValueWillNotChange(int value) => IsLocked || (Value == value);
 
         /// <summary>
         /// If cell is locked, do not set its value.
@@ -58,6 +58,28 @@ namespace SudokuSolver
                 IsLocked = true;
         }
         public void Unlock() => IsLocked = false;
+        public void Clear()
+        {
+            this.Value = 0;
+            this.IsLocked = false;
+            RemoveConflicts();
+        }
+
+        public void AddConflict(SudokuCell other)
+        {
+            conflicts.Add(other);
+            other.conflicts.Add(this);
+        }
+
+
+        private void RemoveConflicts()
+        {
+            foreach (var cell in conflicts.ToList())
+            {
+                conflicts.Remove(cell);
+                cell.conflicts.Remove(this);
+            }
+        }
 
         public bool Equals(int x, int y)
         {
@@ -74,5 +96,7 @@ namespace SudokuSolver
             SudokuCell other = obj as SudokuCell;
             return this.X == other.X && this.Y == other.Y;
         }
+
+        public override string ToString() => $"{X},{Y}";
     }
 }

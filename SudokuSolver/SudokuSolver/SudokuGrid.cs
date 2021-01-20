@@ -90,33 +90,48 @@ namespace SudokuSolver
         /// <returns>true if the cell's value was changed, false otherwise</returns>
         public bool ModifyCell(int value)
         {
-            int oldValue = activeCell.Value;
-            // Set activeCell value.
-            activeCell.SetValue(value);
-            // Conflicts must be updated with change.
-            var result = GetCells(activeCell, Direction.Up);
-            //CheckConflicts(oldValue, activeCell, mapping[Direction.Up]());
-            //CheckConflicts(oldValue, ShiftActive(Direction.Left));
-            //CheckConflicts(oldValue, ShiftActive(Direction.Up));
-            //UpdateConflicts(value);
-            // Check validity to jump forward.
-            if (activeCell.IsValid)
-                Shift(Direction.JumpForward);
+            if (value == activeCell.Value || activeCell.IsLocked)
+                return false;
+
+            // Purge old conflicts, find new ones.
+            else if (value == 0)
+                activeCell.Clear();
+
+            else
+            {
+                activeCell.Clear();
+                // Set activeCell value.
+                activeCell.SetValue(value);
+                // Conflicts must be updated with change.
+                var result = Block.GetHorizontal(this);
+                CheckConflicts(activeCell.Value, result);
+
+                //if (result)
+                //CheckConflicts(oldValue, activeCell, mapping[Direction.Up]());
+                //CheckConflicts(oldValue, ShiftActive(Direction.Left));
+                //CheckConflicts(oldValue, ShiftActive(Direction.Up));
+                //UpdateConflicts(value);
+                // Check validity to jump forward.
+                if (activeCell.IsValid)
+                    Shift(Direction.JumpForward);
+
+            }
             return true;
         }
 
-        public IList<SudokuCell> GetCells(SudokuCell cell, Direction dir)
+        /// <summary>
+        /// Mark cells as invalid, if there are more than 2 that share the same value.
+        /// </summary>
+        private void CheckConflicts(int value, IList<SudokuCell> result)
         {
-            List<SudokuCell> cellList = new List<SudokuCell>();
-            for (int i = 0; i < size; i++)
+            foreach (var cell in result)
             {
-                cellList.Add(cell);
-                cell = Shift(dir, cell);
+                if (cell != activeCell && cell.Value == activeCell.Value)
+                    activeCell.AddConflict(cell);
             }
-            return cellList;
         }
 
-        private void CheckConflicts(int oldValue, SudokuCell cell, Func<SudokuCell, SudokuCell> move)
+        private void CheckConflicts(int oldValue, int newValue)
         {
             int count = 0;
             List<SudokuCell> oldConflicts = new List<SudokuCell>();

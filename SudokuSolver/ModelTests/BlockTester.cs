@@ -29,6 +29,7 @@ namespace ModelTests
             var result = Block.GetHorizontal(sut);
 
             Assert.AreEqual(3, result.Count);
+            Assert.IsTrue(result.All(cell => cell.Y == 1));
         }
 
         [TestMethod]
@@ -39,17 +40,17 @@ namespace ModelTests
             var result = Block.GetVertical(sut);
 
             Assert.AreEqual(3, result.Count);
+            Assert.IsTrue(result.All(cell => cell.X == 1));
         }
 
         [TestMethod]
         public void DownToUpDiagonal()
         {
             var sut = SmallGrid();
-            var expected = sut.cells[2, 0];
 
-            var result = Block.GetDiagonal(sut, Direction.Up, Direction.Right);
+            var result = Block.BottomLeftToTopRight(sut);
 
-            Assert.IsTrue(result.Contains(expected));
+            Assert.IsTrue(result.All(cell => cell.X + cell.Y == 2));
         }
 
         [TestMethod]
@@ -58,7 +59,7 @@ namespace ModelTests
             var sut = SmallGrid();
             var expected = sut.cells[2, 2];
 
-            var result = Block.GetDiagonal(sut, Direction.Down, Direction.Right);
+            var result = Block.TopLeftToBottomRight(sut);
 
             Assert.IsTrue(result.Contains(expected));
         }

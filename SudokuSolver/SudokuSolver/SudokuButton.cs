@@ -15,7 +15,19 @@ namespace SudokuSolver
         public SudokuButton(SudokuCell cell)
         {
             Cell = cell;
+
+            Font = new Font(SystemFonts.DefaultFont.FontFamily, 20);
+            Size = new Size(40, 40);
+            ForeColor = SystemColors.ControlDarkDark;
+            Location = new Point(Cell.X * 40, Cell.Y * 40);
+            
+            FlatStyle = FlatStyle.Flat;
+            FlatAppearance.BorderColor = Color.Black;
+            TabStop = false;
+
+            Name = cell.ToString();
         }
+        //Cell.ValueChanged += cell_valueChanged;
 
         /// <summary>
         /// Change a cell's value, text and color, based on cell state.
