@@ -19,6 +19,9 @@ namespace SudokuSolver
         private IDictionary<Direction, Func<SudokuCell, SudokuCell>> mapping;
         // For picking possible solution paths.
         private readonly Random random = new Random();
+        // Declare the event.
+        //public event EventHandler<CellValueChangedArgs> RaiseCustomEvent;
+
         public bool AllCellsFilled => cells.All(cell => cell.Value != 0);
 
         /// <summary>
@@ -88,75 +91,35 @@ namespace SudokuSolver
         /// </summary>
         /// <param name="value">new value for the cell</param>
         /// <returns>true if the cell's value was changed, false otherwise</returns>
-        public bool ModifyCell(int value)
+        public void ModifyCell(int value)
         {
-            if (value == activeCell.Value || activeCell.IsLocked)
-                return false;
-
-            // Purge old conflicts, find new ones.
-            else if (value == 0)
-                activeCell.Clear();
-
-            else
+            // Value changed, don't check conflicts when value=0.
+            if (activeCell.SetValue(value))
             {
-                activeCell.Clear();
-                // Set activeCell value.
-                activeCell.SetValue(value);
-                // Conflicts must be updated with change.
-                var result = Block.GetHorizontal(this);
-                CheckConflicts(activeCell.Value, result);
+                // Find and add new conflicts.
+                CheckConflicts(Block.GetHorizontal(this));
+                CheckConflicts(Block.GetVertical(this));
+                activeCell.Notify();
 
-                //if (result)
-                //CheckConflicts(oldValue, activeCell, mapping[Direction.Up]());
-                //CheckConflicts(oldValue, ShiftActive(Direction.Left));
-                //CheckConflicts(oldValue, ShiftActive(Direction.Up));
-                //UpdateConflicts(value);
                 // Check validity to jump forward.
                 if (activeCell.IsValid)
                     Shift(Direction.JumpForward);
-
             }
-            return true;
         }
 
         /// <summary>
         /// Mark cells as invalid, if there are more than 2 that share the same value.
         /// </summary>
-        private void CheckConflicts(int value, IList<SudokuCell> result)
+        private void CheckConflicts(IList<SudokuCell> result)
         {
             foreach (var cell in result)
             {
                 if (cell != activeCell && cell.Value == activeCell.Value)
+                {
                     activeCell.AddConflict(cell);
+                    //cell.Notify();
+                }
             }
-        }
-
-        private void CheckConflicts(int oldValue, int newValue)
-        {
-            int count = 0;
-            List<SudokuCell> oldConflicts = new List<SudokuCell>();
-            while (count < 9)
-            {
-                //cell = Shift();
-            }
-            return;
-            //int oldValue = activeCell.Value;
-            //SudokuCell row, col = activeCell;
-            //for (int i = 1; i < size; i++)
-            //{
-            //    SudokuCell row = movement.ShiftRight(row);
-            //    SudokuCell col = movement.ShiftUp(col);
-            //    if (activeCell.Value == row.Value)
-            //    {
-            //        activeCell.IsValid = false;
-            //        row.IsValid = false;
-            //    }
-            //    else if ()
-            //    {
-            //        neighbor.IsValid = true;
-            //    }
-            //activeCell.Notify();
-            //neighbor.Notify();
         }
         #endregion
 
@@ -174,7 +137,8 @@ namespace SudokuSolver
             // Remove value from list of possibilities.
             possNums.Remove(value);
 
-            return ModifyCell(value);
+            ModifyCell(value);
+            return true;
         }
         private bool SolveCell()
         {

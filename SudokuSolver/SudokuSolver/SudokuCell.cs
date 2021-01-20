@@ -10,13 +10,16 @@ namespace SudokuSolver
 {
     public class CellValueChangedArgs : EventArgs
     {
+        public int CellValue { get; private set; }
+        public bool IsLocked { get; private set; }
+        public bool IsValid { get; private set; }
+
         public CellValueChangedArgs(SudokuCell cell)
         {
-            Cell = cell;
             CellValue = cell.Value;
+            IsLocked = cell.IsLocked;
+            IsValid = cell.IsValid;
         }
-        public SudokuCell Cell { get; }
-        public int CellValue { get; set; }
     }
     public delegate void CellValueChanged(CellValueChangedArgs e);
 
@@ -43,11 +46,19 @@ namespace SudokuSolver
         /// <summary>
         /// If cell is locked, do not set its value.
         /// </summary>
-        public void SetValue(int newValue)
+        public bool SetValue(int newValue)
         {
-            if (!IsLocked)
+            if (newValue == Value || IsLocked)
+                return false;
+            else 
+            {
+                Clear();
                 Value = newValue;
+                return true;
+            }
         }
+
+        public void Notify() => ValueChanged.Invoke(new CellValueChangedArgs(this));
 
         /// <summary>
         /// Lock a single cell, if it has a value.
@@ -60,8 +71,8 @@ namespace SudokuSolver
         public void Unlock() => IsLocked = false;
         public void Clear()
         {
-            this.Value = 0;
-            this.IsLocked = false;
+            Value = 0;
+            IsLocked = false;
             RemoveConflicts();
         }
 

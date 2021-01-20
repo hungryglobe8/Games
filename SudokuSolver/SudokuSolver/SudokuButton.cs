@@ -10,7 +10,7 @@ namespace SudokuSolver
 {
     class SudokuButton : Button
     {
-        public SudokuCell Cell { get; set; }
+        public SudokuCell Cell { get; private set; }
 
         public SudokuButton(SudokuCell cell)
         {
@@ -24,10 +24,21 @@ namespace SudokuSolver
             FlatStyle = FlatStyle.Flat;
             FlatAppearance.BorderColor = Color.Black;
             TabStop = false;
+            Cell.ValueChanged += cell_valueChanged;
 
             Name = cell.ToString();
         }
-        //Cell.ValueChanged += cell_valueChanged;
+
+        private void cell_valueChanged(CellValueChangedArgs cell)
+        {
+            if (!Cell.IsValid)
+                ForeColor = Color.Red;
+            else if (Cell.IsLocked)
+                ForeColor = Color.Black;
+            else
+                ForeColor = SystemColors.ControlDarkDark;
+            Text = (Cell.Value == 0) ? string.Empty : Cell.Value.ToString();
+        }
 
         /// <summary>
         /// Change a cell's value, text and color, based on cell state.
@@ -35,16 +46,6 @@ namespace SudokuSolver
         ///     locked - solid black is next priority
         ///     normal - dark grey
         /// </summary>
-        private void Write()
-        {
-            if (!Cell.IsValid)
-                this.ForeColor = Color.Red;
-            else if (Cell.IsLocked)
-                this.ForeColor = Color.Black;
-            else
-                this.ForeColor = SystemColors.ControlDarkDark;
-            this.Text = (Cell.Value == 0) ? string.Empty : Cell.Value.ToString();
-        }
 
         /// <summary>
         /// Get rid of ugly tab box.
