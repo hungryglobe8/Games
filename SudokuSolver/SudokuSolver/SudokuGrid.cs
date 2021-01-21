@@ -99,7 +99,6 @@ namespace SudokuSolver
                 // Find and add new conflicts.
                 CheckConflicts(Block.GetHorizontal(this));
                 CheckConflicts(Block.GetVertical(this));
-                activeCell.Notify();
 
                 // Check validity to jump forward.
                 if (activeCell.IsValid)
@@ -117,7 +116,6 @@ namespace SudokuSolver
                 if (cell != activeCell && cell.Value == activeCell.Value)
                 {
                     activeCell.AddConflict(cell);
-                    //cell.Notify();
                 }
             }
         }

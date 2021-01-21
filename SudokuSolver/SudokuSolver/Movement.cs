@@ -88,7 +88,10 @@ namespace SudokuSolver
                     cell = verticalShift(cell);
                 // Shift left or right.
                 cell = horizontalShift(cell);
-            } while (cell.Value != 0 || cell.Equals(startCell));
+                // Cell is the same as start cell.
+                if (cell.Equals(startCell))
+                    break;
+            } while (cell.Value != 0 && cell.IsValid);
             return cell;
         }
     }

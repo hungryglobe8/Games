@@ -8,20 +8,7 @@ using System.Windows.Forms;
 
 namespace SudokuSolver
 {
-    public class CellValueChangedArgs : EventArgs
-    {
-        public int CellValue { get; private set; }
-        public bool IsLocked { get; private set; }
-        public bool IsValid { get; private set; }
-
-        public CellValueChangedArgs(SudokuCell cell)
-        {
-            CellValue = cell.Value;
-            IsLocked = cell.IsLocked;
-            IsValid = cell.IsValid;
-        }
-    }
-    public delegate void CellValueChanged(CellValueChangedArgs e);
+    public delegate void Notify();
 
 #pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     public class SudokuCell
@@ -33,7 +20,7 @@ namespace SudokuSolver
         public int X { get; private set; }
         public int Y { get; private set; }
         public ISet<SudokuCell> conflicts;
-        public event CellValueChanged ValueChanged;
+        public event Notify ValueChanged;
 
         public SudokuCell(int x, int y)
         {
@@ -54,11 +41,12 @@ namespace SudokuSolver
             {
                 Clear();
                 Value = newValue;
+                OnValueChanged();
                 return true;
             }
         }
 
-        public void Notify() => ValueChanged.Invoke(new CellValueChangedArgs(this));
+        public virtual void OnValueChanged() => ValueChanged?.Invoke();
 
         /// <summary>
         /// Lock a single cell, if it has a value.
@@ -66,20 +54,29 @@ namespace SudokuSolver
         public void Lock()
         {
             if (Value != 0)
+            {
                 IsLocked = true;
+                OnValueChanged();
+            }
         }
-        public void Unlock() => IsLocked = false;
+
         public void Clear()
         {
             Value = 0;
             IsLocked = false;
             RemoveConflicts();
+            OnValueChanged();
         }
 
         public void AddConflict(SudokuCell other)
         {
             conflicts.Add(other);
             other.conflicts.Add(this);
+            // Notify cells whose conflict count has increased.
+            if (conflicts.Count == 1)
+                OnValueChanged();
+            if (other.conflicts.Count == 1)
+                other.OnValueChanged();
         }
 
 
@@ -89,6 +86,8 @@ namespace SudokuSolver
             {
                 conflicts.Remove(cell);
                 cell.conflicts.Remove(this);
+                OnValueChanged();
+                cell.OnValueChanged();
             }
         }
 

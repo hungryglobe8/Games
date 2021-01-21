@@ -150,5 +150,27 @@ namespace ModelTests
 
             Assert.IsTrue(actual.Equals(0, 1));
         }
+
+        [TestMethod]
+        public void JumpForwardReturnsSameWhenAllFilled()
+        {
+            cells.AutoFill();
+            var sut = GetMiddleCell();
+
+            var actual = movement.JumpForward(sut);
+
+            Assert.AreEqual(sut, actual);
+        }
+
+        [TestMethod]
+        public void JumpBackwardReturnsSameWhenAllFilled()
+        {
+            cells.AutoFill();
+            var sut = GetMiddleCell();
+
+            var actual = movement.JumpBackward(sut);
+
+            Assert.AreEqual(sut, actual);
+        }
     }
 }

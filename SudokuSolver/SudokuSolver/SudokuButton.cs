@@ -29,7 +29,13 @@ namespace SudokuSolver
             Name = cell.ToString();
         }
 
-        private void cell_valueChanged(CellValueChangedArgs cell)
+        /// <summary>
+        /// Change a cell's value, text and color, based on cell state.
+        ///     invalid - red takes highest priority
+        ///     locked - solid black is next priority
+        ///     normal - dark grey
+        /// </summary>
+        private void cell_valueChanged()
         {
             if (!Cell.IsValid)
                 ForeColor = Color.Red;
@@ -39,13 +45,6 @@ namespace SudokuSolver
                 ForeColor = SystemColors.ControlDarkDark;
             Text = (Cell.Value == 0) ? string.Empty : Cell.Value.ToString();
         }
-
-        /// <summary>
-        /// Change a cell's value, text and color, based on cell state.
-        ///     invalid - red takes highest priority
-        ///     locked - solid black is next priority
-        ///     normal - dark grey
-        /// </summary>
 
         /// <summary>
         /// Get rid of ugly tab box.
