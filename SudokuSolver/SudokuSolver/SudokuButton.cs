@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
 
 namespace SudokuSolver
@@ -24,7 +19,7 @@ namespace SudokuSolver
             FlatStyle = FlatStyle.Flat;
             FlatAppearance.BorderColor = Color.Black;
             TabStop = false;
-            Cell.ValueChanged += cell_valueChanged;
+            Cell.ValueChanged += cell_ValueChanged;
 
             Name = cell.ToString();
         }
@@ -35,7 +30,7 @@ namespace SudokuSolver
         ///     locked - solid black is next priority
         ///     normal - dark grey
         /// </summary>
-        private void cell_valueChanged()
+        private void cell_ValueChanged()
         {
             if (!Cell.IsValid)
                 ForeColor = Color.Red;
