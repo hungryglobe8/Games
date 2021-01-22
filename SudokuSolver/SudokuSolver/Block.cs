@@ -40,5 +40,19 @@ namespace SudokuSolver
             }
             return cellList;
         }
+
+        //private void AddBoxes(SudokuCell cell)
+        //{
+        //    int x = cell.X;
+        //    int y = cell.Y;
+        //    // Ex: go from 5 - (2) to 5 - (2) + 3
+        //    for (int i = x - (x % width); i < x - (x % width) + width; i++)
+        //    {
+        //        for (int j = y - (y % height); j < y - (y % height) + height; j++)
+        //        {
+        //            cell.AddNeighbor(cells[i, j]);
+        //        }
+        //    }
+        //}
     }
 }

@@ -19,8 +19,6 @@ namespace SudokuSolver
         private IDictionary<Direction, Func<SudokuCell, SudokuCell>> mapping;
         // For picking possible solution paths.
         private readonly Random random = new Random();
-        // Declare the event.
-        //public event EventHandler<CellValueChangedArgs> RaiseCustomEvent;
 
         public bool AllCellsFilled => cells.All(cell => cell.Value != 0);
 
@@ -48,14 +46,6 @@ namespace SudokuSolver
             this.activeCell = cells[0, 0];
         }
 
-        //private bool CoorsInBox(int x, int y, int i)
-        //{
-        //    int x_range = (x - (x % width)) / width;
-        //    int y_range = y - (y % height);
-        //    return x_range + y_range == i;
-        //}
-
-
         public void Select(int x, int y) => activeCell = cells[x, y];
 
         /// <summary>
@@ -68,21 +58,6 @@ namespace SudokuSolver
         /// </summary>
         /// <param name="dir"></param>
         public void Shift(Direction dir) => activeCell = Shift(dir, activeCell);
-
-        //private void AddBoxes(SudokuCell cell)
-        //{
-        //    int x = cell.X;
-        //    int y = cell.Y;
-        //    // Ex: go from 5 - (2) to 5 - (2) + 3
-        //    for (int i = x - (x % width); i < x - (x % width) + width; i++)
-        //    {
-        //        for (int j = y - (y % height); j < y - (y % height) + height; j++)
-        //        {
-        //            cell.AddNeighbor(cells[i, j]);
-        //        }
-        //    }
-        //}
-
 
         #region ModifyCells
         /// <summary>
@@ -99,9 +74,12 @@ namespace SudokuSolver
                 // Find and add new conflicts.
                 CheckConflicts(Block.GetHorizontal(this));
                 CheckConflicts(Block.GetVertical(this));
+                //if (activeCell.X + activeCell.Y == size)
+                //    CheckConflicts(Block.BottomLeftToTopRight(this));
+                //CheckConflicts(Block.TopLeftToBottomRight(this));
 
                 // Check validity to jump forward.
-                if (activeCell.IsValid)
+                if (activeCell.IsValid && activeCell.Value != 0)
                     Shift(Direction.JumpForward);
             }
         }
@@ -138,26 +116,22 @@ namespace SudokuSolver
             ModifyCell(value);
             return true;
         }
+
         private bool SolveCell()
         {
-            // Remember this cell if we have to return to it later on.
-            SudokuCell currentCell = activeCell;
-            // Only consider the possibilities currently available.
-            List<int> possNums = GetPossibleNums(currentCell);
+            // Break from method if no more cells are left.
+            if (AllCellsFilled)
+                return true;
 
+            SudokuCell cell = activeCell;
+            List<int> possNums = Enumerable.Range(1, size).ToList();
             do
             {
-                activeCell = currentCell;
-                // Try another random possibility for the activeCell.
+                activeCell = cell;
                 if (!TryRandomFromList(possNums))
                     return false;
-
-                // Break from loop if no more cells are left.
-                if (AllCellsFilled)
-                {
-                    return true;
-                }
-            } while (!SolveCell());
+            }
+            while (!cell.IsValid || !SolveCell());
 
             return true;
         }
