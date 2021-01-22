@@ -16,7 +16,6 @@ namespace SudokuSolver
         public static IList<SudokuCell> BottomLeftToTopRight(SudokuGrid grid) => GetDiagonal(grid, Direction.Up, Direction.Right);
         public static IList<SudokuCell> TopLeftToBottomRight(SudokuGrid grid) => GetDiagonal(grid, Direction.Down, Direction.Right);
 
-
         private static IList<SudokuCell> GetCells(SudokuGrid grid, Direction dir)
         {
             List<SudokuCell> cellList = new List<SudokuCell>();
@@ -41,18 +40,23 @@ namespace SudokuSolver
             return cellList;
         }
 
-        //private void AddBoxes(SudokuCell cell)
-        //{
-        //    int x = cell.X;
-        //    int y = cell.Y;
-        //    // Ex: go from 5 - (2) to 5 - (2) + 3
-        //    for (int i = x - (x % width); i < x - (x % width) + width; i++)
-        //    {
-        //        for (int j = y - (y % height); j < y - (y % height) + height; j++)
-        //        {
-        //            cell.AddNeighbor(cells[i, j]);
-        //        }
-        //    }
-        //}
+        public static IList<SudokuCell> GetBox(SudokuGrid grid)
+        {
+            List<SudokuCell> cellList = new List<SudokuCell>();
+            int x = grid.activeCell.X;
+            int y = grid.activeCell.Y;
+            int width = grid.width;
+            int height = grid.height;
+            // Check boxes don't have duplicates.
+            // Ex: go from 5 - (2) to 5 - (2) + 3
+            for (int i = x - (x % width); i < x - (x % width) + width; i++)
+            {
+                for (int j = y - (y % height); j < y - (y % height) + height; j++)
+                {
+                    cellList.Add(grid.cells[i, j]);
+                }
+            }
+            return cellList;
+        }
     }
 }

@@ -74,9 +74,11 @@ namespace SudokuSolver
                 // Find and add new conflicts.
                 CheckConflicts(Block.GetHorizontal(this));
                 CheckConflicts(Block.GetVertical(this));
-                //if (activeCell.X + activeCell.Y == size)
-                //    CheckConflicts(Block.BottomLeftToTopRight(this));
-                //CheckConflicts(Block.TopLeftToBottomRight(this));
+                CheckConflicts(Block.GetBox(this));
+                if (activeCell.X + activeCell.Y == size - 1)
+                    CheckConflicts(Block.BottomLeftToTopRight(this));
+                if (activeCell.X == activeCell.Y)
+                    CheckConflicts(Block.TopLeftToBottomRight(this));
 
                 // Check validity to jump forward.
                 if (activeCell.IsValid && activeCell.Value != 0)
@@ -100,7 +102,18 @@ namespace SudokuSolver
         #endregion
 
         #region Solve
-
+        /// <summary>
+        /// Solve what remains of the sudoku game.
+        /// </summary>
+        public void Solve()
+        {
+            // Start in the top left corner.
+            activeCell = cells[0, 0];
+            // Move to first empty square (possibly first).
+            Shift(Direction.JumpBackward);
+            Shift(Direction.JumpForward);
+            SolveCell();
+        }
         private bool TryRandomFromList(IList<int> possNums)
         {
             if (possNums.Count < 1)
@@ -124,7 +137,7 @@ namespace SudokuSolver
                 return true;
 
             SudokuCell cell = activeCell;
-            List<int> possNums = Enumerable.Range(1, size).ToList();
+            List<int> possNums = GetPossibleNums(cell);
             do
             {
                 activeCell = cell;
@@ -145,64 +158,21 @@ namespace SudokuSolver
             List<int> nums = Enumerable.Range(1, size).ToList();
             for (int i = 1; i < size + 1; i++)
             {
-                if (GetConflicts(cell, i).Count != 0)
+                if (GetConflicts(cell, i))
                     nums.Remove(i);
             }
             return nums;
         }
 
-        /// <summary>
-        /// Solve the game.
-        /// </summary>
-        public void Solve()
+        private bool GetConflicts(SudokuCell activeCell, int i)
         {
-            // Start in the top left corner.
-            activeCell = cells[0, 0];
-            // Move to first empty square (possibly first).
-            Shift(Direction.JumpBackward);
-            Shift(Direction.JumpForward);
-            SolveCell();
-        }
-
-        /// <summary>
-        /// Checks for conflicts when changing the value of a cell, based on its neighbors.
-        /// </summary>
-        /// <returns>list of conflicting cells</returns>
-        private ISet<SudokuCell> GetConflicts(SudokuCell cell, int value)
-        {
-            ISet<SudokuCell> conflictingCells = new HashSet<SudokuCell>();
-            int x = cell.X;
-            int y = cell.Y;
-            // Check columns and rows don't have duplicates.
-            for (int i = 0; i < size; i++)
+            var blocks = Block.GetVertical(this).Union(Block.GetHorizontal(this)).Union(Block.GetBox(this));
+            foreach (SudokuCell cell in blocks)
             {
-                SudokuCell xCell = cells[i, y];
-                SudokuCell yCell = cells[x, i];
-                SudokuCell leftDiagCell = cells[i, i];
-                SudokuCell rightDiagCell = cells[i, size - 1 - i];
-                if (cell != xCell && xCell.Value == value)
-                    conflictingCells.Add(xCell);
-
-                if (cell != yCell && yCell.Value == value)
-                    conflictingCells.Add(yCell);
-
-                // Check diagonals.
-                //if (x == y && leftDiagCell != cell && leftDiagCell.Value == value)
-                //    conflictingCells.Add(leftDiagCell);
-                //if (x + y == size - 1 && rightDiagCell != cell && rightDiagCell.Value == value)
-                //    conflictingCells.Add(rightDiagCell);
+                if (i == cell.Value)
+                    return true;
             }
-            // Check boxes don't have duplicates.
-            // Ex: go from 5 - (2) to 5 - (2) + 3
-            for (int i = x - (x % width); i < x - (x % width) + width; i++)
-            {
-                for (int j = y - (y % height); j < y - (y % height) + height; j++)
-                {
-                    if (i != x && j != y && cells[i, j].Value == value)
-                        conflictingCells.Add(cells[i, j]);
-                }
-            }
-            return conflictingCells;
+            return false;
         }
         #endregion
     }
