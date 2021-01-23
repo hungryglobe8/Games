@@ -38,12 +38,36 @@ namespace SudokuSolver
                 ForeColor = Color.Black;
             else
                 ForeColor = SystemColors.ControlDarkDark;
-            Text = (Cell.Value == 0) ? string.Empty : Cell.Value.ToString();
+            // The formatting for painting text must be overridden in SudokuButton's OnPaint.
+            //Text = (Cell.Value == 0) ? string.Empty : Cell.Value.ToString();
         }
 
         /// <summary>
         /// Get rid of ugly tab box.
         /// </summary>
         protected override bool ShowFocusCues { get { return false; } }
+
+        /// <summary>
+        /// Change the painting behavior to fit text that would normally be too big.
+        /// </summary>
+        protected override void OnPaint(PaintEventArgs e)
+        {
+            // Normal painting behavior.
+            base.OnPaint(e);
+            
+            //TODO- Align possible values behavior.
+            // Center text behavior.
+            string text = (Cell.Value == 0) ? string.Empty : Cell.Value.ToString();
+            if (!string.IsNullOrEmpty(text))
+            {
+                StringFormat stringFormat = new StringFormat
+                {
+                    Alignment = StringAlignment.Center,
+                    LineAlignment = StringAlignment.Center
+                };
+
+                e.Graphics.DrawString(text, Font, new SolidBrush(ForeColor), ClientRectangle, stringFormat);
+            }
+        }
     }
 }

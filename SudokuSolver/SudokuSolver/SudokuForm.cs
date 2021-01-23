@@ -14,7 +14,7 @@ namespace SudokuSolver
     {
         public SudokuGrid grid { get; private set; }
 
-        public SudokuForm(int width, int height, int size)
+        public SudokuForm(int width = 2, int height = 5, int size = 10)
         {
             InitializeComponent();
 
