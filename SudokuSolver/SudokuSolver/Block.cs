@@ -1,10 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SudokuSolver
 {
     public static class Block
     {
+        public static IDictionary<SudokuCell, IEnumerable<SudokuCell>> FindNeighbors(SudokuGrid grid)
+        {
+            Dictionary<SudokuCell, IEnumerable<SudokuCell>> keyValuePairs = new Dictionary<SudokuCell, IEnumerable<SudokuCell>>();
+            foreach (var cell in grid.cells)
+            {
+                IEnumerable<SudokuCell> region = new List<SudokuCell>();
+                grid.activeCell = cell;
+                region = GetBox(cell, grid).Union(GetHorizontal(grid)).Union(GetVertical(grid));
+                if (grid.activeCell.X + grid.activeCell.Y == grid.size - 1)
+                    region = region.Union(BottomLeftToTopRight(grid));
+                if (grid.activeCell.X == grid.activeCell.Y)
+                    region = region.Union(TopLeftToBottomRight(grid));
+                keyValuePairs[cell] = region;
+            }
+            return keyValuePairs;
+        }
+
         /// <summary>
         /// Get a list of sudoku cells with matching X as activeCell.
         /// </summary>

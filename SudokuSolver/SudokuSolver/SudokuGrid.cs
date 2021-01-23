@@ -44,25 +44,8 @@ namespace SudokuSolver
                 { Direction.JumpBackward, cell => movement.JumpBackward(cell) }
             };
 
-            this.neighbors = FindNeighbors();
+            this.neighbors = Block.FindNeighbors(this);
             this.activeCell = cells[0, 0];
-        }
-
-        private IDictionary<SudokuCell, IEnumerable<SudokuCell>> FindNeighbors()
-        {
-            Dictionary<SudokuCell, IEnumerable<SudokuCell>> keyValuePairs = new Dictionary<SudokuCell, IEnumerable<SudokuCell>>();
-            foreach (var cell in cells)
-            {
-                IEnumerable<SudokuCell> region = new List<SudokuCell>();
-                activeCell = cell;
-                region = Block.GetBox(cell, this).Union(Block.GetHorizontal(this)).Union(Block.GetVertical(this));
-                if (activeCell.X + activeCell.Y == size - 1)
-                    region = region.Union(Block.BottomLeftToTopRight(this));
-                if (activeCell.X == activeCell.Y)
-                    region = region.Union(Block.TopLeftToBottomRight(this));
-                keyValuePairs[cell] = region;
-            }
-            return keyValuePairs;
         }
 
         public void Select(int x, int y) => activeCell = cells[x, y];
