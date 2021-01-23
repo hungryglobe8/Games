@@ -4,20 +4,41 @@ using System.Linq;
 
 namespace SudokuSolver
 {
+    public struct BlockFlag
+    {
+        public BlockFlag(bool boxes, bool xSudoku)
+        {
+            Boxes = boxes;
+            XSudoku = xSudoku;
+        }
+
+        public bool Boxes { get; }
+        public bool XSudoku { get; }
+    }
+
     public static class Block
     {
-        public static IDictionary<SudokuCell, IEnumerable<SudokuCell>> FindNeighbors(SudokuGrid grid)
+        public static IDictionary<SudokuCell, IEnumerable<SudokuCell>> FindNeighbors(SudokuGrid grid, BlockFlag gameMode)
         {
             Dictionary<SudokuCell, IEnumerable<SudokuCell>> keyValuePairs = new Dictionary<SudokuCell, IEnumerable<SudokuCell>>();
             foreach (var cell in grid.cells)
             {
-                IEnumerable<SudokuCell> region = new List<SudokuCell>();
+                // Focus on the cell under inspection.
                 grid.activeCell = cell;
-                region = GetBox(cell, grid).Union(GetHorizontal(grid)).Union(GetVertical(grid));
-                if (grid.activeCell.X + grid.activeCell.Y == grid.size - 1)
-                    region = region.Union(BottomLeftToTopRight(grid));
-                if (grid.activeCell.X == grid.activeCell.Y)
-                    region = region.Union(TopLeftToBottomRight(grid));
+                // Always get horizontal and vertical neighbors.
+                IEnumerable<SudokuCell> region = GetHorizontal(grid).Union(GetVertical(grid));
+                // Usually get nearby neighbors.
+                if (gameMode.Boxes)
+                    region = region.Union(GetBox(cell, grid));
+                if (gameMode.XSudoku)
+                {
+                    // Only look at true diagonals in XSudoku.
+                    if (grid.activeCell.X + grid.activeCell.Y == grid.size - 1)
+                        region = region.Union(BottomLeftToTopRight(grid));
+                    if (grid.activeCell.X == grid.activeCell.Y)
+                        region = region.Union(TopLeftToBottomRight(grid));
+                }
+                // Add region to dictionary for easy access later.
                 keyValuePairs[cell] = region;
             }
             return keyValuePairs;

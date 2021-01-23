@@ -40,7 +40,11 @@ namespace SudokuSolver
             this.smallToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mediumToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.largeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.gameModeGroupBox = new System.Windows.Forms.GroupBox();
+            this.xSudokuCheck = new System.Windows.Forms.CheckBox();
+            this.boxesCheck = new System.Windows.Forms.CheckBox();
             this.toolStrip1.SuspendLayout();
+            this.gameModeGroupBox.SuspendLayout();
             this.SuspendLayout();
             // 
             // gamePanel
@@ -137,6 +141,39 @@ namespace SudokuSolver
             this.largeToolStripMenuItem.Text = "Large";
             this.largeToolStripMenuItem.Click += new System.EventHandler(this.largeToolStripMenuItem_Click);
             // 
+            // gameModeGroupBox
+            // 
+            this.gameModeGroupBox.Controls.Add(this.xSudokuCheck);
+            this.gameModeGroupBox.Controls.Add(this.boxesCheck);
+            this.gameModeGroupBox.Location = new System.Drawing.Point(12, 37);
+            this.gameModeGroupBox.Name = "gameModeGroupBox";
+            this.gameModeGroupBox.Size = new System.Drawing.Size(102, 367);
+            this.gameModeGroupBox.TabIndex = 5;
+            this.gameModeGroupBox.TabStop = false;
+            this.gameModeGroupBox.Text = "Game Mode";
+            // 
+            // xSudokuCheck
+            // 
+            this.xSudokuCheck.AutoSize = true;
+            this.xSudokuCheck.Location = new System.Drawing.Point(7, 43);
+            this.xSudokuCheck.Name = "xSudokuCheck";
+            this.xSudokuCheck.Size = new System.Drawing.Size(69, 17);
+            this.xSudokuCheck.TabIndex = 1;
+            this.xSudokuCheck.Text = "x sudoku";
+            this.xSudokuCheck.UseVisualStyleBackColor = true;
+            // 
+            // boxesCheck
+            // 
+            this.boxesCheck.AutoSize = true;
+            this.boxesCheck.Checked = true;
+            this.boxesCheck.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.boxesCheck.Location = new System.Drawing.Point(7, 20);
+            this.boxesCheck.Name = "boxesCheck";
+            this.boxesCheck.Size = new System.Drawing.Size(54, 17);
+            this.boxesCheck.TabIndex = 0;
+            this.boxesCheck.Text = "boxes";
+            this.boxesCheck.UseVisualStyleBackColor = true;
+            // 
             // SudokuForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -145,6 +182,7 @@ namespace SudokuSolver
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
             this.ClientSize = new System.Drawing.Size(729, 476);
+            this.Controls.Add(this.gameModeGroupBox);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.clearButton);
             this.Controls.Add(this.solveButton);
@@ -155,6 +193,8 @@ namespace SudokuSolver
             this.Text = "Sudoku";
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
+            this.gameModeGroupBox.ResumeLayout(false);
+            this.gameModeGroupBox.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -172,6 +212,9 @@ namespace SudokuSolver
         private System.Windows.Forms.ToolStripMenuItem smallToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mediumToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem largeToolStripMenuItem;
+        private System.Windows.Forms.GroupBox gameModeGroupBox;
+        private System.Windows.Forms.CheckBox xSudokuCheck;
+        private System.Windows.Forms.CheckBox boxesCheck;
     }
 }
 

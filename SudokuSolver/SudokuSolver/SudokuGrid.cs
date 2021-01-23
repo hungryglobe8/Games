@@ -26,7 +26,7 @@ namespace SudokuSolver
         /// <summary>
         /// Initializes a new instance of the SudokuSolver.SudokuGrid class. 
         /// </summary>
-        public SudokuGrid(int width, int height, int size)
+        public SudokuGrid(int width, int height, int size, BlockFlag gameMode = new BlockFlag())
         {
             this.width = width;
             this.height = height;
@@ -44,7 +44,7 @@ namespace SudokuSolver
                 { Direction.JumpBackward, cell => movement.JumpBackward(cell) }
             };
 
-            this.neighbors = Block.FindNeighbors(this);
+            this.neighbors = Block.FindNeighbors(this, gameMode);
             this.activeCell = cells[0, 0];
         }
 
@@ -108,7 +108,8 @@ namespace SudokuSolver
             // Move to first empty square (possibly first).
             Shift(Direction.JumpBackward);
             Shift(Direction.JumpForward);
-            SolveCell();
+            SolveCell(activeCell);
+            //SolveRandom();
         }
         private bool TryRandomFromList(IList<int> possNums)
         {
@@ -126,13 +127,12 @@ namespace SudokuSolver
             return true;
         }
 
-        private bool SolveCell()
+        private bool SolveCell(SudokuCell cell)
         {
             // Break from method if no more cells are left.
             if (AllCellsFilled)
                 return true;
 
-            SudokuCell cell = activeCell;
             List<int> possNums = GetPossibleNums(cell);
             do
             {
@@ -140,9 +140,36 @@ namespace SudokuSolver
                 if (!TryRandomFromList(possNums))
                     return false;
             }
-            while (!cell.IsValid || !SolveCell());
+            while (!cell.IsValid || !SolveCell(activeCell));
 
             return true;
+        }
+
+        private bool SolveRandom()
+        {
+            if (AllCellsFilled)
+                return true;
+
+            SudokuCell cell = GetRandomCell();
+            List<int> possNums = GetPossibleNums(cell);
+            do
+            {
+                activeCell = cell;
+                if (!TryRandomFromList(possNums))
+                    return false;
+            }
+            while (!cell.IsValid || !SolveCell(activeCell));
+
+            return true;
+        }
+
+        private SudokuCell GetRandomCell()
+        {
+            int x = random.Next(0, size);
+            int y = random.Next(0, size);
+            Select(x, y);
+            Shift(Direction.JumpForward);
+            return activeCell;
         }
 
         public IList<SudokuCell> GetNeighbors(SudokuCell key)

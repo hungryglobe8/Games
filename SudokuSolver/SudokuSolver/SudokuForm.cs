@@ -41,6 +41,15 @@ namespace SudokuSolver
         }
 
         /// <summary>
+        /// Set the game mode by checking various flags.
+        /// </summary>
+        /// <returns>BlockFlag which controls the validation of the grid</returns>
+        private BlockFlag GetFlags()
+        {
+            return new BlockFlag(boxesCheck.Checked, xSudokuCheck.Checked);
+        }
+
+        /// <summary>
         /// Focus on a specific button by providing the corresponding cell.
         /// </summary>
         private void Select(SudokuCell cell)
@@ -170,11 +179,16 @@ namespace SudokuSolver
         /// <param name="size"></param>
         private void CreateGame(int width, int height, int size)
         {
+            // Hide the game panel.
             gamePanel.Visible = false;
             gamePanel.Controls.Clear();
-            grid = new SudokuGrid(width, height, size);
+            
+            // Get the flags (settings) for the new game.
+            BlockFlag gameMode = GetFlags();
+            grid = new SudokuGrid(width, height, size, gameMode);
 
             ConnectCells();
+            // Show the game panel after cells are connected again.
             gamePanel.ResumeLayout();
             gamePanel.Visible = true;
             //new SudokuForm(width, height, size).Show();
