@@ -15,10 +15,11 @@ namespace SudokuSolver
         public SudokuCell[,] cells;
         public SudokuCell activeCell;
         public readonly int width, height, size;
-        //private Movement movement;
         private IDictionary<Direction, Func<SudokuCell, SudokuCell>> mapping;
         // For picking possible solution paths.
         private readonly Random random = new Random();
+        // Store cells relevant to a given cells validity.
+        private IDictionary<SudokuCell, IEnumerable<SudokuCell>> neighbors;
 
         public bool AllCellsFilled => cells.All(cell => cell.Value != 0);
 
@@ -43,7 +44,25 @@ namespace SudokuSolver
                 { Direction.JumpBackward, cell => movement.JumpBackward(cell) }
             };
 
+            this.neighbors = FindNeighbors();
             this.activeCell = cells[0, 0];
+        }
+
+        private IDictionary<SudokuCell, IEnumerable<SudokuCell>> FindNeighbors()
+        {
+            Dictionary<SudokuCell, IEnumerable<SudokuCell>> keyValuePairs = new Dictionary<SudokuCell, IEnumerable<SudokuCell>>();
+            foreach (var cell in cells)
+            {
+                IEnumerable<SudokuCell> region = new List<SudokuCell>();
+                activeCell = cell;
+                region = Block.GetBox(cell, this).Union(Block.GetHorizontal(this)).Union(Block.GetVertical(this));
+                if (activeCell.X + activeCell.Y == size - 1)
+                    region = region.Union(Block.BottomLeftToTopRight(this));
+                if (activeCell.X == activeCell.Y)
+                    region = region.Union(Block.TopLeftToBottomRight(this));
+                keyValuePairs[cell] = region;
+            }
+            return keyValuePairs;
         }
 
         public void Select(int x, int y) => activeCell = cells[x, y];
@@ -72,13 +91,7 @@ namespace SudokuSolver
             if (activeCell.SetValue(value))
             {
                 // Find and add new conflicts.
-                CheckConflicts(Block.GetHorizontal(this));
-                CheckConflicts(Block.GetVertical(this));
-                CheckConflicts(Block.GetBox(this));
-                if (activeCell.X + activeCell.Y == size - 1)
-                    CheckConflicts(Block.BottomLeftToTopRight(this));
-                if (activeCell.X == activeCell.Y)
-                    CheckConflicts(Block.TopLeftToBottomRight(this));
+                CheckConflicts();
 
                 // Check validity to jump forward.
                 if (activeCell.IsValid && activeCell.Value != 0)
@@ -89,9 +102,9 @@ namespace SudokuSolver
         /// <summary>
         /// Mark cells as invalid, if there are more than 2 that share the same value.
         /// </summary>
-        private void CheckConflicts(IList<SudokuCell> result)
+        private void CheckConflicts()
         {
-            foreach (var cell in result)
+            foreach (var cell in neighbors[activeCell])
             {
                 if (cell != activeCell && cell.Value == activeCell.Value)
                 {
@@ -149,6 +162,11 @@ namespace SudokuSolver
             return true;
         }
 
+        public IList<SudokuCell> GetNeighbors(SudokuCell key)
+        {
+            return neighbors[key].ToList();
+        }
+
         /// <summary>
         /// Return a list of numbers without conflicts at a given cell.
         /// </summary>
@@ -166,8 +184,7 @@ namespace SudokuSolver
 
         private bool GetConflicts(SudokuCell activeCell, int i)
         {
-            var blocks = Block.GetVertical(this).Union(Block.GetHorizontal(this)).Union(Block.GetBox(this));
-            foreach (SudokuCell cell in blocks)
+            foreach (SudokuCell cell in neighbors[activeCell])
             {
                 if (i == cell.Value)
                     return true;

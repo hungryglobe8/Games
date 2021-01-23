@@ -40,11 +40,11 @@ namespace SudokuSolver
             return cellList;
         }
 
-        public static IList<SudokuCell> GetBox(SudokuGrid grid)
+        public static IList<SudokuCell> GetBox(SudokuCell cell, SudokuGrid grid)
         {
             List<SudokuCell> cellList = new List<SudokuCell>();
-            int x = grid.activeCell.X;
-            int y = grid.activeCell.Y;
+            int x = cell.X;
+            int y = cell.Y;
             int width = grid.width;
             int height = grid.height;
             // Check boxes don't have duplicates.

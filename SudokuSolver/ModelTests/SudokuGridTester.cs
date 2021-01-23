@@ -24,6 +24,30 @@ namespace ModelTests
         }
 
         [TestMethod]
+        public void AllCellsHaveRightNeighbors()
+        {
+            var sut = SmallGrid();
+
+            foreach (var cell in sut.cells)
+            {
+                var result = sut.GetNeighbors(cell);
+                Assert.AreEqual(9, result.Count);
+            }
+        }
+
+        [TestMethod]
+        public void AllCellsHaveRightNeighborsBigGrid()
+        {
+            var sut = new SudokuGrid(3, 3, 9);
+
+            foreach (var cell in sut.cells)
+            {
+                var result = sut.GetNeighbors(cell);
+                Assert.AreEqual(21, result.Count);
+            }
+        }
+
+        [TestMethod]
         public void SudokuGridHasSudokuCells()
         {
             var sut = SmallGrid();
