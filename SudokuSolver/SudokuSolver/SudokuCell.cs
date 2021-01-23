@@ -26,7 +26,10 @@ namespace SudokuSolver
         }
 
         /// <summary>
-        /// If cell is locked, do not set its value.
+        /// Set the value of a cell to a newValue.
+        /// If cell is locked, or newValue will not change, do nothing.
+        /// Returns true if the modification will result in possible conflicts,
+        /// i.e. Value is a new non-zero number.
         /// </summary>
         public bool SetValue(int newValue)
         {
@@ -37,7 +40,7 @@ namespace SudokuSolver
                 Clear();
                 Value = newValue;
                 OnValueChanged();
-                return true;
+                return Value != 0;
             }
         }
 

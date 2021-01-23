@@ -77,7 +77,7 @@ namespace SudokuSolver
                 CheckConflicts();
 
                 // Check validity to jump forward.
-                if (activeCell.IsValid && activeCell.Value != 0)
+                if (activeCell.IsValid)
                     Shift(Direction.JumpForward);
             }
         }

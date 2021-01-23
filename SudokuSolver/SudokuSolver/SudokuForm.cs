@@ -168,9 +168,9 @@ namespace SudokuSolver
         }
 
         #region CreateNewGame
-        private void smallToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(2, 2, 4);
-        private void mediumToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(3, 2, 6);
-        private void largeToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(3, 3, 9);
+        private void smallToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(3, 2, 6);
+        private void mediumToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(3, 3, 9);
+        private void largeToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(2, 5, 10);
         /// <summary>
         /// Suspend the visuals of the gamePanel until a board has been generated and is ready to view.
         /// </summary>
