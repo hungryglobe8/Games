@@ -12,13 +12,17 @@ namespace SudokuSolver
 {
     public partial class SudokuForm : Form
     {
+        private int _size;
+
         public SudokuGrid grid { get; private set; }
 
-        public SudokuForm(int width = 2, int height = 5, int size = 10)
+        public SudokuForm(int size = 9)
         {
             InitializeComponent();
 
-            CreateGame(width, height, size);
+            _size = size;
+
+            CreateGame(_size);
         }
 
         /// <summary>
@@ -168,17 +172,29 @@ namespace SudokuSolver
         }
 
         #region CreateNewGame
-        private void smallToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(3, 2, 6);
-        private void mediumToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(3, 3, 9);
-        private void largeToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(2, 5, 10);
+        private void smallToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(6);
+        private void mediumToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(9);
+        private void largeToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(10);
         /// <summary>
         /// Suspend the visuals of the gamePanel until a board has been generated and is ready to view.
         /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
         /// <param name="size"></param>
-        private void CreateGame(int width, int height, int size)
+        private void CreateGame(int size)
         {
+            // Get the correct width and height.
+            int width, height;
+            double squareRoot = Math.Sqrt(size);
+            if (squareRoot % 1 == 0)
+            {
+                width = (int)squareRoot;
+                height = (int)squareRoot;
+            }
+            else
+            {
+                width = size / 2;
+                height = size / width;
+            }
+
             // Hide the game panel.
             gamePanel.Visible = false;
             gamePanel.Controls.Clear();
@@ -191,9 +207,20 @@ namespace SudokuSolver
             // Show the game panel after cells are connected again.
             gamePanel.ResumeLayout();
             gamePanel.Visible = true;
-            //new SudokuForm(width, height, size).Show();
-            //this.Close();
+        }
+
+        private void newGameButton_Click(object sender, EventArgs e)
+        {
+            CreateGame(_size);
+            clearButton_Click(sender, e);
         }
         #endregion
+
+        private void sizeRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            var radioButton = sender as RadioButton;
+            if (radioButton.Checked)
+                _size = int.Parse(radioButton.Text);                
+        }
     }
 }
