@@ -6,6 +6,18 @@ using System.Threading.Tasks;
 
 namespace SudokuSolver
 {
+    public struct Factor
+    {
+        public int First { get; private set; }
+        public int Second { get; private set; }
+
+        public Factor(int first, int second)
+        {
+            First = first;
+            Second = second;
+        }
+    };
+
     public static class GridOperations
     {
         /// <summary>
@@ -22,6 +34,27 @@ namespace SudokuSolver
                 }
             }
             return cells;
+        }
+
+        public static List<Factor> GetFactors(int number)
+        {
+            var factors = new List<Factor>();
+            // Check if our number is an exact square.
+            int sqrt = (int)Math.Ceiling(Math.Sqrt(number));
+            if (sqrt * sqrt == number)
+                factors.Add(new Factor(sqrt, sqrt));
+
+            // Start from 2, as we don't care about 1-factors.
+            for (int i = 2; i < sqrt; i++)
+            {
+                //  We found a pair of factors.
+                if (number % i == 0)
+                {
+                    factors.Add(new Factor(i, number / i));
+                    factors.Add(new Factor(number / i, i));
+                }
+            }
+            return factors;
         }
 
         public static IEnumerable<SudokuCell> ToEnumerable<T>(this SudokuCell[,] cells)

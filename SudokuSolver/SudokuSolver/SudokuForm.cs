@@ -12,17 +12,16 @@ namespace SudokuSolver
 {
     public partial class SudokuForm : Form
     {
-        private int _size;
+        private int sizeSetting;
+        private Factor orientationSetting;
 
         public SudokuGrid grid { get; private set; }
 
-        public SudokuForm(int size = 9)
+        public SudokuForm()
         {
             InitializeComponent();
 
-            _size = size;
-
-            CreateGame(_size);
+            CreateGame(9, 3, 3);
         }
 
         /// <summary>
@@ -172,29 +171,15 @@ namespace SudokuSolver
         }
 
         #region CreateNewGame
-        private void smallToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(6);
-        private void mediumToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(9);
-        private void largeToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(10);
+        private void smallToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(6, 2, 3);
+        private void mediumToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(9, 3, 3);
+        private void largeToolStripMenuItem_Click(object sender, EventArgs e) => CreateGame(10, 2, 5);
         /// <summary>
         /// Suspend the visuals of the gamePanel until a board has been generated and is ready to view.
         /// </summary>
         /// <param name="size"></param>
-        private void CreateGame(int size)
+        private void CreateGame(int size, int width, int height)
         {
-            // Get the correct width and height.
-            int width, height;
-            double squareRoot = Math.Sqrt(size);
-            if (squareRoot % 1 == 0)
-            {
-                width = (int)squareRoot;
-                height = (int)squareRoot;
-            }
-            else
-            {
-                width = size / 2;
-                height = size / width;
-            }
-
             // Hide the game panel.
             gamePanel.Visible = false;
             gamePanel.Controls.Clear();
@@ -211,16 +196,53 @@ namespace SudokuSolver
 
         private void newGameButton_Click(object sender, EventArgs e)
         {
-            CreateGame(_size);
+            int size = sizeSetting;
+            int width = orientationSetting.First;
+            int height = orientationSetting.Second;
+            CreateGame(size, width, height);
             clearButton_Click(sender, e);
         }
         #endregion
 
+        #region Settings
         private void sizeRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             var radioButton = sender as RadioButton;
             if (radioButton.Checked)
-                _size = int.Parse(radioButton.Text);                
+            {
+                sizeSetting = int.Parse(radioButton.Text);
+                UpdateOrientationPanel(sizeSetting);
+            }
         }
+
+        private void UpdateOrientationPanel(int number)
+        {
+            // Get orientation options.
+            orientationPanel.Controls.Clear();
+            foreach (var factor in GridOperations.GetFactors(number))
+            {
+                RadioButton orientationButton = new RadioButton()
+                {
+                    Dock = DockStyle.Fill,
+                    Font = defaultOrientationButton.Font,
+                    Tag = factor,
+                    Text = $"{factor.First}x{factor.Second}"
+                };
+                orientationButton.CheckedChanged += orientationButton_CheckedChanged;
+                // If this is the first orientation button, mark it as checked.
+                if (orientationPanel.Controls.Count == 0)
+                    orientationButton.Checked = true;
+
+                orientationPanel.Controls.Add(orientationButton);
+            }
+        }
+
+        private void orientationButton_CheckedChanged(object sender, EventArgs e)
+        {
+            var radioButton = sender as RadioButton;
+            if (radioButton.Checked)
+                orientationSetting = (Factor)radioButton.Tag;
+        }
+        #endregion
     }
 }

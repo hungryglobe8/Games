@@ -35,6 +35,9 @@ namespace SudokuSolver
             this.solveButton = new System.Windows.Forms.Button();
             this.clearButton = new System.Windows.Forms.Button();
             this.gameModeGroupBox = new System.Windows.Forms.GroupBox();
+            this.orientationPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.defaultOrientationButton = new System.Windows.Forms.RadioButton();
+            this.orientationLabel = new System.Windows.Forms.Label();
             this.newGameButton = new System.Windows.Forms.Button();
             this.size16RadioButton = new System.Windows.Forms.RadioButton();
             this.size10RadioButton = new System.Windows.Forms.RadioButton();
@@ -50,7 +53,9 @@ namespace SudokuSolver
             this.mediumToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.largeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.size12RadioButton = new System.Windows.Forms.RadioButton();
             this.gameModeGroupBox.SuspendLayout();
+            this.orientationPanel.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -99,6 +104,8 @@ namespace SudokuSolver
             // 
             // gameModeGroupBox
             // 
+            this.gameModeGroupBox.Controls.Add(this.orientationPanel);
+            this.gameModeGroupBox.Controls.Add(this.orientationLabel);
             this.gameModeGroupBox.Controls.Add(this.newGameButton);
             this.gameModeGroupBox.Controls.Add(this.size16RadioButton);
             this.gameModeGroupBox.Controls.Add(this.size10RadioButton);
@@ -108,12 +115,51 @@ namespace SudokuSolver
             this.gameModeGroupBox.Controls.Add(this.sizeLabel);
             this.gameModeGroupBox.Controls.Add(this.xSudokuCheck);
             this.gameModeGroupBox.Controls.Add(this.boxesCheck);
+            this.gameModeGroupBox.Controls.Add(this.size12RadioButton);
             this.gameModeGroupBox.Location = new System.Drawing.Point(12, 37);
             this.gameModeGroupBox.Name = "gameModeGroupBox";
             this.gameModeGroupBox.Size = new System.Drawing.Size(121, 367);
             this.gameModeGroupBox.TabIndex = 5;
             this.gameModeGroupBox.TabStop = false;
             this.gameModeGroupBox.Text = "Game Mode";
+            // 
+            // orientationPanel
+            // 
+            this.orientationPanel.ColumnCount = 2;
+            this.orientationPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.orientationPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.orientationPanel.Controls.Add(this.defaultOrientationButton, 0, 0);
+            this.orientationPanel.Location = new System.Drawing.Point(6, 78);
+            this.orientationPanel.Name = "orientationPanel";
+            this.orientationPanel.RowCount = 2;
+            this.orientationPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.orientationPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.orientationPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.orientationPanel.Size = new System.Drawing.Size(109, 61);
+            this.orientationPanel.TabIndex = 12;
+            // 
+            // defaultOrientationButton
+            // 
+            this.defaultOrientationButton.AutoSize = true;
+            this.defaultOrientationButton.Checked = true;
+            this.defaultOrientationButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.defaultOrientationButton.Font = new System.Drawing.Font("Rockwell", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.defaultOrientationButton.Location = new System.Drawing.Point(3, 3);
+            this.defaultOrientationButton.Name = "defaultOrientationButton";
+            this.defaultOrientationButton.Size = new System.Drawing.Size(48, 24);
+            this.defaultOrientationButton.TabIndex = 0;
+            this.defaultOrientationButton.TabStop = true;
+            this.defaultOrientationButton.Text = "3x3";
+            this.defaultOrientationButton.UseVisualStyleBackColor = true;
+            // 
+            // orientationLabel
+            // 
+            this.orientationLabel.AutoSize = true;
+            this.orientationLabel.Location = new System.Drawing.Point(3, 62);
+            this.orientationLabel.Name = "orientationLabel";
+            this.orientationLabel.Size = new System.Drawing.Size(61, 13);
+            this.orientationLabel.TabIndex = 11;
+            this.orientationLabel.Text = "Orientation:";
             // 
             // newGameButton
             // 
@@ -129,11 +175,11 @@ namespace SudokuSolver
             // 
             this.size16RadioButton.AutoSize = true;
             this.size16RadioButton.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.size16RadioButton.Location = new System.Drawing.Point(90, 29);
+            this.size16RadioButton.Location = new System.Drawing.Point(92, 29);
             this.size16RadioButton.Name = "size16RadioButton";
             this.size16RadioButton.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.size16RadioButton.Size = new System.Drawing.Size(23, 30);
-            this.size16RadioButton.TabIndex = 8;
+            this.size16RadioButton.TabIndex = 9;
             this.size16RadioButton.Text = "16";
             this.size16RadioButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.size16RadioButton.UseVisualStyleBackColor = true;
@@ -143,7 +189,8 @@ namespace SudokuSolver
             // 
             this.size10RadioButton.AutoSize = true;
             this.size10RadioButton.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.size10RadioButton.Location = new System.Drawing.Point(67, 29);
+            this.size10RadioButton.Location = new System.Drawing.Point(52, 29);
+            this.size10RadioButton.Margin = new System.Windows.Forms.Padding(0);
             this.size10RadioButton.Name = "size10RadioButton";
             this.size10RadioButton.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.size10RadioButton.Size = new System.Drawing.Size(23, 30);
@@ -158,7 +205,7 @@ namespace SudokuSolver
             this.size9RadioButton.AutoSize = true;
             this.size9RadioButton.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
             this.size9RadioButton.Checked = true;
-            this.size9RadioButton.Location = new System.Drawing.Point(50, 29);
+            this.size9RadioButton.Location = new System.Drawing.Point(36, 29);
             this.size9RadioButton.Name = "size9RadioButton";
             this.size9RadioButton.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.size9RadioButton.Size = new System.Drawing.Size(17, 30);
@@ -173,7 +220,7 @@ namespace SudokuSolver
             // 
             this.size8RadioButton.AutoSize = true;
             this.size8RadioButton.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.size8RadioButton.Location = new System.Drawing.Point(33, 29);
+            this.size8RadioButton.Location = new System.Drawing.Point(20, 29);
             this.size8RadioButton.Name = "size8RadioButton";
             this.size8RadioButton.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.size8RadioButton.Size = new System.Drawing.Size(17, 30);
@@ -187,7 +234,7 @@ namespace SudokuSolver
             // 
             this.size6RadioButton.AutoSize = true;
             this.size6RadioButton.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.size6RadioButton.Location = new System.Drawing.Point(16, 29);
+            this.size6RadioButton.Location = new System.Drawing.Point(4, 29);
             this.size6RadioButton.Name = "size6RadioButton";
             this.size6RadioButton.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.size6RadioButton.Size = new System.Drawing.Size(17, 30);
@@ -279,6 +326,21 @@ namespace SudokuSolver
             this.toolStrip1.TabIndex = 4;
             this.toolStrip1.Text = "toolStrip1";
             // 
+            // size12RadioButton
+            // 
+            this.size12RadioButton.AutoSize = true;
+            this.size12RadioButton.CheckAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.size12RadioButton.Location = new System.Drawing.Point(72, 29);
+            this.size12RadioButton.Margin = new System.Windows.Forms.Padding(0);
+            this.size12RadioButton.Name = "size12RadioButton";
+            this.size12RadioButton.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.size12RadioButton.Size = new System.Drawing.Size(23, 30);
+            this.size12RadioButton.TabIndex = 8;
+            this.size12RadioButton.Text = "12";
+            this.size12RadioButton.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.size12RadioButton.UseVisualStyleBackColor = true;
+            this.size12RadioButton.CheckedChanged += new System.EventHandler(this.sizeRadioButton_CheckedChanged);
+            // 
             // SudokuForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -298,6 +360,8 @@ namespace SudokuSolver
             this.Text = "Sudoku";
             this.gameModeGroupBox.ResumeLayout(false);
             this.gameModeGroupBox.PerformLayout();
+            this.orientationPanel.ResumeLayout(false);
+            this.orientationPanel.PerformLayout();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -327,6 +391,10 @@ namespace SudokuSolver
         private System.Windows.Forms.ToolStripMenuItem mediumToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem largeToolStripMenuItem;
         private System.Windows.Forms.ToolStrip toolStrip1;
+        private System.Windows.Forms.Label orientationLabel;
+        private System.Windows.Forms.TableLayoutPanel orientationPanel;
+        private System.Windows.Forms.RadioButton defaultOrientationButton;
+        private System.Windows.Forms.RadioButton size12RadioButton;
     }
 }
 
