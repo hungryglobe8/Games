@@ -3,9 +3,11 @@ This repo is a place for me (Casey Rand) to organize my projects and experiment 
 ## Minesweeper
 The classic game we all know and love (or is it just me?) with a few additional features that increase playability.
 * The first click of any game is guaranteed to be a zero. This starts you off with a small region from which to play rather than just one square. Don't waste it on a corner!
-![](https://github.com/Games/imgs/BigClick.gif)
+
+![](https://github.com/hungryglobe8/Games/blob/master/imgs/BigClick.gif)
 * A "reveal all" button appears after all your flags have been expended. A fast way to end the game... one way or another.
-![](https://github.com/Games/imgs/AutoComplete.gif)
+
+![](https://github.com/hungryglobe8/Games/blob/master/imgs/AutoComplete.gif)
 * Stats that prevail across runs showing percentage and can be reset.
 
 ## Sudoku
@@ -14,6 +16,8 @@ It can also be used to solve partially filled in puzzles relatively quickly.
 Unique features:
 * Smart fill-in system, moving selection automatically to the next open square when valid.
 * Highlights inconsistencies in grid as soon as they invalidate previous numbers. Also highlights the other number until the conflict is resolved.
+
+![](https://github.com/hungryglobe8/Games/blob/master/imgs/Sudoku.gif)
 * Generate or solve X Sudoku puzzles (only reasonable for sizes < 10)
 
 Future goals:
